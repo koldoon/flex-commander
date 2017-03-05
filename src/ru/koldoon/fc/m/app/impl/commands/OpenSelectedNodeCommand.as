@@ -15,6 +15,7 @@ package ru.koldoon.fc.m.app.impl.commands {
             ];
         }
 
+
         /**
          * Last operation token.
          */
@@ -31,15 +32,16 @@ package ru.koldoon.fc.m.app.impl.commands {
             }
 
             if (dir) {
-                    listingPromise = dir
-                        .getListing()
-                        .onReady(function (op:AsyncCollection):void {
-                            listingPromise = null;
-                            panel.directory = dir;
-                            panel.selectedNodeIndex = 0;
-                        });
+                listingPromise = dir
+                    .getListing()
+                    .onReady(function (op:AsyncCollection):void {
+                        listingPromise = null;
+                        panel.selection.reset();
+                        panel.directory = dir;
+                        panel.selectedNodeIndex = 0;
+                    });
 
-                    panel.setStatusText("Loading...");
+                panel.setStatusText("Loading...");
             }
             else if (node == AbstractNode.PARENT_NODE) {
                 var currentDir:IDirectory = panel.directory;
