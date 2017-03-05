@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<s:ItemRenderer
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    autoDrawBackground="false" height="50"
+    addedToStage="onAdded()" removedFromStage="onRemoved()">
+
+    <s:states>
+        <s:State name="normal"/>
+        <s:State name="selected"/>
+    </s:states>
+
+    <s:Rect
+        id="selectionRect" visible="false" includeInLayout="false"
+        left="0" right="0" top="0" bottom="0">
+
+        <s:fill>
+            <s:SolidColor color="{palette.white}" alpha="0.08"/>
+        </s:fill>
+    </s:Rect>
+
+    <s:Rect
+        id="caretRect"
+        left="0" right="0" top="0" bottom="0" includeIn="selected">
+
+        <s:fill>
+            <s:SolidColor color="{palette.blue2}"/>
+        </s:fill>
+    </s:Rect>
+
+    <s:Rect
+        id="selectionRect2" visible="false" includeInLayout="false"
+        left="0" top="0" bottom="0" width="8">
+
+        <s:fill>
+            <s:SolidColor color="#289ff4" alpha="1"/>
+        </s:fill>
+    </s:Rect>
+
+    <s:Label
+        id="attrLabel"
+        verticalCenter="0" left="30"
+        styleName="h5 blue0 icon"
+        styleName.selected="h5 white icon"
+        alpha="0.6"/>
+
+    <s:HGroup
+        left="{attrLabel.width + 50}" right="40" gap="20"
+        verticalAlign="baseline" verticalCenter="2">
+
+        <s:Label
+            id="nameLabel"
+            width="100%" maxDisplayedLines="1"
+            styleName="h5 left blue0"
+            styleName.selected="h5 left white"/>
+
+        <s:Label
+            id="typeLabel"
+            maxDisplayedLines="1" paddingRight="10"
+            styleName="h5 right blue0"
+            styleName.selected="h5 right white"/>
+
+        <s:Label
+            id="sizeLabel"
+            width="160" paddingRight="10"
+            styleName="h5 right blue0"
+            styleName.selected="h5 right white"/>
+
+        <s:Label
+            id="dateLabel"
+            width="220"
+            styleName="h5 left blue0"
+            styleName.selected="h5 left white"/>
+
+    </s:HGroup>
+
+    <fx:Script><![CDATA[
+        import ru.koldoon.fc.m.app.INodesSelection;
+        import ru.koldoon.fc.m.tree.INode;
+        import ru.koldoon.fc.m.tree.impl.AbstractNode;
+        import ru.koldoon.fc.m.tree.impl.DirectoryNode;
+        import ru.koldoon.fc.m.tree.impl.FileNode;
+        import ru.koldoon.fc.resources.styles.icon;
+        import ru.koldoon.fc.resources.styles.palette;
+        import ru.koldoon.fc.utils.F;
+
+        public var selection:INodesSelection;
+
+
+        private function onAdded():void {
+            selection.change.add(onSelectionChange);
+        }
+
+
+        private function onRemoved():void {
+            selection.change.remove(onSelectionChange);
+        }
+
+
+        private function onSelectionChange():void {
+            selectionRect.visible = selectionRect.includeInLayout =
+                selectionRect2.visible = selectionRect2.includeInLayout =
+                    selection.isSelected(data as INode);
+        }
+
+
+        override public function set data(value:Object):void {
+            super.data = value;
+
+            var node:AbstractNode = data as AbstractNode;
+            var dir:DirectoryNode = data as DirectoryNode;
+            var file:FileNode = data as FileNode;
+
+            nameLabel.text = node.label;
+            typeLabel.text = dir ? "" : node.type;
+
+            attrLabel.text =
+                file && file.link ? icon.fa_link :
+                dir || node == AbstractNode.PARENT_NODE ? icon.fa_folder :
+                file && file.executable ? icon.fa_asterisk : icon.fa_circle_o;
+
+            // To save natural measuring we never set icon text to null
+            attrLabel.visible = attrLabel.text != icon.fa_circle_o;
+
+            if (file) {
+                sizeLabel.text = file.size >= 0 ? file.getFormattedSize() : "";
+                dateLabel.text = F.getInstance().dateOnlyNumbers.format(file.modified);
+            }
+            else {
+                sizeLabel.text = "";
+                dateLabel.text = "";
+            }
+
+            onSelectionChange();
+        }
+        ]]></fx:Script>
+</s:ItemRenderer>

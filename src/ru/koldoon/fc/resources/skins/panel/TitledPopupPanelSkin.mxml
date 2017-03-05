@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<s:Skin
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:rule="com.qwickserve.components.rule.*"
+    xmlns:snapshot="com.qwickserve.components.snapshot.*"
+
+    minWidth="450" minHeight="200">
+
+    <fx:Metadata>
+        [HostComponent("spark.components.Panel")]
+    </fx:Metadata>
+
+    <s:states>
+        <s:State name="normal"/>
+        <s:State name="disabled"/>
+        <s:State name="normalWithControlBar" stateGroups="withControls"/>
+        <s:State name="disabledWithControlBar" stateGroups="withControls"/>
+    </s:states>
+
+    <!-- Shadowed background for GPU could be implemented this way only -->
+    <snapshot:Snapshot left="0" right="0" top="0" bottom="0">
+        <!-- 23 - to hide shadow edge from the screen -->
+        <s:Rect left="23" right="23" top="23" bottom="23" radiusX="7" radiusY="7">
+            <s:fill>
+                <s:SolidColor color="#666666" alpha="1"/>
+            </s:fill>
+            <s:filters>
+                <s:DropShadowFilter angle="90" distance="6" blurX="10" blurY="10" quality="3" alpha="0.2"/>
+            </s:filters>
+        </s:Rect>
+    </snapshot:Snapshot>
+
+    <!-- Sharp rect on the top -->
+    <s:Rect left="20" right="20" top="20" bottom="20" radiusX="7" radiusY="7">
+        <s:fill>
+            <s:SolidColor color="#FFFFFF" alpha="1"/>
+        </s:fill>
+    </s:Rect>
+
+    <!-- Contains the vertical stack of titlebar content and controlbar. -->
+    <s:Group left="20" top="20" right="20" bottom="20" id="contents">
+        <s:layout>
+            <s:VerticalLayout gap="0" horizontalAlign="justify"/>
+        </s:layout>
+
+        <s:Group id="titleGroup">
+            <s:Group left="0" top="0" right="0" bottom="0" id="titlebarMask">
+                <s:Rect left="0" top="0" right="0" bottom="0"
+                        topLeftRadiusX="7" topRightRadiusX="7" topLeftRadiusY="7" topRightRadiusY="7">
+                    <s:fill>
+                        <s:SolidColor alpha="1"/>
+                    </s:fill>
+                </s:Rect>
+            </s:Group>
+            <s:Rect id="tbFill" left="0" right="0" top="0" bottom="0" mask="{titlebarMask}">
+                <s:fill>
+                    <s:SolidColor color="{palette.red}"/>
+                </s:fill>
+            </s:Rect>
+
+            <s:Label id="titleDisplay" left="20" right="20" top="20" bottom="20" styleName="white bold left"/>
+        </s:Group>
+
+        <s:Group id="contentGroup" height="100%" minWidth="0" minHeight="0"/>
+
+        <rule:HRule top="0" includeIn="normalWithControlBar, disabledWithControlBar"/>
+
+        <s:Group id="navigationGroup" minWidth="0" minHeight="0"
+                 includeIn="normalWithControlBar, disabledWithControlBar">
+
+            <!-- bottom group mask -->
+            <s:Group left="0" top="0" right="0" bottom="0" id="controlBarMask">
+                <s:Rect left="0" top="0" right="0" bottom="0"
+                        bottomLeftRadiusX="7" bottomRightRadiusX="7" bottomLeftRadiusY="7" bottomRightRadiusY="7">
+                    <s:fill>
+                        <s:SolidColor alpha="1"/>
+                    </s:fill>
+                </s:Rect>
+            </s:Group>
+
+            <s:Group id="controlBarGroup" mask="{controlBarMask}"
+                     left="0" right="0" top="0" bottom="0" minWidth="0" minHeight="0">
+                <s:layout>
+                    <s:HorizontalLayout gap="10"/>
+                </s:layout>
+            </s:Group>
+        </s:Group>
+    </s:Group>
+
+    <fx:Script><![CDATA[
+        import ru.koldoon.fc.resources.styles.palette;
+        ]]></fx:Script>
+
+</s:Skin>

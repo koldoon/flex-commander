@@ -1,0 +1,42 @@
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+/*  ---------------------------------------------------------  */
+/*  This file contains common text styles shortcuts            */
+/*  Also sets default styles for MX and Spark Text primitives  */
+/*  ---------------------------------------------------------  */
+
+.bold { fontWeight: bold; }
+.normal { fontWeight: normal; }
+
+/*  Alignment Styles Shortcuts  */
+.middle { verticalAlign: middle; }
+.center { textAlign: center; }
+.right { textAlign: right; }
+.left { textAlign: left; }
+
+/*  ----------------------------------------------------------  */
+/*  Text Components Defaults                                    */
+/*  textAlign = center is set because if text measuring issues  */
+/*  in TextField (mx components)                                */
+/*  ----------------------------------------------------------  */
+
+mx|TextInput, mx|TextArea, mx|Label, mx|Text, s|Label, s|TextArea, s|TextInput {
+    textAlign:     center;
+    verticalAlign: middle;
+    focusAlpha:    0;
+}
+
+/*  Override textAlign property for inputs  */
+mx|TextInput, mx|TextArea, s|TextArea, s|TextInput {
+    textAlign: left;
+}
+
+s|TextBase {
+    verticalAlign: middle;
+}
+
+.icon {
+    fontWeight:    normal;
+    verticalAlign: middle;
+}

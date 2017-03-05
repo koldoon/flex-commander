@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!---
+ Qwickserve Formatters static collection. Use F.getInstance() method to access.
+-->
+<context:ContextBase
+    xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark" xmlns:context="ru.koldoon.fc.c.context.*">
+
+    <fx:Declarations>
+
+        <s:CurrencyFormatter
+            id="currency"
+            currencySymbol="$" useCurrencySymbol="true"
+            negativeCurrencyFormat="0" positiveCurrencyFormat="0"
+            fractionalDigits="2" decimalSeparator="."
+            useGrouping="true" groupingSeparator=" "/>
+
+        <s:DateTimeFormatter
+            id="dateTimeFull"
+            dateTimePattern="yyyy-MM-dd HH:mm:ss"/>
+
+        <s:DateTimeFormatter
+            id="time"
+            dateTimePattern="HH:mm:ss"/>
+
+        <s:DateTimeFormatter
+            id="dateTime"
+            dateTimePattern="yyyy-MM-dd HH:mm"/>
+
+        <s:DateTimeFormatter
+            id="dateOnly"
+            dateTimePattern="dd-MMM-yyyy"/>
+
+        <s:DateTimeFormatter
+            id="dateOnlyNumbers"
+            dateTimePattern="dd-MM-yyyy"/>
+
+        <s:NumberFormatter
+            id="number2"
+            decimalSeparator="." fractionalDigits="2" negativeNumberFormat="0"
+            groupingSeparator=""/>
+
+        <s:NumberFormatter
+            id="number1"
+            decimalSeparator="." fractionalDigits="1" negativeNumberFormat="0"
+            groupingSeparator=""/>
+
+        <s:NumberFormatter
+            id="number0"
+            decimalSeparator="." fractionalDigits="0" negativeNumberFormat="0"
+            groupingSeparator=""/>
+
+    </fx:Declarations>
+
+
+    <fx:Script><![CDATA[
+        // -----------------------------------------------------------------------------------
+        // Singleton pattern
+        // -----------------------------------------------------------------------------------
+
+        private static var _instance:F;
+
+        public static function getInstance():F {
+            if (_instance == null) {
+                _instance = new F();
+            }
+
+            return _instance;
+        }
+        ]]></fx:Script>
+</context:ContextBase>

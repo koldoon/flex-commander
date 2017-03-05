@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<s:Application
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
+
+    backgroundColor="#011130" applicationDPI="320"
+    activate="onActivate()" deactivate="onDeactivate()"
+    frameRate="600" creationComplete="creationCompleteHandler(event)">
+
+
+    <fx:Style source="/ru/koldoon/fc/resources/styles/typo.css"/>
+    <fx:Style source="/ru/koldoon/fc/resources/styles/text-styles.css"/>
+    <fx:Style source="/ru/koldoon/fc/resources/styles/text-sizes.css"/>
+    <fx:Style source="/ru/koldoon/fc/resources/styles/palette.css"/>
+
+    <impl:FilesPanel
+        id="leftPanel" position="left"
+        left="0" bottom="85" top="20" width="{width / 2 - 10}"/>
+
+    <impl:FilesPanel
+        id="rightPanel" position="right"
+        right="0" bottom="85" top="20" width="{width / 2 - 10}"/>
+
+    <s:List
+        id="functionKeyList"
+        bottom="15" left="0" right="0" minHeight="0"
+        itemRenderer="ru.koldoon.fc.c.fn.FunctionKeyRenderer"
+        skinClass="ru.koldoon.fc.resources.skins.list.ListTransparentSkin"
+        preventSelection="true" focusEnabled="false" cacheAsBitmap="true">
+
+        <s:layout>
+            <s:TileLayout
+                requestedRowCount="1" rowHeight="55" requestedColumnCount="10"
+                horizontalAlign="justify" columnAlign="justifyUsingWidth"
+                paddingRight="30" horizontalGap="20"/>
+        </s:layout>
+
+        <s:dataProvider>
+            <s:ArrayCollection>
+                <fx:String>Help</fx:String>
+                <fx:String>Menu</fx:String>
+                <fx:String>View</fx:String>
+                <fx:String>Edit</fx:String>
+                <fx:String>Copy</fx:String>
+                <fx:String>Move</fx:String>
+                <fx:String>MkDir</fx:String>
+                <fx:String>Delete</fx:String>
+                <fx:String>-</fx:String>
+                <fx:String>-</fx:String>
+            </s:ArrayCollection>
+        </s:dataProvider>
+
+    </s:List>
+
+    <impl2:PopupManager
+        id="popupManager"
+        left="0" right="0" top="0" bottom="0"/>
+
+    <fx:Script><![CDATA[
+        import mx.controls.ToolTip;
+        import mx.events.FlexEvent;
+        import mx.managers.IFocusManagerComponent;
+
+        import ru.koldoon.fc.m.app.impl.ApplicationImpl;
+        import ru.koldoon.fc.m.app.impl.commands.StartupCommand;
+        import ru.koldoon.fc.m.tree.impl.fs.LocalFileSystemTreeProvider;
+
+        private var proposedFocusObject:IFocusManagerComponent;
+
+        /**
+         * Main Application Model and Context
+         */
+        private var app:ApplicationImpl;
+
+
+        private function onActivate():void {
+            if (proposedFocusObject) {
+                proposedFocusObject.setFocus();
+            }
+
+            if (stage) {
+                stage.frameRate = 600;
+            }
+            mouseEnabled = mouseChildren = true;
+        }
+
+
+        private function onDeactivate():void {
+            proposedFocusObject = focusManager.getFocus();
+            if (stage) {
+                stage.frameRate = 4;
+            }
+            mouseEnabled = mouseChildren = false;
+        }
+
+
+        private function creationCompleteHandler(event:FlexEvent):void {
+            ToolTip.maxWidth = 1300;
+            app = new ApplicationImpl();
+            app.attachView(this);
+            app.context.installCommand(new StartupCommand());
+
+
+            app.leftPanel.directory = new LocalFileSystemTreeProvider().getRootDirectory();
+            app.leftPanel.directory.getListing();
+
+            app.rightPanel.directory = new LocalFileSystemTreeProvider().getRootDirectory();
+            app.rightPanel.directory.getListing();
+
+
+//            Storage.getStorage().getDocumentsRepository("TestStorage")
+//                .pushDocument(new TestVO("Some Str", 5, 6))
+//                .onReady(function (data:Object):void {
+//                    trace("Object Pushed");
+//                });
+//
+//            Storage.getStorage().getDocumentsRepository("TestStorage")
+//                .selectIndices()
+//                .onReady(function (pr:AsyncCollection):void {
+//                    trace("Indices: " + pr.items.source);
+//                });
+//
+//            Storage.getStorage().getDocumentsRepository("TestStorage")
+//                .putDocument("42",new TestVO("Some Str", 1, 1))
+//                .onReady(function (data:Object):void {
+//                    trace("Object Pushed");
+//                });
+//
+//            Storage.getStorage().getDocumentsRepository("TestStorage")
+//                .getDocument("42")
+//                .onReady(function (pr:AsyncValue):void {
+//                    trace("Object: " + pr.value);
+//                });
+//
+//            Storage.getStorage().getDocumentsRepository("TestStorage")
+//                .selectDocuments()
+//                .onReady(function (pr:AsyncCollection):void {
+//                    trace("Docs: " + pr.items.length);
+//                });
+
+//            var p:AsyncValue = new AsyncValue();
+//            p.onReady(function (ac:AsyncValue):void {
+//                trace("Object Loaded: " + ac.value);
+//            });
+
+//            new SaveObjectOperation(File.documentsDirectory.resolvePath("TestStorage"))
+//                .object("1", new TestVO("Some Str", 5, 6))
+//                .onComplete(function (aop:SaveObjectOperation):void {
+//                    trace("Saved");
+//                })
+//                .execute();
+
+//            new LoadObjectOperation(File.documentsDirectory.resolvePath("TestStorage"))
+//                .name("1")
+//                .onComplete(function (aop:LoadObjectOperation):void {
+//                    trace("Loaded");
+//                    p.applyResult(aop.value);
+//                })
+//                .execute();
+        }
+        ]]></fx:Script>
+</s:Application>

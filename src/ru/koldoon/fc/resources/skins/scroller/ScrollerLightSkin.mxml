@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark">
+
+    <fx:Metadata>
+        [HostComponent("spark.components.Scroller")]
+    </fx:Metadata>
+
+    <fx:Script>
+    <![CDATA[
+        import com.greensock.TweenLite;
+
+        override public function beginHighlightBitmapCapture():Boolean {
+            var needUpdate:Boolean = super.beginHighlightBitmapCapture();
+
+            // Draw an opaque rect that fill our entire skin. Our background
+            // is transparent, but we don't want focus/error skins to
+            // poke through.  This is safe to do since we don't have any
+            // graphic elements as direct children.
+            graphics.beginFill(0);
+            graphics.drawRect(0, 0, width, height);
+            graphics.endFill();
+
+            return needUpdate;
+        }
+
+
+        override public function endHighlightBitmapCapture():Boolean {
+            var needUpdate:Boolean = super.endHighlightBitmapCapture();
+
+            // Clear the rect we drew in beginBitmapCapture();
+            graphics.clear();
+            return needUpdate;
+        }
+
+
+        private function onVerticalScrollingChange():void {
+            TweenLite.killTweensOf(verticalScrollBar);
+            if (verticalScrollBar.maximum != 0) {
+                TweenLite.to(verticalScrollBar, 0.2, {alpha: 1});
+                TweenLite.to(verticalScrollBar, 0.2, {delay: 2, alpha: 0});
+            }
+        }
+        ]]>
+    </fx:Script>
+
+    <s:VScrollBar
+        id="verticalScrollBar" visible="false" alpha="0" valueCommit="onVerticalScrollingChange()"
+        skinClass="ru.koldoon.fc.resources.skins.scroller.VScrollBarLightSkin"/>
+
+    <!--<s:HScrollBar-->
+    <!--id="horizontalScrollBar" visible="false" alpha="0"-->
+    <!--skinClass="ru.koldoon.fc.resources.skins.scroller.HScrollBarLightSkin"/>-->
+</s:Skin>

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<s:Skin
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:qs="http://qs.petrosoft.com" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:c="com.qwickserve.components.core.*"
+    alpha.disabled="0.5" height="140" mouseEnabledWhereTransparent="true">
+
+    <fx:Metadata>
+        [HostComponent("com.qwickserve.components.core.MobileTextArea")]
+    </fx:Metadata>
+
+    <s:states>
+        <s:State name="normal"/>
+        <s:State name="focused"/>
+        <s:State name="disabled"/>
+    </s:states>
+
+
+    <s:Rect id="underline" left="0" right="0" bottom="0" height="2" height.focused="4">
+        <s:fill>
+            <s:SolidColor color="#BEBEBE" color.focused="#DE1D2D"/>
+        </s:fill>
+    </s:Rect>
+
+
+    <qs:Label
+        id="promptLabel" fontSize="{textInput.getStyle('fontSize')}"
+        alpha="0.6" fontStyle="normal" textAlign="left" left="0" right="0" top="0"
+        mouseEnabled="false" mouseChildren="false" visible="{isEmpty(hostComponent.text)}"/>
+
+    <qs:Label
+        id="errorLabel" fontSize="{textInput.getStyle('fontSize')}"
+        alpha="1" fontStyle="normal" styleName="red" text="{hostComponent.errorString}"
+        textAlign="center" left="0" right="0" bottom="-15" scaleX="0.75" scaleY="0.75"
+        mouseEnabled="false" mouseChildren="false" visible="{notEmpty(hostComponent.errorString)}"/>
+
+    <c:MXTextArea
+        id="textInput" borderStyle="none" focusAlpha="0"
+        paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0"
+        left="0" right="0" bottom="6" top="0" needsSoftKeyboard="true"/>
+
+    <fx:Script><![CDATA[
+        ]]></fx:Script>
+</s:Skin>

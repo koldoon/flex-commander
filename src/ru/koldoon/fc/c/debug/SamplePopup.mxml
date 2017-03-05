@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<s:Panel
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    title="Sample Popup" width="600" height="300">
+
+    <s:filters>
+        <s:DropShadowFilter quality="2" distance="5" blurX="20" blurY="20" alpha="0.3"/>
+    </s:filters>
+
+    <s:Button
+        label="Close" click="dispatchEvent(new CloseEvent(CloseEvent.CLOSE))"
+        verticalCenter="0" horizontalCenter="0"/>
+
+    <fx:Script><![CDATA[
+        import mx.events.CloseEvent;
+        ]]></fx:Script>
+</s:Panel>

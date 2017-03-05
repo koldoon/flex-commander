@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!---
+ Component draws a spreading ink drop when being clicked.
+-->
+<s:Group
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:mx="library://ns.adobe.com/flex/mx"
+    visible="false">
+
+    <s:Group id="__mask" left="0" right="0" top="0" bottom="0">
+        <s:Rect
+            left="0" right="0" top="0" bottom="0" radiusX="{radius}" radiusY="{radius}">
+
+            <s:fill>
+                <s:SolidColor color="#000000" alpha="1"/>
+            </s:fill>
+        </s:Rect>
+    </s:Group>
+
+    <mx:UIComponent
+        id="canvas"
+        left="0" right="0" top="0" bottom="0" mask="{__mask}"/>
+
+    <fx:Script><![CDATA[
+        private var _autoDrop:Boolean;
+        private var _model:InkModel = new InkModel();
+
+        [Bindable]
+        public var radius:Number = 0;
+
+        [Deprecated]
+        [Bindable]
+        public function get radiusX():Number {
+            return radius;
+        }
+
+        public function set radiusX(value:Number):void {
+            radius = value;
+        }
+
+        [Deprecated]
+        [Bindable]
+        public function get radiusY():Number {
+            return radius;
+        }
+
+        public function set radiusY(value:Number):void {
+            radius = value;
+        }
+
+        public var dropOnCenter:Boolean = false;
+
+        /**
+         * Manually play the animation
+         */
+        public function drop():void {
+            if (dropOnCenter) {
+                _model.inkX = width / 2;
+                _model.inkY = height / 2;
+            }
+            else {
+                _model.inkX = mouseX;
+                _model.inkY = mouseY;
+            }
+            _model.animate(canvas, this);
+        }
+
+        /**
+         * Use this property with Spark states to play animation
+         * when state is changed, like this: autoDrop.down="true"
+         * @param value
+         */
+        public function set autoDrop(value:Boolean):void {
+            _autoDrop = value;
+            if (value) {
+                drop();
+            }
+        }
+
+        public function reset():void {
+            _model.stop();
+            invalidateDisplayList();
+        }
+
+        public function get autoDrop():Boolean {
+            return _autoDrop;
+        }
+        ]]></fx:Script>
+</s:Group>

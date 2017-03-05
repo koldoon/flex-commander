@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<s:Group
+    xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark"
+
+    height="{size}" width="{size}" visible="false" alpha="0"
+    addedToStage="init()" creationComplete="init()"
+    removedFromStage="removedFromStageHandler(event)">
+
+    <s:layout>
+        <!-- No layout, Group used as a canvas for BitmapImage -->
+        <s:LayoutBase/>
+    </s:layout>
+
+    <s:BitmapImage
+        id="spinner" scaleMode="letterbox" smooth="true" smoothingQuality="high"
+        width="{size}" height="{size}" includeInLayout="false"
+        source="@Embed(source='throbber.png')"/>
+
+    <fx:Script><![CDATA[
+        import com.greensock.TweenMax;
+        import com.greensock.easing.Linear;
+
+        use namespace mx_internal;
+
+        /**f
+         * Max recommended size is 270 - the size of a bitmap
+         */
+        [Bindable]
+        public var size:Number;
+
+
+        override protected function commitProperties():void {
+            super.commitProperties();
+
+            if (isNaN(size)) {
+                size = 80;
+            }
+        }
+
+
+        private function init():void {
+            if (_play) {
+                show();
+            }
+        }
+
+
+        override public function get baselinePosition():Number {
+            if (!validateBaselinePosition()) {
+                return NaN;
+            }
+
+            return height * 0.8;
+        }
+
+
+        private function removedFromStageHandler(event:Event):void {
+            hide();
+        }
+
+
+        // -----------------------------------------------------------------------------------
+        // Playing Overall
+        // -----------------------------------------------------------------------------------
+        private var _play:Boolean = false;
+
+        public function set play(value:Boolean):void {
+            if (value == _play) {
+                return;
+            }
+
+            _play = value;
+
+            if (!initialized || !stage) {
+                return;
+            }
+
+            if (_play) {
+                show()
+            }
+            else {
+                hide();
+            }
+        }
+
+
+        [Bindable]
+        public function get play():Boolean {
+            return _play;
+        }
+
+
+        // -----------------------------------------------------------------------------------
+        // Display
+        // -----------------------------------------------------------------------------------
+        private var displayTween:TweenMax;
+
+
+        private function show():void {
+            visible = true;
+            beginRotate();
+            if (displayTween) {
+                displayTween.kill();
+            }
+            displayTween = TweenMax.to(this, 0.3, {alpha: 1});
+        }
+
+
+        private function hide():void {
+            if (displayTween) {
+                displayTween.kill();
+            }
+            if (!stage) {
+                visible = false;
+                stopRotate();
+            }
+            else {
+                displayTween = TweenMax.to(this, 0.3, {
+                    alpha:      0,
+                    onComplete: function ():void {
+                        visible = false;
+                        stopRotate();
+                    }
+                });
+            }
+        }
+
+
+        // -----------------------------------------------------------------------------------
+        // Rotation
+        // -----------------------------------------------------------------------------------
+        public var centerRotation:Number = 0;
+        private var rotationTween:TweenMax;
+        private var prevCenterRotation:Number = 0;
+
+
+        private function beginRotate():void {
+            stopRotate();
+            centerRotation = 0;
+            rotationTween = TweenMax.to(this, 2, {
+                centerRotation: 360,
+                ease:           Linear.easeNone,
+                repeat:         -1,
+                onUpdate:       updateRotation
+            });
+        }
+
+
+        private function stopRotate():void {
+            if (rotationTween) {
+                rotationTween.kill();
+                rotationTween = null;
+            }
+        }
+
+
+        private function updateRotation():void {
+            rotateAround(
+                spinner,
+                centerRotation - prevCenterRotation,
+                width / 2,
+                height / 2);
+            prevCenterRotation = centerRotation;
+        }
+
+
+        private function rotateAround(obj:*, rotation:Number, x:Number, y:Number) {
+            var m:Matrix = obj.transform.matrix;
+            m.tx -= x;
+            m.ty -= y;
+            m.rotate(rotation * (Math.PI / 180));
+            m.tx += x;
+            m.ty += y;
+            obj.transform.matrix = m;
+        }
+        ]]></fx:Script>
+</s:Group>

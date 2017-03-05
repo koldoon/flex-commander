@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<s:HGroup
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    horizontalAlign="center" verticalAlign="baseline"
+    mouseEnabledWhereTransparent="true" buttonMode="true" gap="15">
+
+    <s:Label id="sortingLabel" styleName="h5 white icon"/>
+    <s:Label id="textLabel" styleName="h5 white"/>
+
+    <fx:Script><![CDATA[
+        import ru.koldoon.fc.resources.styles.icon;
+
+        // -----------------------------------------------------------------------------------
+        // Text
+        // -----------------------------------------------------------------------------------
+
+        private var _text:String;
+
+        public function get text():String {
+            return _text;
+        }
+
+
+        public function set text(value:String):void {
+            _text = value;
+            textLabel.text = value;
+        }
+
+
+        // -----------------------------------------------------------------------------------
+        // Sorting
+        // -----------------------------------------------------------------------------------
+
+        private var _sort:String = SortDirection.NONE;
+
+        public function get sort():String {
+            return _sort;
+        }
+
+
+        [Inspectable(enumeration="none,asc,desc")]
+        public function set sort(value:String):void {
+            _sort = value;
+            invalidateProperties();
+        }
+
+
+        public function setNextSortingDirection():void {
+            if (sort == SortDirection.NONE) {
+                sort = SortDirection.DESC;
+            }
+            else if (sort == SortDirection.ASC) {
+                sort = SortDirection.DESC;
+            }
+            else if (sort == SortDirection.DESC) {
+                sort = SortDirection.ASC;
+            }
+        }
+
+
+        override protected function commitProperties():void {
+            super.commitProperties();
+
+            if (_sort == SortDirection.ASC) {
+                sortingLabel.text = icon.fa_caret_down;
+                sortingLabel.visible = sortingLabel.includeInLayout = true;
+            }
+            else if (_sort == SortDirection.DESC) {
+                sortingLabel.text = icon.fa_caret_up;
+                sortingLabel.visible = sortingLabel.includeInLayout = true;
+            }
+            else {
+                sortingLabel.visible = sortingLabel.includeInLayout = false;
+            }
+        }
+
+
+        // -----------------------------------------------------------------------------------
+        // Sort Field
+        // -----------------------------------------------------------------------------------
+
+        public var sortField:String;
+        ]]></fx:Script>
+</s:HGroup>

@@ -1,0 +1,24 @@
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+/*  Text Colors  */
+.white { color: #FFFFFF; }
+.black { color: #57585F; }
+
+.gray2 { color: #BBBBBB; }
+.gray1 { color: #E2E2E2; }
+.gray0 { color: #D9D9D9; }
+
+.blue0 { color: #9AA7C1; }
+.blue1 { color: #3B5A96; }
+.blue2 { color: #15387E; }
+.blue3 { color: #011130; }
+
+.red { color: #DE1D2E; }
+.green { color: #3BA839; }
+.yellow { color: #F5BB30; }
+
+
+mx|TextInput, mx|TextArea, mx|Label, mx|Text, s|Label, s|TextArea, s|TextInput {
+    color:      #57585F;
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<s:ItemRenderer
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:material="ru.koldoon.fc.c.material.*"
+    minWidth="0" minHeight="0" autoDrawBackground="false">
+
+    <s:states>
+        <s:State name="normal"/>
+        <s:State name="down"/>
+    </s:states>
+
+    <s:Rect left="55" right="0" top="0" bottom="0">
+        <s:fill>
+            <s:SolidColor color="{palette.sea}" alpha="1"/>
+        </s:fill>
+    </s:Rect>
+
+    <material:Ink
+        left="55" right="0" top="0" bottom="0"
+        autoDrop.down="true"/>
+
+    <s:Label
+        text="{itemIndex + 1}"
+        left="0" width="50" verticalCenter="0" styleName="h5 right" color="#95ABBD"/>
+
+    <s:Label
+        text="{data}"
+        left="60" right="10" verticalCenter="0" styleName="h5 left" color="#95ABBD"/>
+
+    <fx:Script><![CDATA[
+        import ru.koldoon.fc.resources.styles.palette;
+
+        override protected function measure():void {
+            super.measure();
+            measuredWidth = 0;
+        }
+        ]]></fx:Script>
+</s:ItemRenderer>

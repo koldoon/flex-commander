@@ -1,0 +1,25 @@
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+.h7 { fontSize: 20px; }
+.h6 { fontSize: 26px; }
+.h5 { fontSize: 34px; }
+.h4 { fontSize: 40px; }
+.h3 { fontSize: 44px; }
+.h2 { fontSize: 50px; }
+.h1 { fontSize: 56px; }
+.h0 { fontSize: 64px; }
+
+
+mx|TextInput, mx|TextArea, mx|Label, mx|Text, s|Label, s|TextArea, s|TextInput {
+    fontSize: 40px;
+}
+
+mx|ToolTip {
+    fontSize:      34px;
+    paddingLeft:   20px;
+    paddingRight:  20px;
+    paddingTop:    5px;
+    paddingBottom: 5px;
+    cornerRadius:  10px;
+}

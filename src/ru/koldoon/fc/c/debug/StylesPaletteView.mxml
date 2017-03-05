@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<s:Group
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:text="ru.koldoon.fc.c.text.*">
+
+    <s:layout>
+        <s:VerticalLayout/>
+    </s:layout>
+
+    <!--<s:VGroup padding="20">-->
+    <!--<tSLabelabel text="9 TEXT Selected 1 Order (h1)" fontSize="26"/>-->
+    <!--<tSLabelabel text="8.1 TEXT 2025 Greentree Rd. (h2)" fontSize="24"/>-->
+    <!--<tSLabelabel text="7.2 TEXT #555075 READY TO GET (h3)" fontSize="20"/>-->
+    <!--<tSLabelabel text="6.3 TEXT 10min ~0.5mi (h5)" fontSize="16"/>-->
+    <!--</s:VGroup>-->
+
+    <s:VGroup padding="20">
+        <text:Label text="H0: 9 TEXT Selected 1 Order" styleName="h0"/>
+        <text:Label text="H0: 9 TEXT Selected 1 Order bold" styleName="h0 bold"/>
+        <text:Label text="H1: 8.1 TEXT 2025 Greentree Rd." styleName="h1"/>
+        <text:Label text="H2: 7.2 TEXT #555075 READY TO GET" styleName="h2"/>
+        <text:Label text="H3: 6.3 TEXT 10min ~0.5mi" styleName="h3"/>
+        <text:Label text="H3: 6.3 TEXT 10min ~0.5mi bold" styleName="h3 bold"/>
+        <text:Label text="H4: 9 TEXT Selected 1 Order" styleName="h4"/>
+        <text:Label text="H5: 8.1 TEXT 2025 Greentree Rd." styleName="h5"/>
+        <text:Label text="H6 7.2 TEXT #555075 READY TO GET" styleName="h6"/>
+        <text:Label text="H6 7.2 TEXT #555075 READY TO GET bold" styleName="h6 bold"/>
+    </s:VGroup>
+
+    <s:VGroup padding="20">
+        <text:Label text="TEXT #555075 READY (light)" styleName="h3 light"/>
+        <text:Label text="TEXT #555075 READY (gray)" styleName="h3 gray"/>
+        <text:Label text="TEXT #555075 READY (black)" styleName="h3 black"/>
+        <text:Label text="TEXT #555075 READY (red)" styleName="h3 red"/>
+        <text:Label text="TEXT #555075 READY (green)" styleName="h3 green"/>
+        <text:Label text="TEXT #555075 READY (yellow)" styleName="h3 yellow"/>
+    </s:VGroup>
+
+    <s:HGroup width="100%" horizontalAlign="center">
+        <s:Rect width="100" height="100">
+            <s:fill>
+                <s:SolidColor color="{palette.yellow}"/>
+            </s:fill>
+        </s:Rect>
+
+        <s:Rect width="100" height="100">
+            <s:fill>
+                <s:SolidColor color="{palette.red}"/>
+            </s:fill>
+        </s:Rect>
+
+        <s:Rect width="100" height="100">
+            <s:fill>
+                <s:SolidColor color="{palette.green}"/>
+            </s:fill>
+        </s:Rect>
+
+    </s:HGroup>
+
+    <fx:Script><![CDATA[
+        import ru.koldoon.fc.resources.styles.palette;
+        ]]></fx:Script>
+</s:Group>

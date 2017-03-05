@@ -1,0 +1,415 @@
+<?xml version="1.0"?>
+<s:Group
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:core="mx.core.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
+
+    implements="ru.koldoon.fc.m.app.IPanel"
+    initialize="onInitialize()">
+
+    <s:Rect
+        id="backgroundRect"
+        left="{position == 'left' ? -3 : 0}"
+        right="{position == 'right' ? -3 : 0}"
+        top="30" bottom="0">
+
+        <s:fill>
+            <s:SolidColor color="white" alpha="0.05"/>
+        </s:fill>
+        <s:stroke>
+            <s:SolidColorStroke color="white" alpha="0.15" weight="2"/>
+        </s:stroke>
+    </s:Rect>
+
+    <s:HGroup
+        left="30" right="40" top="80" gap="30"
+        verticalAlign="baseline">
+
+        <impl:ColumnHeader
+            id="nameColumnHeader" text="Name" sortField="label"
+            left="85" right="485" top="70" width="100%"
+            click="changeSort(event)" sort="desc"/>
+
+        <impl:ColumnHeader
+            id="sizeColumnHeader" text="Size" sortField="size"
+            width="160" right="295" top="70"
+            click="changeSort(event)"/>
+
+        <impl:ColumnHeader
+            id="modifiedColumnHeader" text="Modified" sortField="modified"
+            width="220" right="45" top="70"
+            click="changeSort(event)"/>
+    </s:HGroup>
+
+    <s:List
+        id="nodesList"
+        left="0" right="0" top="135" bottom="65" minHeight="100" focusAlpha="0"
+        verticalScrollPolicy="on" doubleClickEnabled="true"
+        skinClass="ru.koldoon.fc.resources.skins.list.ListTransparentSkin"
+        dataProvider="{nodes}" focusIn="onFocusIn()" focusOut="onFocusOut()">
+
+        <s:layout>
+            <s:VerticalLayout
+                gap="2" horizontalAlign="justify" requestedMinRowCount="5"/>
+        </s:layout>
+
+        <s:itemRenderer>
+            <core:ClassFactory
+                generator="ru.koldoon.fc.c.panel.list.FileItemRenderer"
+                properties="{{ selection: this.selection }}"/>
+        </s:itemRenderer>
+    </s:List>
+
+    <s:Label
+        id="panelStatusTextLabel"
+        left="20" right="20" height="55" bottom="0"
+        styleName="h5 left blue0 middle" maxDisplayedLines="1" showTruncationTip="true"
+        text="{getSelectionInfoText(selection_.length, selectedNode)}"/>
+
+    <impl:PanelLine left="5" right="5" bottom="60"/>
+    <impl:PanelLine top="75" right="275" bottom="65"/>
+    <impl:PanelLine top="75" right="455" bottom="65"/>
+
+    <impl2:PopupManager
+        id="panelPopupManager"
+        left="0" right="0" top="30" bottom="0"/>
+
+    <s:Group
+        id="pathGroup"
+        horizontalCenter="0" top="0" maxWidth="{width - 100}" height="60">
+
+        <s:Rect
+            left="0" right="0" top="0" bottom="0"
+            radiusX="5" radiusY="5">
+
+            <s:fill>
+                <s:SolidColor color="#04345B" alpha="1"/>
+            </s:fill>
+            <s:stroke>
+                <s:SolidColorStroke color="white" alpha="0.15" weight="2"/>
+            </s:stroke>
+        </s:Rect>
+
+        <s:Label
+            id="pathLabel"
+            left="20" right="20" verticalCenter="0" styleName="h5 center white"
+            text="{getPathString(directory)}" maxDisplayedLines="1" showTruncationTip="true"/>
+    </s:Group>
+
+
+    <fx:Script><![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.core.EventPriority;
+        import mx.events.FlexEvent;
+
+        import org.osflash.signals.Signal;
+
+        import ru.koldoon.fc.m.app.INodesSelection;
+        import ru.koldoon.fc.m.app.impl.BindingProperties;
+        import ru.koldoon.fc.m.popups.IPopupManager;
+        import ru.koldoon.fc.m.tree.IDirectory;
+        import ru.koldoon.fc.m.tree.INode;
+        import ru.koldoon.fc.m.tree.impl.AbstractNode;
+        import ru.koldoon.fc.utils.notEmpty;
+
+        import spark.collections.Sort;
+
+        /**
+         * Affects panel style.
+         */
+        [Bindable]
+        [Inspectable(enumeration="left,right")]
+        public var position:String;
+
+
+        /**
+         * @inheritDoc
+         */
+        public function get popupManager():IPopupManager {
+            return panelPopupManager;
+        }
+
+
+        // -----------------------------------------------------------------------------------
+        // IPanel - selection
+        // -----------------------------------------------------------------------------------
+
+        /**
+         * Directory Nodes Array Collection View (for filtering and sorting purposes)
+         */
+        [Bindable]
+        private var nodes:ArrayCollection = new ArrayCollection();
+
+        [Bindable]
+        private var selection_:PanelSelection = new PanelSelection();
+
+
+        /**
+         * @inheritDoc
+         */
+        public function get selection():INodesSelection {
+            return selection_;
+        }
+
+
+        private function onInitialize():void {
+            nodes.sort = new Sort(null, nodesCompareFunction);
+            nodes.refresh();
+
+            nodesList.addEventListener(KeyboardEvent.KEY_DOWN, nodesList_keyDownHandler, false, EventPriority.CURSOR_MANAGEMENT);
+        }
+
+
+        // -----------------------------------------------------------------------------------
+        // Sorting
+        // -----------------------------------------------------------------------------------
+
+        private var sortHeader:ColumnHeader;
+
+
+        private function changeSort(event:MouseEvent):void {
+            var header:ColumnHeader = ColumnHeader(event.currentTarget);
+            var headers:Array = [nameColumnHeader, sizeColumnHeader, modifiedColumnHeader];
+
+            header.setNextSortingDirection();
+            for each (var h:ColumnHeader in headers) {
+                if (h != header) {
+                    h.sort = SortDirection.NONE;
+                }
+            }
+
+            sortHeader = header.sort == SortDirection.NONE ? null : header;
+            nodes.refresh();
+            nodesList.validateNow(); // to prevent ugly list blinking
+        }
+
+
+        private function nodesCompareFunction(a:Object, b:Object, fields:Array = null):int {
+            if (a == AbstractNode.PARENT_NODE) {
+                return -1;
+            }
+            else if (b == AbstractNode.PARENT_NODE) {
+                return 1;
+            }
+            else if (a is IDirectory && !(b is IDirectory)) {
+                return -1;
+            }
+            else if (b is IDirectory && !(a is IDirectory)) {
+                return 1;
+            }
+
+            if (sortHeader && a.hasOwnProperty(sortHeader.sortField) && b.hasOwnProperty(sortHeader.sortField)) {
+                var da:Object = a[sortHeader.sortField] is Date ? a[sortHeader.sortField].time : a[sortHeader.sortField];
+                var db:Object = b[sortHeader.sortField] is Date ? b[sortHeader.sortField].time : b[sortHeader.sortField];
+
+                if (da == db) {
+                    return 0;
+                }
+                else if (sortHeader.sort == SortDirection.DESC) {
+                    return da < db ? -1 : 1;
+                }
+                else {
+                    return da > db ? -1 : 1;
+                }
+            }
+            else {
+                if (a["label"] == b["label"]) {
+                    return 0;
+                }
+                else {
+                    return a["label"] < b["label"] ? -1 : 1;
+                }
+            }
+        }
+
+
+        // -----------------------------------------------------------------------------------
+        // IPanel - directory
+        // -----------------------------------------------------------------------------------
+
+        private var directory_:IDirectory;
+
+
+        /**
+         * @inheritDoc
+         */
+        [Bindable(event="directoryChange")]
+        public function get directory():IDirectory {
+            return directory_;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function set directory(val:IDirectory):void {
+            directory_ = val;
+            nodes.list = directory.nodes;
+            nodes.refresh();
+            dispatchEvent(new Event("directoryChange"));
+        }
+
+
+        private function getPathString(directory:IDirectory):String {
+            var path:Array = directory.getPath();
+            var fsPath:Array = [];
+
+            for each (var n:INode in path) {
+                if (notEmpty(n.label)) {
+                    fsPath.push(n.label);
+                }
+            }
+            return "/" + fsPath.join("/");
+        }
+
+
+        // -----------------------------------------------------------------------------------
+        // IPanel - selectedNode
+        // -----------------------------------------------------------------------------------
+
+        private var selectedNodeChange_:Signal = new Signal();
+        private var selectedNode_:INode;
+
+
+        /**
+         * @inheritDoc
+         */
+        public function get selectedNodeChange():Signal {
+            return selectedNodeChange_;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        [Bindable]
+        public function get selectedNode():INode {
+            return selectedNode_;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function set selectedNode(node:INode):void {
+            if (selectedNode_ == node) {
+                return;
+            }
+
+            selectedNode_ = node;
+
+            if (nodesList.selectedItem != node) {
+                var index:Number = nodes.getItemIndex(node);
+                if (index != -1) {
+                    nodesList.validateNow();
+                    nodesList.selectedIndex = index;
+                    nodesList.ensureIndexIsVisible(index);
+                }
+            }
+            selectedNodeChange.dispatch();
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function get selectedNodeIndex():int {
+            return nodesList.selectedIndex;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function set selectedNodeIndex(val:int):void {
+            nodesList.validateNow();
+            nodesList.selectedIndex = val;
+            nodesList.ensureIndexIsVisible(val);
+        }
+
+
+        private function onNodesListSelectionChange(event:Event):void {
+            selectedNode = nodesList.selectedItem;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function setStatusText(txt:String):void {
+            panelStatusTextLabel.text = txt;
+        }
+
+
+        /**
+         * This Index is saved and restored when panel looses and gets focus.
+         */
+        private var proposedSelectedIndex:int = 0;
+        private var active_:Boolean = false;
+
+
+        public function get active():Boolean {
+            return active_;
+        }
+
+
+        public function set active(val:Boolean):void {
+            if (val == active_) {
+                return;
+            }
+
+            if (active_) {
+                if (nodesList.selectedIndex == -1) {
+                    nodesList.selectedIndex = proposedSelectedIndex;
+                }
+            }
+            else {
+                proposedSelectedIndex = nodesList.selectedIndex;
+                nodesList.selectedIndex = -1;
+            }
+        }
+
+
+        private function onFocusOut():void {
+            nodesList.removeEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
+
+            proposedSelectedIndex = nodesList.selectedIndex;
+            nodesList.requireSelection = false;
+            nodesList.selectedIndex = -1;
+        }
+
+
+        private function onFocusIn():void {
+            nodesList.requireSelection = true;
+
+            // If selectedIndex is not -1, then the List was selected by mouse.
+            // In this case we should not change the selection.
+            if (nodesList.selectedIndex == -1) {
+                nodesList.selectedIndex = proposedSelectedIndex;
+            }
+            else {
+                onNodesListSelectionChange(null);
+            }
+
+            nodesList.addEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
+        }
+
+
+        private function getSelectionInfoText(selLength:int, selectedItem:INode):String {
+            if (selLength > 0) {
+                return 'Items Selected: ' + selLength;
+            }
+            else if (selectedItem) {
+                return selectedItem.info
+            }
+            return "-";
+        }
+
+
+        private function nodesList_keyDownHandler(event:KeyboardEvent):void {
+            if (BindingProperties.optKeysDown(event)) {
+                event.preventDefault();
+            }
+        }
+        ]]></fx:Script>
+
+</s:Group>

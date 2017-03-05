@@ -1,0 +1,6 @@
+.idea
+FlexCommander.eap
+FlexCommander.iml
+FlexCommander.ldb
+.DS_Store
+out/**

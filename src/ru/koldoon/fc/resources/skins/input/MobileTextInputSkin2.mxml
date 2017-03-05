@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<s:Skin
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:c="com.qwickserve.components.core.*" xmlns:qs="http://qs.petrosoft.com"
+
+    alpha.disabled="0.5" height="90"
+    currentStateChange="currentStateChangeHandler(event)">
+
+    <fx:Metadata>
+        [HostComponent("com.qwickserve.components.core.MobileTextInput")]
+    </fx:Metadata>
+
+    <s:states>
+        <s:State name="normal"/>
+        <s:State name="focused"/>
+        <s:State name="disabled"/>
+    </s:states>
+
+    <!-- fill -->
+    <s:Rect id="background" left="0" right="0" top="0" bottom="0">
+        <s:fill>
+            <s:SolidColor id="bgFill" color="0xFFFFFF"/>
+        </s:fill>
+    </s:Rect>
+
+    <s:Rect id="underline" left="0" right="0" bottom="0" height="2">
+        <s:fill>
+            <s:SolidColor color="#BEBEBE" color.focused="{palette.red}"/>
+        </s:fill>
+    </s:Rect>
+
+    <c:MXTextInput
+        id="textInput" borderStyle="none" focusAlpha="0"
+        paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0"
+        left="0" right="0" bottom="5" needsSoftKeyboard="true"
+        change="textInput_changeHandler(event)"/>
+
+    <qs:Label
+        id="promptLabel"
+        alpha="0.6" fontStyle="normal" textAlign="left" left="0" right="0"
+        mouseEnabled="false" mouseChildren="false" scaleX=".65" scaleY=".65"/>
+
+    <fx:Script><![CDATA[
+        import com.greensock.TweenMax;
+
+        import mx.events.StateChangeEvent;
+
+        private function currentStateChangeHandler(event:StateChangeEvent):void {
+            if (isEmpty(event.oldState)) {
+                textInput_changeHandler(null); // init
+            }
+        }
+
+
+        private function textInput_changeHandler(event:Event):void {
+            if (notEmpty(textInput.text)) {
+                TweenMax.to(promptLabel, 0.1, {
+                    bottom: textInput.height,
+                    scaleX: 0.65,
+                    scaleY: 0.65,
+                    alpha:  1
+                });
+            }
+            else {
+                TweenMax.to(promptLabel, 0.1, {
+                    bottom: 5,
+                    scaleX: 1,
+                    scaleY: 1,
+                    alpha:  0.6
+                });
+            }
+        }
+        ]]></fx:Script>
+</s:Skin>

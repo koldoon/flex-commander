@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark">
+
+    <fx:Metadata>
+        [HostComponent("spark.components.Form")]
+    </fx:Metadata>
+
+    <s:states>
+        <s:State name="normal"/>
+        <s:State name="error"/>
+        <s:State name="disabled"/>
+    </s:states>
+
+    <s:Group
+        id="contentGroup" showErrorSkin="true" showErrorTip="true"
+        left="0" right="0" top="0" bottom="0">
+
+        <s:layout>
+            <s:FormLayout gap="0"/>
+        </s:layout>
+    </s:Group>
+</s:Skin>

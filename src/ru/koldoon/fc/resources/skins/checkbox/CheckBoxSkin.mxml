@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<s:Skin
+    xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark" xmlns:text="ru.koldoon.fc.c.text.*"
+    alpha.disabled="0.5" currentStateChange="currentStateChangeHandler(event)">
+
+    <fx:Metadata>
+        [HostComponent("spark.components.CheckBox")]
+    </fx:Metadata>
+
+    <s:states>
+        <s:State name="up"/>
+        <s:State name="over" stateGroups="overStates"/>
+        <s:State name="down" stateGroups="downStates"/>
+        <s:State name="disabled" stateGroups="disabledStates"/>
+        <s:State name="upAndSelected" stateGroups="selectedStates"/>
+        <s:State name="overAndSelected" stateGroups="overStates, selectedStates"/>
+        <s:State name="downAndSelected" stateGroups="downStates, selectedStates"/>
+        <s:State name="disabledAndSelected" stateGroups="disabledStates, selectedStates"/>
+    </s:states>
+
+    <!-- touch area -->
+    <s:Rect width="100%" height="100%">
+        <s:fill>
+            <s:SolidColor alpha="0"/>
+        </s:fill>
+    </s:Rect>
+
+    <s:Group verticalCenter="0">
+        <s:Rect width="42" height="42" radiusX="6" radiusY="6">
+            <s:fill>
+                <s:SolidColor
+                    color="{palette.black}" color.selectedStates="{palette.red}"
+                    alpha="0.7" alpha.selectedStates="1"/>
+            </s:fill>
+        </s:Rect>
+
+        <s:Rect width="34" height="34" radiusX="3" radiusY="3" left="4" top="4">
+            <s:fill>
+                <s:SolidColor
+                    id="fillColor" color="white" color.selectedStates="{palette.red}"/>
+            </s:fill>
+        </s:Rect>
+
+        <s:Rect width="42" height="42" radiusX="6" radiusY="6" includeIn="downStates">
+            <s:fill>
+                <s:SolidColor color="{palette.black}" alpha="0.2"/>
+            </s:fill>
+        </s:Rect>
+
+
+        <s:Group id="check" verticalCenter="0" horizontalCenter="0">
+            <s:Line x="1" y="10" xTo="8" yTo="8">
+                <s:stroke>
+                    <s:SolidColorStroke caps="none" color="white" joints="miter" miterLimit="4" weight="4"/>
+                </s:stroke>
+            </s:Line>
+            <s:Line x="8" xTo="18" yFrom="18">
+                <s:stroke>
+                    <s:SolidColorStroke caps="none" color="white" joints="miter" miterLimit="4" weight="4"/>
+                </s:stroke>
+            </s:Line>
+        </s:Group>
+    </s:Group>
+
+    <text:Label
+        id="labelDisplay" verticalCenter="0" left="60" styleName="h4"
+        visible="{notEmpty(labelDisplay.text)}" includeInLayout="{notEmpty(labelDisplay.text)}"/>
+
+    <fx:Script><![CDATA[
+        import com.greensock.TimelineMax;
+        import com.greensock.easing.Quad;
+
+        import mx.events.StateChangeEvent;
+
+        import ru.koldoon.fc.resources.styles.palette;
+
+        private var animation:TimelineMax;
+
+
+        private function currentStateChangeHandler(event:StateChangeEvent):void {
+            if (animation) {
+                animation.kill();
+            }
+
+            animation = new TimelineMax();
+            if (["upAndSelected", "overAndSelected", "downAndSelected", "disabledAndSelected"].indexOf(currentState) != -1) {
+                animation.to(check, 0.15, {scaleX: 1, scaleY: 1}, 0);
+                animation.to(fillColor, 0.15, {alpha: 0, ease: Quad.easeOut}, 0)
+            }
+            else {
+                animation.to(check, 0.15, {scaleX: 0, scaleY: 0}, 0);
+                animation.to(fillColor, 0.15, {alpha: 1, ease: Quad.easeIn}, 0)
+            }
+        }
+        ]]></fx:Script>
+</s:Skin>
