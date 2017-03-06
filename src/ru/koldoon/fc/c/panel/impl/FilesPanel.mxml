@@ -91,7 +91,7 @@
 
         <s:Label
             id="pathLabel"
-            left="20" right="20" verticalCenter="0" styleName="h5 center white"
+            left="20" right="20" verticalCenter="2" styleName="h5 center white"
             text="{getPathString(directory)}" maxDisplayedLines="1" showTruncationTip="true"/>
     </s:Group>
 
