@@ -7,6 +7,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileNode;
+    import ru.koldoon.fc.m.tree.impl.FileSystemReference;
     import ru.koldoon.fc.utils.notEmpty;
 
     public class LocalFileSystemDirectoryListingOperation extends AbstractStatelessCommandLineOperation {
@@ -16,12 +17,14 @@ package ru.koldoon.fc.m.tree.impl.fs {
         public static const TOTAL_RXP:RegExp = /^total\s[0-9]*$/;
 
         /**
-         * Detects strings of "gfind {0} -maxdepth 1 -printf '%y\t%Y\t%m\t%s\t%T@\t%p\t%l\n' listing
+         * Detects strings of "gfind {0} -maxdepth 1 -printf '%y\t%Y\t%m\t%s\t%T@\t%p\t%l\n' listing.
+         * Look into bin/listing.sh file for details.
+         *
          * Group 1: File Type (dlfU)
          * Group 2: Link Target Type (dlfU)
          * Group 3: File Permissions (drwxrwxr-t)
          * Group 4: File Size in Bytes
-         * Group 5: File Modification Date/Time in unix time (1487534224.0000000000)
+         * Group 5: File Modification Date/Time in unix time - seconds from 1970 (1487534224.0000000000)
          * Group 6: File Name
          * Group 7: Link target
          */
@@ -33,6 +36,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
         [ArrayElementType("ru.koldoon.fc.m.tree.impl.FileNode")]
         public var files:Array;
 
+
         private var directory_:IDirectory;
 
 
@@ -43,6 +47,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
 
         override public function execute():IAsyncOperation {
+            // getting actual path using common interface method
             IFilesProvider(directory_.getTreeProvider())
                 .getFiles([directory_])
                 .onReady(onFilesReferencesReady);
@@ -51,9 +56,12 @@ package ru.koldoon.fc.m.tree.impl.fs {
         }
 
 
+        /**
+         * Begin directory listing.
+         */
         private function onFilesReferencesReady(ac:IAsyncCollection):void {
             command("bin/listing.sh");
-            commandArguments(ac.items[0]);
+            commandArguments(FileSystemReference(ac.items[0]).path);
 
             files = [];
             if (directory_.getParentDirectory()) {
@@ -65,6 +73,9 @@ package ru.koldoon.fc.m.tree.impl.fs {
         }
 
 
+        /**
+         * Parse stdout lines and create files and directories nodes
+         */
         override protected function onLines(lines:Array):void {
             if (notEmpty(lines.length) && lines[0].match(TOTAL_RXP)) {
                 lines.shift();
