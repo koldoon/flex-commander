@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <s:ItemRenderer
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
-    xmlns:material="ru.koldoon.fc.c.material.*"
     minWidth="0" minHeight="0" autoDrawBackground="false">
 
     <s:states>
@@ -9,15 +8,23 @@
         <s:State name="down"/>
     </s:states>
 
-    <s:Rect left="55" right="0" top="0" bottom="0">
+    <s:Rect
+        left="55" right="0" top="0" bottom="0"
+        radiusX="5" radiusY="5">
+
         <s:fill>
             <s:SolidColor color="{palette.sea}" alpha="1"/>
         </s:fill>
     </s:Rect>
 
-    <material:Ink
+    <s:Rect
         left="55" right="0" top="0" bottom="0"
-        autoDrop.down="true"/>
+        includeIn="down" radiusX="5" radiusY="5">
+
+        <s:fill>
+            <s:SolidColor color="black" alpha="0.1"/>
+        </s:fill>
+    </s:Rect>
 
     <s:Label
         text="{itemIndex + 1}"

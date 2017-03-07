@@ -4,7 +4,7 @@
     xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:core="mx.core.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
 
     implements="ru.koldoon.fc.m.app.IPanel"
-    initialize="onInitialize()">
+    initialize="onInitialize()" addedToStage="onAddedToStage(event)">
 
     <s:Rect
         id="backgroundRect"
@@ -45,7 +45,8 @@
         left="0" right="0" top="135" bottom="65" minHeight="100" focusAlpha="0"
         verticalScrollPolicy="on" doubleClickEnabled="true"
         skinClass="ru.koldoon.fc.resources.skins.list.ListTransparentSkin"
-        dataProvider="{nodes}" focusIn="onFocusIn()" focusOut="onFocusOut()">
+        dataProvider="{nodes}" focusIn="onFocusIn()" focusOut="onFocusOut()"
+        doubleClick="nodesList_doubleClickHandler(event)">
 
         <s:layout>
             <s:VerticalLayout
@@ -156,6 +157,12 @@
             nodes.refresh();
 
             nodesList.addEventListener(KeyboardEvent.KEY_DOWN, nodesList_keyDownHandler, false, EventPriority.CURSOR_MANAGEMENT);
+        }
+
+
+        private function onAddedToStage(event:Event):void {
+            stage.addEventListener(KeyboardEvent.KEY_UP, onStageKeyUp, false, EventPriority.CURSOR_MANAGEMENT, true);
+            stage.addEventListener(KeyboardEvent.KEY_DOWN, onStageKeyDown, false, EventPriority.CURSOR_MANAGEMENT, true);
         }
 
 
@@ -405,10 +412,44 @@
         }
 
 
+        /**
+         * Used to emulate key press on mouse double click
+         */
+        private var lastKeyPressEvent:KeyboardEvent;
+
+
         private function nodesList_keyDownHandler(event:KeyboardEvent):void {
             if (BindingProperties.optKeysDown(event)) {
                 event.preventDefault();
             }
+        }
+
+
+        private function onStageKeyDown(event:KeyboardEvent):void {
+            lastKeyPressEvent = event;
+        }
+
+
+        private function onStageKeyUp(event:KeyboardEvent):void {
+            lastKeyPressEvent = null;
+        }
+
+
+        /**
+         * Emulate ENTER key press.
+         * @param event
+         */
+        private function nodesList_doubleClickHandler(event:MouseEvent):void {
+            var evt:KeyboardEvent;
+            if (lastKeyPressEvent) {
+                evt = KeyboardEvent(lastKeyPressEvent.clone());
+            }
+            else {
+                evt = new KeyboardEvent(KeyboardEvent.KEY_DOWN);
+            }
+
+            evt.keyCode = Keyboard.ENTER;
+            nodesList.dispatchEvent(evt);
         }
         ]]></fx:Script>
 

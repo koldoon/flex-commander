@@ -27,6 +27,26 @@
         </s:fill>
     </s:Rect>
 
+<!--
+    <s:Rect
+        id="caretRect1"
+        left="0" right="0" top="0" height="2" includeIn="selected">
+
+        <s:fill>
+            <s:SolidColor color="{palette.white}" alpha="0.2"/>
+        </s:fill>
+    </s:Rect>
+
+    <s:Rect
+        id="caretRect2"
+        left="0" right="0" bottom="0" height="2" includeIn="selected">
+
+        <s:fill>
+            <s:SolidColor color="{palette.white}" alpha="0.2"/>
+        </s:fill>
+    </s:Rect>
+-->
+
     <s:Rect
         id="selectionRect2" visible="false" includeInLayout="false"
         left="0" top="0" bottom="0" width="8">
