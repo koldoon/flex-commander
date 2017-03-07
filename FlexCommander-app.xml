@@ -144,8 +144,8 @@
         <!--<image114x114></image114x114>-->
         <!--<image120x120></image120x120>-->
         <image128x128>icons/fc-icon-128.png</image128x128>
-        <image144x144>icons/fc-icon-144.png</image144x144>
-        <image152x152>icons/fc-icon-152.png</image152x152>
+        <!--<image144x144>icons/fc-icon-144.png</image144x144>-->
+        <!--<image152x152>icons/fc-icon-152.png</image152x152>-->
         <image512x512>icons/fc-icon-512.png</image512x512>
         <!--<image732x412></image732x412>-->
         <image1024x1024>icons/fc-icon-1024.png</image1024x1024>
