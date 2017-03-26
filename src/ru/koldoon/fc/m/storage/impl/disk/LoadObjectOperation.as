@@ -6,10 +6,9 @@ package ru.koldoon.fc.m.storage.impl.disk {
     import flash.filesystem.FileMode;
     import flash.filesystem.FileStream;
 
-    import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
+    import ru.koldoon.fc.m.async.impl.AbstractProgressiveAsyncOperation;
 
-    public class LoadObjectOperation extends AbstractAsyncOperation {
+    public class LoadObjectOperation extends AbstractProgressiveAsyncOperation {
         public function LoadObjectOperation(location:File) {
             this.location = location;
         }
@@ -40,10 +39,7 @@ package ru.koldoon.fc.m.storage.impl.disk {
             return this;
         }
 
-        override public function execute():IAsyncOperation {
-            status.setProcessing();
-            super.execute();
-
+        override protected function begin():void {
             value = null;
             f = location.resolvePath(fileName);
 
@@ -58,16 +54,15 @@ package ru.koldoon.fc.m.storage.impl.disk {
             }
 
             fs.openAsync(f, FileMode.READ);
-            return this;
         }
 
         private function fs_onProgress(event:ProgressEvent):void {
-            progress(event.bytesLoaded / event.bytesTotal * 100);
+            progress_.setPercent(event.bytesLoaded / event.bytesTotal * 100);
         }
 
         private function fs_onIOError(event:IOErrorEvent):void {
             fs.close();
-            fault(event);
+            fault();
         }
 
         private function fs_onComplete(event:Event):void {
@@ -85,7 +80,7 @@ package ru.koldoon.fc.m.storage.impl.disk {
             }
             catch (error:Error) {
                 fs.close();
-                fault(error);
+                fault();
             }
 
             if (err) {

@@ -1,6 +1,4 @@
 package ru.koldoon.fc.m.tree {
-    import mx.collections.ArrayCollection;
-
     import ru.koldoon.fc.m.async.IAsyncCollection;
 
     public interface IDirectory extends INode {
@@ -9,7 +7,7 @@ package ru.koldoon.fc.m.tree {
          * Items loaded by last <code>getListing()</code> operation
          * @return
          */
-        function get nodes():ArrayCollection;
+        function get nodes():Array;
 
 
         /**

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <s:Skin
     xmlns:fx="http://ns.adobe.com/mxml/2009"
-    xmlns:s="library://ns.adobe.com/flex/spark" xmlns:text="ru.koldoon.fc.c.text.*"
+    xmlns:s="library://ns.adobe.com/flex/spark"
     alpha.disabled="0.5" currentStateChange="currentStateChangeHandler(event)">
 
     <fx:Metadata>
@@ -20,7 +20,7 @@
     </s:states>
 
     <!-- touch area -->
-    <s:Rect width="100%" height="100%">
+    <s:Rect left="0" right="0" top="0" bottom="0">
         <s:fill>
             <s:SolidColor alpha="0"/>
         </s:fill>
@@ -35,10 +35,10 @@
             </s:fill>
         </s:Rect>
 
-        <s:Rect width="34" height="34" radiusX="3" radiusY="3" left="4" top="4">
+        <s:Rect width="38" height="38" radiusX="3" radiusY="3" left="2" top="2">
             <s:fill>
                 <s:SolidColor
-                    id="fillColor" color="white" color.selectedStates="{palette.red}"/>
+                    id="fillColor" color="{palette.sea}" color.selectedStates="{palette.red}"/>
             </s:fill>
         </s:Rect>
 
@@ -48,24 +48,25 @@
             </s:fill>
         </s:Rect>
 
-
-        <s:Group id="check" verticalCenter="0" horizontalCenter="0">
+        <s:Group id="check" verticalCenter="0" horizontalCenter="0" scaleX="0" scaleY="0">
             <s:Line x="1" y="10" xTo="8" yTo="8">
                 <s:stroke>
-                    <s:SolidColorStroke caps="none" color="white" joints="miter" miterLimit="4" weight="4"/>
+                    <s:SolidColorStroke
+                        caps="none" color="white" joints="miter" miterLimit="4" weight="4"/>
                 </s:stroke>
             </s:Line>
             <s:Line x="8" xTo="18" yFrom="18">
                 <s:stroke>
-                    <s:SolidColorStroke caps="none" color="white" joints="miter" miterLimit="4" weight="4"/>
+                    <s:SolidColorStroke
+                        caps="none" color="white" joints="miter" miterLimit="4" weight="4"/>
                 </s:stroke>
             </s:Line>
         </s:Group>
     </s:Group>
 
-    <text:Label
-        id="labelDisplay" verticalCenter="0" left="60" styleName="h4"
-        visible="{notEmpty(labelDisplay.text)}" includeInLayout="{notEmpty(labelDisplay.text)}"/>
+    <s:Label
+        id="labelDisplay"
+        verticalCenter="0" left="60" styleName="h5 left" color="#95ABBD"/>
 
     <fx:Script><![CDATA[
         import com.greensock.TimelineMax;

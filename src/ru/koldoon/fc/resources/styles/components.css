@@ -1,0 +1,60 @@
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+/* Form */
+
+s|Form.simple {
+    skinClass: ClassReference("ru.koldoon.fc.resources.skins.form.SimpleFormSkin");
+}
+
+s|Form.simple s|FormItem {
+    skinClass: ClassReference("ru.koldoon.fc.resources.skins.form.SimpleFormItemSkin");
+}
+
+/* Buttons */
+
+s|Button {
+    skinClass: ClassReference("ru.koldoon.fc.resources.skins.button.RegularButtonSkin");
+}
+
+s|Button.default, s|Button.emphasized {
+    skinClass: ClassReference("ru.koldoon.fc.resources.skins.button.DefaultButtonSkin");
+}
+
+/* CheckBox */
+
+s|CheckBox {
+    skinClass: ClassReference("ru.koldoon.fc.resources.skins.checkbox.CheckBoxSkin");
+}
+
+/* Text Inputs  */
+
+s|TextInput.bordered {
+    skinClass: ClassReference("ru.koldoon.fc.resources.skins.input.TextInputBorderedSkin");
+}
+
+s|TextInput:normalWithPrompt {
+    color:     #CCCCFF;
+    fontStyle: normal;
+}
+
+s|TextArea:normalWithPrompt {
+    color:     #CCCCFF;
+    fontStyle: normal;
+}
+
+s|TextInput:disabledWithPrompt {
+    color:     #CCFFFF;
+    fontStyle: normal;
+}
+
+s|TextArea:disabledWithPrompt {
+    color:     #CCFFFF;
+    fontStyle: normal;
+}
+
+/* Focus */
+
+s|Button, s|CheckBox {
+    focusThickness: 4
+}

@@ -15,6 +15,7 @@ package ru.koldoon.fc.resources.styles {
         public static const blue0:Number = 0x9AA7C1;
 
         public static const sea:Number = 0x04345B;
+        public static const sea2:Number = 0x011E37;
 
         public static const yellow:Number = 0xF5BB30;
     }

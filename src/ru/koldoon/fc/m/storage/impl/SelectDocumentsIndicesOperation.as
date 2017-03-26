@@ -4,10 +4,9 @@ package ru.koldoon.fc.m.storage.impl {
 
     import mx.collections.ArrayCollection;
 
-    import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
+    import ru.koldoon.fc.m.async.impl.AbstractProgressiveAsyncOperation;
 
-    public class SelectDocumentsIndicesOperation extends AbstractAsyncOperation {
+    public class SelectDocumentsIndicesOperation extends AbstractProgressiveAsyncOperation {
         public function SelectDocumentsIndicesOperation(index:DocumentsIndex) {
             super();
             docsIndex = index;
@@ -45,10 +44,7 @@ package ru.koldoon.fc.m.storage.impl {
         }
 
 
-        override public function execute():IAsyncOperation {
-            super.execute();
-            status.setProcessing();
-
+        override protected function begin():void {
             if (docsIndex.files.length > 0) {
                 totalCount = docsIndex.files.length;
                 processingItemIndex = 0;
@@ -57,7 +53,6 @@ package ru.koldoon.fc.m.storage.impl {
             else {
                 done();
             }
-            return this;
         }
 
 
@@ -66,7 +61,7 @@ package ru.koldoon.fc.m.storage.impl {
 
             if (docsIndex.files.length != totalCount) {
                 TICKER.removeEventListener(Event.ENTER_FRAME, checkNextIndices);
-                fault("Documents Index was changed during operation execution.");
+                fault();
             }
             else {
                 while (processingItemIndex < totalCount && processingItemIndex < selectLimit && indicesPerFrame > 0) {
@@ -79,7 +74,7 @@ package ru.koldoon.fc.m.storage.impl {
                 }
 
                 items_.refresh();
-                progress(processingItemIndex / totalCount * 100);
+                progress_.setPercent(processingItemIndex / totalCount * 100);
 
                 if (processingItemIndex >= totalCount - 1) {
                     TICKER.removeEventListener(Event.ENTER_FRAME, checkNextIndices);

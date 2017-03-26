@@ -3,130 +3,54 @@ package ru.koldoon.fc.m.async.impl {
     import flash.display.Shape;
     import flash.events.Event;
 
-    import org.osflash.signals.Signal;
+    import mx.logging.ILogger;
+    import mx.logging.Log;
+
+    import org.spicefactory.lib.reflect.ClassInfo;
 
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.IAsyncOperationStatus;
-    import ru.koldoon.fc.m.async.ICancelable;
+    import ru.koldoon.fc.m.async.IProcessStatus;
 
     public class AbstractAsyncOperation implements IAsyncOperation {
+        protected static var LOG:ILogger;
+
+
         public function AbstractAsyncOperation() {
-            _status = new AsyncOperationStatus();
+            LOG = Log.getLogger("fc." + ClassInfo.forInstance(this).simpleName);
+            _status = new ProcessStatus();
         }
 
 
-        public function get status():IAsyncOperationStatus {
+        public function get status():IProcessStatus {
             return _status;
         }
 
 
-        public function onProgress(handler:Function, unset:Boolean = false):IAsyncOperation {
-            if (!_onProgress) {
-                _onProgress = new Signal();
-            }
-
-            if (unset) {
-                _onProgress.remove(handler);
-            }
-            else {
-                _onProgress.add(handler);
-            }
-            return this;
-        }
-
-
-        public function onComplete(handler:Function, unset:Boolean = false):IAsyncOperation {
-            if (!_onComplete) {
-                _onComplete = new Signal();
-            }
-
-            if (unset) {
-                _onComplete.remove(handler);
-            }
-            else {
-                _onComplete.add(handler);
-            }
-            return this;
-        }
-
-
-        public function onStart(handler:Function, unset:Boolean = false):IAsyncOperation {
-            if (!_onStart) {
-                _onStart = new Signal();
-            }
-
-            if (unset) {
-                _onStart.remove(handler);
-            }
-            else {
-                _onStart.add(handler);
-            }
-            return this;
-        }
-
-
-        public function onFault(handler:Function, unset:Boolean = false):IAsyncOperation {
-            if (!_onFault) {
-                _onFault = new Signal();
-            }
-
-            if (unset) {
-                _onFault.remove(handler);
-            }
-            else {
-                _onFault.add(handler);
-            }
-            return this;
-        }
-
-
-        public function onResult(handler:Function, unset:Boolean = false):IAsyncOperation {
-            if (!_onResult) {
-                _onResult = new Signal();
-            }
-
-            if (unset) {
-                _onResult.remove(handler);
-            }
-            else {
-                _onResult.add(handler);
-            }
-            return this;
-        }
-
-
-        public function onCancel(handler:Function, unset:Boolean = false):ICancelable {
-            if (!_onCancel) {
-                _onCancel = new Signal();
-            }
-
-            if (unset) {
-                _onCancel.remove(handler);
-            }
-            else {
-                _onCancel.add(handler);
-            }
-            return this;
-        }
-
-
+        /**
+         * Execute command.
+         * Do not override this method! Otherwise async execution will not
+         * be working properly!
+         * To implement custom Operation, you must overwrite <code>begin</code>
+         * method instead.
+         */
         public function execute():IAsyncOperation {
-            if (_onStart) {
-                _onStart.dispatch(this);
-            }
+            ticker.addEventListener(Event.ENTER_FRAME, function call_execute(e:Event):void {
+                ticker.removeEventListener(Event.ENTER_FRAME, call_execute);
+
+                _status.setProcessing(!status.isInited, this);
+                begin();
+            });
             return this;
+        }
+
+
+        protected function begin():void {
+            throw new Error("You must implement abstract method begin()");
         }
 
 
         public function cancel():void {
-            status.setCanceled();
-            if (_onCancel) {
-                _onCancel.dispatch(this);
-            }
-            if (_onComplete) {
-                _onComplete.dispatch(this);
-            }
-            dispose();
+            _status.setCanceled(this);
         }
 
 
@@ -134,65 +58,30 @@ package ru.koldoon.fc.m.async.impl {
         // Internal
         // -----------------------------------------------------------------------------------
 
-        protected var _ticker:Shape = new Shape();
-        protected var _status:AsyncOperationStatus;
-        protected var _onComplete:Signal;
-        protected var _onStart:Signal;
-        protected var _onResult:Signal;
-        protected var _onFault:Signal;
-        protected var _onProgress:Signal;
-        protected var _onCancel:Signal;
+        protected static var ticker:Shape = new Shape();
+        protected var _status:ProcessStatus;
 
 
         /**
          * Call this method if you need to apply <code>done()</code> in the next frame
          */
-        public function doneAsync():void {
-            _ticker.addEventListener(Event.ENTER_FRAME, callDone);
+        protected function doneAsync():void {
+            ticker.addEventListener(Event.ENTER_FRAME, callDone);
             function callDone(e:Event):void {
-                _ticker.removeEventListener(Event.ENTER_FRAME, callDone);
+                ticker.removeEventListener(Event.ENTER_FRAME, callDone);
                 done();
             }
         }
 
 
-        public function done():void {
-            status.setComplete();
-            if (_onResult) {
-                _onResult.dispatch(this);
-            }
-            if (_onComplete) {
-                _onComplete.dispatch(this);
-            }
-            dispose();
+        protected function done():void {
+            _status.setComplete(this);
         }
 
 
-        public function fault(data:* = null):void {
-            status.setFault();
-            if (_onFault) {
-                _onFault.dispatch(data);
-            }
-            if (_onComplete) {
-                _onComplete.dispatch(this);
-            }
-            dispose();
+        protected function fault():void {
+            _status.setFault(this);
         }
 
-
-        public function progress(data:* = null):void {
-            if (_onProgress) {
-                _onProgress.dispatch(this);
-            }
-        }
-
-
-        protected function dispose():void {
-            _onProgress = null;
-            _onResult = null;
-            _onStart = null;
-            _onFault = null;
-            _onComplete = null;
-        }
     }
 }

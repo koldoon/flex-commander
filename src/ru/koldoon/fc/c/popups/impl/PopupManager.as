@@ -6,7 +6,6 @@ package ru.koldoon.fc.c.popups.impl {
     import flash.events.MouseEvent;
     import flash.utils.Dictionary;
 
-    import mx.core.IInvalidating;
     import mx.core.UIComponent;
     import mx.events.CloseEvent;
     import mx.graphics.SolidColor;
@@ -120,39 +119,45 @@ package ru.koldoon.fc.c.popups.impl {
                 }
             }
 
-            // validate popup in context of popup manager
-            if (pd.instance_ is IInvalidating) {
-                IInvalidating(pd.instance_).validateNow();
+            pd.instance_.visible = false;
+
+            TweenLite.to(this, 0, {
+                delay:      2,
+                useFrames:  true,
+                onComplete: performPopupLayoutAfterValidate
+            });
+
+            function performPopupLayoutAfterValidate():void {
+                // perform layout
+                alignPopup(pd);
+                alignCallout(pd);
+
+                pd.instance_.addEventListener(CloseEvent.CLOSE, onPopupSelfClose);
+
+                if (pd.hideAfter_) {
+                    TweenLite.to(this, pd.hideAfter_, {
+                        onComplete: function ():void { remove(pd); }
+                    });
+                }
+
+                if (pd.hideByClickOutside_) {
+                    pd.instance_.addEventListener(MouseEvent.MOUSE_DOWN, onPopupMouseDown, false, 0, true);
+                }
+
+                popupsVisible.push(pd);
+                if (pd.inQueue_) {
+                    popupFromQueueVisible = pd;
+                }
+                displayQueue.shift();
+
+                pd.instance_.visible = true;
+                lockEnvironmentAndShowContent();
+                if (pd.instance_ is UIComponent) {
+                    UIComponent(pd.instance_).setFocus();
+                }
+
+                pd.onPopupOpen_.dispatch(pd.instance_);
             }
-
-            // perform layout
-            alignPopup(pd);
-            alignCallout(pd);
-
-            pd.instance_.addEventListener(CloseEvent.CLOSE, onPopupSelfClose);
-
-            if (pd.hideAfter_) {
-                TweenLite.to(this, pd.hideAfter_, {
-                    onComplete: function ():void { remove(pd); }
-                });
-            }
-
-            if (pd.hideByClickOutside_) {
-                pd.instance_.addEventListener(MouseEvent.MOUSE_DOWN, onPopupMouseDown, false, 0, true);
-            }
-
-            popupsVisible.push(pd);
-            if (pd.inQueue_) {
-                popupFromQueueVisible = pd;
-            }
-            displayQueue.shift();
-
-            lockEnvironmentAndShowContent();
-            if (pd.modal_ && pd.instance_ is UIComponent) {
-                UIComponent(pd.instance_).setFocus();
-            }
-
-            pd.onPopupOpen_.dispatch(pd.instance_);
         }
 
 
@@ -288,13 +293,13 @@ package ru.koldoon.fc.c.popups.impl {
 
         private function alignPopup(pd:PopupDescriptor):void {
             if (pd.verticalAlign_ == VerticalAlign.BOTTOM) {
-                pd.instance_.y = height - pd.marginBottom_ - pd.instance_.height;
+                pd.instance_.y = height - pd.marginBottom_ - pd.instance_.getLayoutBoundsHeight();
             }
             else if (pd.verticalAlign_ == VerticalAlign.TOP) {
                 pd.instance_.y = pd.marginTop_;
             }
             else if (pd.verticalAlign_ == VerticalAlign.MIDDLE) {
-                pd.instance_.y = (height - pd.instance_.height) / 2;
+                pd.instance_.y = (height - pd.instance_.getLayoutBoundsHeight()) / 2;
             }
             else if (pd.verticalAlign_ == VerticalAlign.JUSTIFY) {
                 pd.instance_.y = 0;
@@ -306,10 +311,10 @@ package ru.koldoon.fc.c.popups.impl {
                 pd.instance_.x = pd.marginLeft_;
             }
             else if (pd.horizontalAlign_ == HorizontalAlign.RIGHT) {
-                pd.instance_.x = width - pd.marginRight_ - pd.instance_.width;
+                pd.instance_.x = width - pd.marginRight_ - pd.instance_.getLayoutBoundsWidth();
             }
             else if (pd.horizontalAlign_ == HorizontalAlign.CENTER) {
-                pd.instance_.x = (width - pd.instance_.width) / 2;
+                pd.instance_.x = (width - pd.instance_.getLayoutBoundsWidth()) / 2;
             }
             else if (pd.horizontalAlign_ == HorizontalAlign.JUSTIFY) {
                 pd.instance_.x = 0;

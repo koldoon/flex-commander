@@ -16,7 +16,7 @@
         left="0" right="0" top="0" bottom="0">
 
         <s:layout>
-            <s:FormLayout gap="0"/>
+            <s:FormLayout gap="20" horizontalAlign="justify"/>
         </s:layout>
     </s:Group>
 </s:Skin>

@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<s:Skin
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    height="60" touchDelay="0">
+
+    <s:states>
+        <s:State name="up"/>
+        <s:State name="over"/>
+        <s:State name="down"/>
+        <s:State name="disabled"/>
+    </s:states>
+
+    <!-- Base color -->
+    <s:Rect
+        left="0" right="0" top="0" bottom="0"
+        radiusX="8" radiusY="8">
+        <s:fill>
+            <s:SolidColor color="{palette.blue1}" alpha="1"/>
+        </s:fill>
+        <s:stroke>
+            <s:SolidColorStroke
+                color="black" alpha="0.04" weight="2" joints="round" caps="round"/>
+        </s:stroke>
+    </s:Rect>
+
+    <s:Rect
+        left="0" right="0" top="0" bottom="0"
+        radiusX="8" radiusY="8">
+        <s:fill>
+            <s:SolidColor color="0" alpha="1"/>
+        </s:fill>
+        <s:filters>
+            <s:DropShadowFilter
+                knockout="true"
+                blurY="2" blurX="0" distance="1" angle="90" quality="1" alpha="0.25"/>
+        </s:filters>
+    </s:Rect>
+
+    <s:Rect
+        left="0" right="0" top="0" bottom="0"
+        radiusX="8" radiusY="8">
+        <s:fill>
+            <s:LinearGradient angle="-90">
+                <s:entries>
+                    <s:GradientEntry color="black" alpha="0.2"/>
+                    <s:GradientEntry color="black" alpha="0"/>
+                </s:entries>
+            </s:LinearGradient>
+        </s:fill>
+        <s:stroke>
+            <s:SolidColorStroke
+                color="black" alpha="0.04" weight="2" joints="round" caps="round"/>
+        </s:stroke>
+    </s:Rect>
+
+
+    <s:Label
+        id="labelDisplay"
+        left="40" right="40" verticalCenter="0" styleName="white h5 ui"/>
+
+
+    <s:Rect
+        includeIn="down"
+        left="0" right="0" top="0" bottom="0" radiusX="8" radiusY="8">
+        <s:fill>
+            <s:SolidColor color="black" alpha="0.2"/>
+        </s:fill>
+        <s:stroke>
+            <s:SolidColorStroke
+                color="black" alpha="0.04" weight="2" joints="round" caps="round"/>
+        </s:stroke>
+    </s:Rect>
+
+    <fx:Script><![CDATA[
+        import ru.koldoon.fc.resources.styles.palette;
+        ]]></fx:Script>
+</s:Skin>

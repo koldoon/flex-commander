@@ -29,8 +29,8 @@ package ru.koldoon.fc.c.popups.impl {
 
         public function arrange(pd:PopupDescriptor):Boolean {
             this.pd = pd;
-            this.calloutWidth = pd.instance_.width;
-            this.calloutHeight = pd.instance_.height;
+            this.calloutWidth = pd.instance_.getLayoutBoundsWidth();
+            this.calloutHeight = pd.instance_.getLayoutBoundsHeight();
             this.anchorWidth = pd.anchor.width;
             this.anchorHeight = pd.anchor.height;
             this.anchorOrigin = canvas.globalToLocal(pd.anchor.localToGlobal(new Point()));

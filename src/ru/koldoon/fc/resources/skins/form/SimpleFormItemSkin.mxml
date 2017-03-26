@@ -27,15 +27,15 @@
     </s:layout>
 
     <s:Label
-        id="labelDisplay" styleName="right"
-        left="labelCol:0" right="labelCol:40" bottom="row1:0" baseline="row1:0"/>
+        id="labelDisplay" styleName="right white"
+        left="labelCol:0" right="labelCol:20" bottom="row1:0" baseline="row1:0"/>
 
     <s:Group
         id="contentGroup" showErrorTip="false" showErrorSkin="true"
         left="contentCol:0" right="contentCol:0" baseline="row1:0" bottom="row1:0">
 
         <s:layout>
-            <s:HorizontalLayout gap="20" verticalAlign="baseline"/>
+            <s:HorizontalLayout gap="20" verticalAlign="baseline" horizontalAlign="left"/>
         </s:layout>
     </s:Group>
 

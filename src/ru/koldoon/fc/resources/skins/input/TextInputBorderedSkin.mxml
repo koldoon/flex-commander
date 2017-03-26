@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<s:Skin
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    alpha.disabled="0.5" height="70">
+
+    <fx:Metadata>
+        [HostComponent("spark.components.TextInput")]
+    </fx:Metadata>
+
+    <s:states>
+        <s:State name="normal"/>
+        <s:State name="disabled" stateGroups="disabledStates"/>
+        <s:State name="normalWithPrompt"/>
+        <s:State name="disabledWithPrompt" stateGroups="disabledStates"/>
+    </s:states>
+
+    <fx:Declarations>
+        <fx:String id="iconString">{getStyle('icon')}</fx:String>
+    </fx:Declarations>
+
+    <s:Rect
+        id="background"
+        left="0" right="0" top="0" bottom="0"
+        radiusX="2" radiusY="2">
+        <s:fill>
+            <s:SolidColor color="0xFFFFFF" alpha="0.07"/>
+        </s:fill>
+        <s:stroke>
+            <s:SolidColorStroke color="white" weight="2" alpha="0.11" caps="round" joints="round"/>
+        </s:stroke>
+    </s:Rect>
+
+    <s:Rect
+        id="innerShadow"
+        left="2" top="2" right="2" height="3">
+        <s:fill>
+            <s:SolidColor color="black" alpha="0.15"/>
+        </s:fill>
+    </s:Rect>
+
+
+    <s:Label
+        id="iconDisplay"
+        left="20" width="90" verticalCenter="0"
+        styleName="icon center"/>
+
+    <s:RichEditableText
+        id="textDisplay"
+        left="{isEmpty(iconString) ? 22 : 120}" right="20" verticalCenter="0"
+        styleName="white left"/>
+
+    <s:Label
+        id="promptDisplay"
+        alpha="0.6" styleName="left white normal"
+        left="{isEmpty(iconString) ? 22 : 120}" right="20" verticalCenter="0"
+        visible="{isEmpty(hostComponent.text)}"/>
+
+    <fx:Script><![CDATA[
+        import ru.koldoon.fc.utils.isEmpty;
+        ]]></fx:Script>
+</s:Skin>

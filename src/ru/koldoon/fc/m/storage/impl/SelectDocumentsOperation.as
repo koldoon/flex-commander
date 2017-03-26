@@ -5,11 +5,10 @@ package ru.koldoon.fc.m.storage.impl {
 
     import mx.collections.ArrayCollection;
 
-    import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
+    import ru.koldoon.fc.m.async.impl.AbstractProgressiveAsyncOperation;
     import ru.koldoon.fc.m.storage.impl.disk.LoadObjectOperation;
 
-    public class SelectDocumentsOperation extends AbstractAsyncOperation {
+    public class SelectDocumentsOperation extends AbstractProgressiveAsyncOperation {
         public function SelectDocumentsOperation(location:File, index:DocumentsIndex) {
             super();
             this.location = location;
@@ -50,10 +49,7 @@ package ru.koldoon.fc.m.storage.impl {
         }
 
 
-        override public function execute():IAsyncOperation {
-            super.execute();
-            status.setProcessing();
-
+        override protected function begin():void {
             if (docsIndex.files.length > 0) {
                 totalCount = docsIndex.files.length;
                 processingItemIndex = 0;
@@ -63,8 +59,6 @@ package ru.koldoon.fc.m.storage.impl {
             else {
                 done();
             }
-
-            return this;
         }
 
 
@@ -76,7 +70,7 @@ package ru.koldoon.fc.m.storage.impl {
 
         private function checkNextFile(event:Event = null):void {
             if (docsIndex.files.length != totalCount) {
-                fault("Documents Index was changed during operation execution.");
+                fault();
             }
             else {
                 if (processingItemIndex >= totalCount || processingItemIndex >= selectLimit) {
@@ -85,16 +79,19 @@ package ru.koldoon.fc.m.storage.impl {
                 else {
                     itemLoader
                         .name(docsIndex.files[processingItemIndex])
+                        .execute();
+
+                    itemLoader.status
                         .onComplete(function (op:LoadObjectOperation):void {
                             if (selectFilter == null || selectFilter(op.value)) {
                                 items.addItem(op.value);
                             }
                             TICKER.addEventListener(Event.ENTER_FRAME, beginSelect);
-                        }, false)
-                        .execute();
+                        });
+
 
                     processingItemIndex += 1;
-                    progress(processingItemIndex / totalCount * 100);
+                    progress_.setPercent(processingItemIndex / totalCount * 100);
                 }
             }
         }

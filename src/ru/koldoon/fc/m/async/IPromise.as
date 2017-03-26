@@ -5,18 +5,31 @@ package ru.koldoon.fc.m.async {
          * Complete handler, no matter: positive or negative
          * function (op:IPromise):void {}
          * @param handler
-         * @param unset
          * @return
          */
-        function onReady(handler:Function, unset:Boolean = false):IPromise;
+        function onReady(handler:Function):IPromise;
 
-        function onReject(handler:Function, unset:Boolean = false):IPromise;
+
+        /**
+         * Reject handler. If the target do not need data any more.
+         * @param handler
+         * @return
+         */
+        function onReject(handler:Function):IPromise;
+
+
+        /**
+         * Conventional method to remove handlers.
+         * @param handler
+         */
+        function removeEventHandler(handler:Function):void;
 
 
         /**
          * Reject promise requested
          */
         function reject():void;
+
 
         /**
          * Apply promise

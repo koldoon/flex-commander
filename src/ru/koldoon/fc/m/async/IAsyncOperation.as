@@ -2,43 +2,12 @@ package ru.koldoon.fc.m.async {
     /**
      * Async resource getting operation promise
      */
-    public interface IAsyncOperation extends ICancelable {
+    public interface IAsyncOperation {
 
         /**
          * Operation Status
          */
-        function get status():IAsyncOperationStatus;
-
-        /**
-         * Operation start Handler shortcut;
-         * @param handler function(op:IAsyncOperation):void {}
-         * @param unset
-         * @return
-         */
-        function onStart(handler:Function, unset:Boolean = false):IAsyncOperation;
-
-        /**
-         * @param handler function(op:IAsyncOperation):void {}
-         * @param unset remove handler given
-         * @return
-         */
-        function onResult(handler:Function, unset:Boolean = false):IAsyncOperation;
-
-        /**
-         * Progress change handler: function (op:IAsyncOperation):void {}
-         * @param handler
-         * @param unset
-         * @return
-         */
-        function onProgress(handler:Function, unset:Boolean = false):IAsyncOperation;
-
-        /**
-         * Fault handler;
-         * @param handler function(op:IAsyncOperation):void {}
-         * @param unset
-         * @return
-         */
-        function onFault(handler:Function, unset:Boolean = false):IAsyncOperation;
+        function get status():IProcessStatus;
 
 
         /**
@@ -46,13 +15,10 @@ package ru.koldoon.fc.m.async {
          */
         function execute():IAsyncOperation;
 
-        /**
-         * Complete handler, no matter: positive or negative.
-         * @param handler function(op:IAsyncOperation):void {}
-         * @param unset
-         * @return
-         */
-        function onComplete(handler:Function, unset:Boolean = false):IAsyncOperation;
 
+        /**
+         * Stops async process.
+         */
+        function cancel():void;
     }
 }

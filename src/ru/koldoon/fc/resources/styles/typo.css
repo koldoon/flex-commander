@@ -2,14 +2,14 @@
 @namespace mx "library://ns.adobe.com/flex/mx";
 
 @font-face {
-    font-family:          ubuntu;
+    font-family:          ubuntu_cff;
     src:                  url('/ru/koldoon/fc/resources/fonts/Ubuntu-R.ttf');
     embedAsCFF:           true;
     advancedAntiAliasing: true;
 }
 
 @font-face {
-    font-family:          ubuntu;
+    font-family:          ubuntu_cff;
     src:                  url('/ru/koldoon/fc/resources/fonts/Ubuntu-B.ttf');
     fontWeight:           bold;
     embedAsCFF:           true;
@@ -91,12 +91,6 @@ mx|ToolTip {
     fontFamily: ubuntu_mx;
 }
 
-s|TextBase {
-    /*fontFamily: "Avenir Next Medium", "Droid Sans Mono", "Monaco";*/
-    fontFamily: consolas_cff;
-    fontWeight: bold;
-}
-
 mx|Label {
     /*fontFamily: "Droid Sans Mono", "Monaco";*/
     /*fontFamily: "Monaco";*/
@@ -106,10 +100,26 @@ mx|Label {
 }
 
 s|SkinnableTextBase {
-    fontFamily: "Droid Sans Mono", "Monaco";
+    fontFamily: ubuntu_cff;
     focusAlpha: 0;
 }
 
+s|TextBase {
+    /*fontFamily: "Avenir Next Medium", "Droid Sans Mono", "Monaco";*/
+    fontFamily: ubuntu_cff;
+    focusAlpha: 0;
+}
+
+/* Styles */
+
 .icon {
     fontFamily: icon_cff;
+}
+
+.ui {
+    fontFamily: ubuntu_cff;
+}
+
+.fixed {
+    fontFamily: consolas_cff;
 }

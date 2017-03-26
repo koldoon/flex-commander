@@ -1,5 +1,4 @@
 package ru.koldoon.fc.m.tree.impl.fs {
-    import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
@@ -23,13 +22,12 @@ package ru.koldoon.fc.m.tree.impl.fs {
         }
 
 
-        override public function execute():IAsyncOperation {
+        override protected function begin():void {
             files = [];
             for each (var node:INode in nodes_) {
                 files.push(new FileSystemReference(getFileSystemPath(node), node));
             }
-            doneAsync();
-            return super.execute();
+            done();
         }
 
 

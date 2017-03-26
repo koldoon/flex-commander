@@ -1,7 +1,6 @@
 package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.async.IAsyncCollection;
-    import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.os.AbstractStatelessCommandLineOperation;
+    import ru.koldoon.fc.m.os.CommandLineOperation;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.IFilesProvider;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
@@ -10,15 +9,16 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
     import ru.koldoon.fc.utils.notEmpty;
 
-    public class LocalFileSystemDirectoryListingOperation extends AbstractStatelessCommandLineOperation {
+    public class LocalFileSystemDirectoryListingOperation extends CommandLineOperation {
         /**
          * Detects "total" string in ls listing (usually on the first place)
          */
         public static const TOTAL_RXP:RegExp = /^total\s[0-9]*$/;
 
         /**
-         * Detects strings of "gfind {0} -maxdepth 1 -printf '%y\t%Y\t%m\t%s\t%T@\t%p\t%l\n' listing.
+         * Detects strings of "gfind {0} -maxdepth 1 -printf '%y\t%Y\t%m\t%s\t%T@\t%p\t%l\n'" listing.
          * Look into bin/listing.sh file for details.
+         * Example: "s    s    srwxrwxrwx    0    1489663143.0000000000    .dbfseventsd    "
          *
          * Group 1: File Type (dlfU)
          * Group 2: Link Target Type (dlfU)
@@ -34,7 +34,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
          * Files Fetched
          */
         [ArrayElementType("ru.koldoon.fc.m.tree.impl.FileNode")]
-        public var files:Array;
+        public var nodes:Array;
 
 
         private var directory_:IDirectory;
@@ -46,13 +46,11 @@ package ru.koldoon.fc.m.tree.impl.fs {
         }
 
 
-        override public function execute():IAsyncOperation {
+        override protected function begin():void {
             // getting actual path using common interface method
             IFilesProvider(directory_.getTreeProvider())
                 .getFiles([directory_])
                 .onReady(onFilesReferencesReady);
-
-            return this;
         }
 
 
@@ -63,13 +61,13 @@ package ru.koldoon.fc.m.tree.impl.fs {
             command("bin/listing.sh");
             commandArguments(FileSystemReference(ac.items[0]).path);
 
-            files = [];
+            nodes = [];
             if (directory_.getParentDirectory()) {
                 // Special Anchor for navigation
-                files.push(AbstractNode.PARENT_NODE);
+                nodes.push(AbstractNode.PARENT_NODE);
             }
 
-            super.execute();
+            super.begin();
         }
 
 
@@ -101,10 +99,8 @@ package ru.koldoon.fc.m.tree.impl.fs {
                 f.attributes = file[3];
                 f.size = (file[2] == "d") ? -1 : file[4];
                 f.modified = new Date(1000 * file[5]);
-                files.push(f);
+                nodes.push(f);
             }
-
-            progress();
         }
     }
 }

@@ -140,7 +140,7 @@ package org.osflash.signals
 			if (registrationPossible(listener, once))
 			{
 				const newSlot:ISlot = new Slot(listener, this, once);
-				slots = slots.prepend(newSlot);
+				slots = slots.append(newSlot);
 				return newSlot;
 			}
 			

@@ -5,30 +5,20 @@ package ru.koldoon.fc.m.async.impl {
 
     public class Promise implements IPromise {
 
-        public function onReady(handler:Function, unset:Boolean = false):IPromise {
+        public function onReady(handler:Function):IPromise {
             if (!onReady_) {
                 onReady_ = new Signal();
             }
-            if (unset) {
-                onReady_.remove(handler);
-            }
-            else {
-                onReady_.addOnce(handler);
-            }
+            onReady_.addOnce(handler);
             return this;
         }
 
 
-        public function onReject(handler:Function, unset:Boolean = false):IPromise {
+        public function onReject(handler:Function):IPromise {
             if (!onReject_) {
                 onReject_ = new Signal();
             }
-            if (unset) {
-                onReject_.remove(handler);
-            }
-            else {
-                onReject_.addOnce(handler);
-            }
+            onReject_.addOnce(handler);
             return this;
         }
 
@@ -53,5 +43,16 @@ package ru.koldoon.fc.m.async.impl {
 
         private var onReady_:Signal;
         private var onReject_:Signal;
+
+
+        public function removeEventHandler(handler:Function):void {
+            if (onReady_) {
+                onReady_.remove(handler);
+            }
+            if (onReject_) {
+                onReject_.remove(handler);
+            }
+
+        }
     }
 }

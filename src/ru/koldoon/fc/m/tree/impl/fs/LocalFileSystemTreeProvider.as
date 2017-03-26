@@ -11,6 +11,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
+    import ru.koldoon.fc.m.tree.impl.fs.copy.LocalFileSystemCopyOperation;
 
     public class LocalFileSystemTreeProvider extends AbstractNode implements ITreeProvider, IFilesProvider, ITreeEditor {
 
@@ -37,14 +38,13 @@ package ru.koldoon.fc.m.tree.impl.fs {
             var ac:AsyncCollection = new AsyncCollection();
             var op:IAsyncOperation = new LocalFileSystemDirectoryListingOperation()
                 .directory(dir)
-                .onProgress(function (op:LocalFileSystemDirectoryListingOperation):void {
-                    ac.items.source = op.files;
-                })
-                .onComplete(function (op:LocalFileSystemDirectoryListingOperation):void {
-                    ac.applyResult(op.files);
-                    delete operations[op];
-                })
                 .execute();
+
+            op.status
+                .onComplete(function (op:LocalFileSystemDirectoryListingOperation):void {
+                    ac.applyResult(op.nodes);
+                    delete operations[op];
+                });
 
             ac.onReject(function ():void {
                 op.cancel();
@@ -71,11 +71,14 @@ package ru.koldoon.fc.m.tree.impl.fs {
             var ac:AsyncCollection = new AsyncCollection();
             var op:IAsyncOperation = new LocalFileSystemGetFilesOperation()
                 .nodes(nodes)
+                .execute();
+
+            op.status
                 .onComplete(function (op:LocalFileSystemGetFilesOperation):void {
                     ac.applyResult(op.files);
                     delete operations[op];
-                })
-                .execute();
+                });
+
 
             operations[op] = true;
             return ac;
@@ -102,13 +105,17 @@ package ru.koldoon.fc.m.tree.impl.fs {
         // ITreeEditor
         // -----------------------------------------------------------------------------------
 
-        public function move(nodes:Array, toDir:IDirectory):IAsyncOperation {
+        public function move(source:IDirectory, destination:IDirectory, nodes:Array = null):IAsyncOperation {
             return null;
         }
 
 
-        public function copy(nodes:Array, toDir:IDirectory):IAsyncOperation {
-            return null;
+        public function copy(source:IDirectory, destination:IDirectory, nodes:Array = null):IAsyncOperation {
+            return new LocalFileSystemCopyOperation()
+                .source(source)
+                .nodes(nodes)
+                .destination(destination)
+                .execute();
         }
 
 

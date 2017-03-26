@@ -2,16 +2,21 @@
 <s:Application
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
+    xmlns:debug="ru.koldoon.debug.*"
 
     backgroundColor="#011130" applicationDPI="320"
     activate="onActivate()" deactivate="onDeactivate()"
     frameRate="600" creationComplete="creationCompleteHandler(event)">
 
+    <fx:Declarations>
+        <debug:SOSLoggingTarget/>
+    </fx:Declarations>
 
     <fx:Style source="/ru/koldoon/fc/resources/styles/typo.css"/>
     <fx:Style source="/ru/koldoon/fc/resources/styles/text-styles.css"/>
     <fx:Style source="/ru/koldoon/fc/resources/styles/text-sizes.css"/>
     <fx:Style source="/ru/koldoon/fc/resources/styles/palette.css"/>
+    <fx:Style source="/ru/koldoon/fc/resources/styles/components.css"/>
 
     <impl:FilesPanel
         id="leftPanel" position="left"
@@ -26,7 +31,8 @@
         bottom="15" left="0" right="0" minHeight="0"
         itemRenderer="ru.koldoon.fc.c.fn.FunctionKeyRenderer"
         skinClass="ru.koldoon.fc.resources.skins.list.ListTransparentSkin"
-        preventSelection="true" focusEnabled="false" cacheAsBitmap="true">
+        preventSelection="true" focusEnabled="false" cacheAsBitmap="true"
+        click="functionKeyList_clickHandler(event)">
 
         <s:layout>
             <s:TileLayout
@@ -63,6 +69,7 @@
 
         import ru.koldoon.fc.m.app.impl.ApplicationImpl;
         import ru.koldoon.fc.m.app.impl.commands.StartupCommand;
+        import ru.koldoon.fc.m.async.IAsyncCollection;
         import ru.koldoon.fc.m.tree.impl.fs.LocalFileSystemTreeProvider;
 
         private var proposedFocusObject:IFocusManagerComponent;
@@ -102,61 +109,18 @@
 
 
             app.leftPanel.directory = new LocalFileSystemTreeProvider().getRootDirectory();
-            app.leftPanel.directory.getListing();
+            app.leftPanel.directory.getListing().onReady(function (ac:IAsyncCollection):void {
+                app.leftPanel.refresh();
+            });
 
             app.rightPanel.directory = new LocalFileSystemTreeProvider().getRootDirectory();
-            app.rightPanel.directory.getListing();
+            app.rightPanel.directory.getListing().onReady(function (ac:IAsyncCollection):void {
+                app.rightPanel.refresh();
+            });
+        }
 
 
-//            Storage.getStorage().getDocumentsRepository("TestStorage")
-//                .pushDocument(new TestVO("Some Str", 5, 6))
-//                .onReady(function (data:Object):void {
-//                    trace("Object Pushed");
-//                });
-//
-//            Storage.getStorage().getDocumentsRepository("TestStorage")
-//                .selectIndices()
-//                .onReady(function (pr:AsyncCollection):void {
-//                    trace("Indices: " + pr.items.source);
-//                });
-//
-//            Storage.getStorage().getDocumentsRepository("TestStorage")
-//                .putDocument("42",new TestVO("Some Str", 1, 1))
-//                .onReady(function (data:Object):void {
-//                    trace("Object Pushed");
-//                });
-//
-//            Storage.getStorage().getDocumentsRepository("TestStorage")
-//                .getDocument("42")
-//                .onReady(function (pr:AsyncValue):void {
-//                    trace("Object: " + pr.value);
-//                });
-//
-//            Storage.getStorage().getDocumentsRepository("TestStorage")
-//                .selectDocuments()
-//                .onReady(function (pr:AsyncCollection):void {
-//                    trace("Docs: " + pr.items.length);
-//                });
-
-//            var p:AsyncValue = new AsyncValue();
-//            p.onReady(function (ac:AsyncValue):void {
-//                trace("Object Loaded: " + ac.value);
-//            });
-
-//            new SaveObjectOperation(File.documentsDirectory.resolvePath("TestStorage"))
-//                .object("1", new TestVO("Some Str", 5, 6))
-//                .onComplete(function (aop:SaveObjectOperation):void {
-//                    trace("Saved");
-//                })
-//                .execute();
-
-//            new LoadObjectOperation(File.documentsDirectory.resolvePath("TestStorage"))
-//                .name("1")
-//                .onComplete(function (aop:LoadObjectOperation):void {
-//                    trace("Loaded");
-//                    p.applyResult(aop.value);
-//                })
-//                .execute();
+        private function functionKeyList_clickHandler(event:MouseEvent):void {
         }
         ]]></fx:Script>
 </s:Application>

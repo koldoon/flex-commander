@@ -1,6 +1,4 @@
 package ru.koldoon.fc.m.tree.impl {
-    import mx.collections.ArrayCollection;
-
     import ru.koldoon.fc.m.async.IAsyncCollection;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
@@ -19,7 +17,7 @@ package ru.koldoon.fc.m.tree.impl {
         /**
          * @inheritDoc
          */
-        public function get nodes():ArrayCollection {
+        public function get nodes():Array {
             return nodes_;
         }
 
@@ -32,7 +30,7 @@ package ru.koldoon.fc.m.tree.impl {
             if (tp) {
                 var op:IAsyncCollection = tp.getListingFor(this);
                 op.onReady(function (op:IAsyncCollection):void {
-                    nodes_.list = op.items;
+                    nodes_ = op.items;
                 });
                 return op;
             }
@@ -42,6 +40,6 @@ package ru.koldoon.fc.m.tree.impl {
         }
 
 
-        private var nodes_:ArrayCollection = new ArrayCollection();
+        private var nodes_:Array = [];
     }
 }

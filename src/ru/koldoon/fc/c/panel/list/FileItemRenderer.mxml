@@ -27,25 +27,25 @@
         </s:fill>
     </s:Rect>
 
-<!--
-    <s:Rect
-        id="caretRect1"
-        left="0" right="0" top="0" height="2" includeIn="selected">
+    <!--
+        <s:Rect
+            id="caretRect1"
+            left="0" right="0" top="0" height="2" includeIn="selected">
 
-        <s:fill>
-            <s:SolidColor color="{palette.white}" alpha="0.2"/>
-        </s:fill>
-    </s:Rect>
+            <s:fill>
+                <s:SolidColor color="{palette.white}" alpha="0.2"/>
+            </s:fill>
+        </s:Rect>
 
-    <s:Rect
-        id="caretRect2"
-        left="0" right="0" bottom="0" height="2" includeIn="selected">
+        <s:Rect
+            id="caretRect2"
+            left="0" right="0" bottom="0" height="2" includeIn="selected">
 
-        <s:fill>
-            <s:SolidColor color="{palette.white}" alpha="0.2"/>
-        </s:fill>
-    </s:Rect>
--->
+            <s:fill>
+                <s:SolidColor color="{palette.white}" alpha="0.2"/>
+            </s:fill>
+        </s:Rect>
+    -->
 
     <s:Rect
         id="selectionRect2" visible="false" includeInLayout="false"
@@ -70,26 +70,26 @@
         <s:Label
             id="nameLabel"
             width="100%" maxDisplayedLines="1"
-            styleName="h5 left blue0"
-            styleName.selected="h5 left white"/>
+            styleName="h5 left blue0 fixed"
+            styleName.selected="h5 left white fixed"/>
 
         <s:Label
             id="typeLabel"
             maxDisplayedLines="1" paddingRight="10"
-            styleName="h5 right blue0"
-            styleName.selected="h5 right white"/>
+            styleName="h5 right blue0 fixed"
+            styleName.selected="h5 right white fixed"/>
 
         <s:Label
             id="sizeLabel"
             width="160" paddingRight="10"
-            styleName="h5 right blue0"
-            styleName.selected="h5 right white"/>
+            styleName="h5 right blue0 fixed"
+            styleName.selected="h5 right white fixed"/>
 
         <s:Label
             id="dateLabel"
             width="220"
-            styleName="h5 left blue0"
-            styleName.selected="h5 left white"/>
+            styleName="h5 left blue0 fixed"
+            styleName.selected="h5 left white fixed"/>
 
     </s:HGroup>
 
@@ -130,7 +130,7 @@
             var dir:DirectoryNode = data as DirectoryNode;
             var file:FileNode = data as FileNode;
 
-            nameLabel.text = node.label;
+            nameLabel.text = node.type ? node.label.substr(0, node.label.length - node.type.length - 1) : node.label;
             typeLabel.text = dir ? "" : node.type;
 
             attrLabel.text =

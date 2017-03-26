@@ -4,21 +4,24 @@ package ru.koldoon.fc.m.tree {
     public interface ITreeEditor {
 
         /**
-         * Performs on Destination ITreeProvider. Moves Nodes and their associated data
+         * Performs on DESTINATION ITreeProvider. Moves Nodes and their associated data
          * to a particular Dir. Basically, this operation can be performed by
          * combination of "copy" and "remove" but for many cases there are much more
          * effective way to move objects in different structures.
          * @nodes List of INode
          */
-        function move(nodes:Array, toDir:IDirectory):IAsyncOperation;
+        function move(source:IDirectory, destination:IDirectory, nodes:Array = null):IAsyncOperation;
 
 
         /**
-         * Performs on Destination ITreeProvider. Copy Nodes and their associated data
+         * Performs on DESTINATION ITreeProvider. Copy Nodes and their associated data
          * to a particular Dir
-         * @nodes List of INode
+         * @param source Source nodes subtree root.
+         * @param destination Target directory root.
+         * @param nodes List of INode. If param omitted then all source dir content should
+         * be copied to destination dir.
          */
-        function copy(nodes:Array, toDir:IDirectory):IAsyncOperation;
+        function copy(source:IDirectory, destination:IDirectory, nodes:Array = null):IAsyncOperation;
 
 
         /**

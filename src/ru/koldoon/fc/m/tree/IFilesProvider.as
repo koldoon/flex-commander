@@ -11,7 +11,7 @@ package ru.koldoon.fc.m.tree {
 
         /**
          * For Source ITreeProvider.
-         * Get file system objects references (files and filters) to be able to perform standard operations
+         * Get file system objects references (files and directories) to be able to perform standard operations
          * if operations of copy/move/remove are performed between different ITreeProviders.
          *
          * @param nodes List of INode
@@ -21,9 +21,9 @@ package ru.koldoon.fc.m.tree {
 
 
         /**
-         * Put Files in particular directory in a tree provided.
+         * Put Files in particular directory in a tree provider.
          * Source files must not be modified during this operation.
-         * To move, delete or copy files use ITreeEditor interface within FileSystemTreeProvider.
+         * To move, delete or copy nodes use ITreeEditor interface within TreeProvider.
          */
         function putFiles(files:FileSystemReference, toDir:IDirectory):IAsyncOperation;
 

@@ -93,7 +93,7 @@
         <s:Label
             id="pathLabel"
             left="20" right="20" verticalCenter="2" styleName="h5 center white"
-            text="{getPathString(directory)}" maxDisplayedLines="1" showTruncationTip="true"/>
+            text="{TreeUtils.getPathString(directory)}" maxDisplayedLines="1" showTruncationTip="true"/>
     </s:Group>
 
 
@@ -110,7 +110,7 @@
         import ru.koldoon.fc.m.tree.IDirectory;
         import ru.koldoon.fc.m.tree.INode;
         import ru.koldoon.fc.m.tree.impl.AbstractNode;
-        import ru.koldoon.fc.utils.notEmpty;
+        import ru.koldoon.fc.m.tree.impl.TreeUtils;
 
         import spark.collections.Sort;
 
@@ -186,7 +186,6 @@
 
             sortHeader = header.sort == SortDirection.NONE ? null : header;
             nodes.refresh();
-            nodesList.validateNow(); // to prevent ugly list blinking
         }
 
 
@@ -250,22 +249,14 @@
          */
         public function set directory(val:IDirectory):void {
             directory_ = val;
-            nodes.list = directory.nodes;
-            nodes.refresh();
+            refresh();
             dispatchEvent(new Event("directoryChange"));
         }
 
 
-        private function getPathString(directory:IDirectory):String {
-            var path:Array = directory.getPath();
-            var fsPath:Array = [];
-
-            for each (var n:INode in path) {
-                if (notEmpty(n.label)) {
-                    fsPath.push(n.label);
-                }
-            }
-            return "/" + fsPath.join("/");
+        public function refresh():void {
+            nodes.source = directory.nodes;
+            nodes.refresh();
         }
 
 

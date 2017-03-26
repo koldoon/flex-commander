@@ -22,7 +22,7 @@
 /*  ----------------------------------------------------------  */
 
 mx|TextInput, mx|TextArea, mx|Label, mx|Text, s|Label, s|TextArea, s|TextInput {
-    textAlign:     center;
+    textAlign:     left;
     verticalAlign: middle;
     focusAlpha:    0;
 }

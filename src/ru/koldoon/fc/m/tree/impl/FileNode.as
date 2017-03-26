@@ -23,14 +23,13 @@ package ru.koldoon.fc.m.tree.impl {
                 var t:Object = FILE_TYPE_RXP.exec(label || value);
                 if (t) {
                     _type = t[2];
-                    _label = t[1];
                 }
             }
         }
 
 
         public var attributes:String;
-        public var size:Number;
+        public var size:int;
         public var modified:Date;
         public var executable:Boolean;
         public var link:Boolean;

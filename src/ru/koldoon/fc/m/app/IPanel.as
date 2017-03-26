@@ -22,6 +22,12 @@ package ru.koldoon.fc.m.app {
 
 
         /**
+         * Read current directory nodes again
+         */
+        function refresh():void;
+
+
+        /**
          * Manage Panel selection
          */
         function get selection():INodesSelection;
