@@ -1,4 +1,6 @@
 package ru.koldoon.fc.m.async {
+    import ru.koldoon.fc.m.async.status.IProcessStatus;
+
     /**
      * Async resource getting operation promise
      */
@@ -7,7 +9,7 @@ package ru.koldoon.fc.m.async {
         /**
          * Operation Status
          */
-        function get status():IProcessStatus;
+        function getStatus():IProcessStatus;
 
 
         /**

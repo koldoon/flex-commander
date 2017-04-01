@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<s:ItemRenderer
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    autoDrawBackground="false">
+
+    <s:Button
+        id="button" click="message.response(option)"
+        left="0" right="0" top="0" bottom="0"/>
+
+    <fx:Script><![CDATA[
+        import ru.koldoon.fc.m.async.impl.InteractionOption;
+        import ru.koldoon.fc.m.async.interactive.IInteractionMessage;
+
+        public var message:IInteractionMessage;
+
+        public var option:InteractionOption;
+
+
+        override public function set data(value:Object):void {
+            super.data = value;
+
+            option = data as InteractionOption;
+            if (option) {
+                button.label = option.label;
+                if (itemIndex == 0) {
+                    button.styleName = "default";
+                }
+            }
+        }
+        ]]></fx:Script>
+</s:ItemRenderer>

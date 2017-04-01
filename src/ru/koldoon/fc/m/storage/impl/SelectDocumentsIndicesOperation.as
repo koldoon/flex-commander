@@ -4,8 +4,6 @@ package ru.koldoon.fc.m.storage.impl {
 
     import mx.collections.ArrayCollection;
 
-    import ru.koldoon.fc.m.async.impl.AbstractProgressiveAsyncOperation;
-
     public class SelectDocumentsIndicesOperation extends AbstractProgressiveAsyncOperation {
         public function SelectDocumentsIndicesOperation(index:DocumentsIndex) {
             super();
@@ -74,7 +72,7 @@ package ru.koldoon.fc.m.storage.impl {
                 }
 
                 items_.refresh();
-                progress_.setPercent(processingItemIndex / totalCount * 100);
+                _progress.setPercent(processingItemIndex / totalCount * 100);
 
                 if (processingItemIndex >= totalCount - 1) {
                     TICKER.removeEventListener(Event.ENTER_FRAME, checkNextIndices);

@@ -10,9 +10,10 @@ package ru.koldoon.fc.m.app.impl.commands {
         public function OpenMacApplicationCommand() {
             super();
             bindingProperties_ = [
-                new BindingProperties("Cmd-O"),
-                new BindingProperties("Enter", APP_RXP)
+                new BindingProperties("Cmd-O")
             ];
+
+            // new BindingProperties("Enter", APP_RXP)
         }
 
 
@@ -33,7 +34,7 @@ package ru.koldoon.fc.m.app.impl.commands {
                     var ref:FileSystemReference = ac.items[0];
                     new CommandLineOperation()
                         .command("bin/open.sh")
-                        .commandArguments(ref.path)
+                        .commandArguments([ref.path])
                         .execute();
                 });
         }

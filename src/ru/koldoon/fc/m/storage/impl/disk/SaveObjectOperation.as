@@ -6,20 +6,29 @@ package ru.koldoon.fc.m.storage.impl.disk {
     import flash.filesystem.FileMode;
     import flash.filesystem.FileStream;
 
-    import ru.koldoon.fc.m.async.impl.AbstractProgressiveAsyncOperation;
+    import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
+    import ru.koldoon.fc.m.async.impl.Progress;
+    import ru.koldoon.fc.m.async.progress.IProgress;
+    import ru.koldoon.fc.m.async.progress.IProgressReporter;
 
-    public class SaveObjectOperation extends AbstractProgressiveAsyncOperation {
+    public class SaveObjectOperation extends AbstractAsyncOperation implements IProgressReporter {
         public function SaveObjectOperation(location:File) {
             this.location = location;
         }
 
 
+        private var progress:Progress = new Progress();
         private var value:*;
         private var fileName:String;
         private var f:File;
         private var fs:FileStream;
         private var location:File;
         private var format:String = SerializationFormat.AMF;
+
+
+        public function getProgress():IProgress {
+            return progress;
+        }
 
 
         public function object(name:String, value:*):SaveObjectOperation {
@@ -61,7 +70,7 @@ package ru.koldoon.fc.m.storage.impl.disk {
 
 
         private function fs_onProgress(event:ProgressEvent):void {
-            progress_.setPercent(event.bytesLoaded / event.bytesTotal * 100);
+            progress.setPercent(event.bytesLoaded / event.bytesTotal * 100, this);
         }
 
 

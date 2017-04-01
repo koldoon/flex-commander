@@ -5,11 +5,11 @@ package ru.koldoon.fc.c.panel.impl {
 
     import org.osflash.signals.Signal;
 
-    import ru.koldoon.fc.m.app.INodesSelection;
+    import ru.koldoon.fc.m.app.IPanelSelection;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
 
-    public class PanelSelection extends EventDispatcher implements INodesSelection {
+    public class PanelSelection extends EventDispatcher implements IPanelSelection {
         public function PanelSelection() {
             selectedNodesIndex = new Dictionary(true);
             change_ = new Signal();

@@ -18,6 +18,8 @@ package ru.koldoon.fc.m.os {
         private var npsi:NativeProcessStartupInfo;
         private var proc:NativeProcess;
         private var _shutDownOnStdErr:Boolean = false;
+        private var _waitForReturnOnStdOut:Boolean = true;
+        private var _waitForReturnOnStdErr:Boolean = false;
 
 
         public function command(str:String):CommandLineOperation {
@@ -26,13 +28,13 @@ package ru.koldoon.fc.m.os {
         }
 
 
-        public function commandArguments(line:String, ...rest):CommandLineOperation {
-            // replace all of the parameters in args string
-            for (var i:int = 0; i < rest.length; i++) {
-                line = line.replace(new RegExp("\\{" + i + "\\}", "g"), rest[i]);
+        public function commandArguments(a:Array):CommandLineOperation {
+            // Array API a little bit more compact
+            var args:Vector.<String> = new Vector.<String>();
+            for (var i:int = 0; i < a.length; i++) {
+                args.push(a[i]);
             }
-
-            _commandArguments = new <String>[line];
+            _commandArguments = args;
             return this;
         }
 
@@ -40,12 +42,34 @@ package ru.koldoon.fc.m.os {
         override public function cancel():void {
             super.cancel();
             incompleteStdOut = null;
-            proc.exit(true);
+            if (proc) {
+                proc.exit(true);
+            }
         }
 
 
+        /**
+         * Do not report new line until CR is received
+         * @default false
+         */
         public function shutDownOnStdErr(val:Boolean):CommandLineOperation {
             _shutDownOnStdErr = val;
+            return this;
+        }
+
+
+        /**
+         * Do not report new line until CR is received
+         * @default true
+         */
+        public function waitForReturnOnStdOut(value:Boolean):CommandLineOperation {
+            _waitForReturnOnStdOut = value;
+            return this;
+        }
+
+
+        public function waitForReturnOnStdErr(value:Boolean):CommandLineOperation {
+            _waitForReturnOnStdErr = value;
             return this;
         }
 
@@ -88,7 +112,7 @@ package ru.koldoon.fc.m.os {
                 incompleteStdOut = null;
             }
 
-            if (lines.length > 0 && notEmpty(lines[lines.length - 1])) {
+            if (_waitForReturnOnStdErr && lines.length > 0 && notEmpty(lines[lines.length - 1])) {
                 incompleteStdOut = lines.pop();
             }
 
@@ -118,7 +142,7 @@ package ru.koldoon.fc.m.os {
                 incompleteStdOut = null;
             }
 
-            if (lines.length > 0 && notEmpty(lines[lines.length - 1])) {
+            if (_waitForReturnOnStdOut && lines.length > 0 && notEmpty(lines[lines.length - 1])) {
                 incompleteStdOut = lines.pop();
             }
 
@@ -147,7 +171,9 @@ package ru.koldoon.fc.m.os {
          * @param line
          */
         public function stdInput(line:String):void {
-            proc.standardInput.writeUTFBytes(line + "\n");
+            if (proc && proc.running) {
+                proc.standardInput.writeUTFBytes(line + "\n");
+            }
         }
 
 

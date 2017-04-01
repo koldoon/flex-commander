@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-/usr/bin/open "$*"
+/usr/bin/open "$@"

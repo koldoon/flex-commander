@@ -94,7 +94,7 @@
     </s:HGroup>
 
     <fx:Script><![CDATA[
-        import ru.koldoon.fc.m.app.INodesSelection;
+        import ru.koldoon.fc.m.app.IPanelSelection;
         import ru.koldoon.fc.m.tree.INode;
         import ru.koldoon.fc.m.tree.impl.AbstractNode;
         import ru.koldoon.fc.m.tree.impl.DirectoryNode;
@@ -103,7 +103,7 @@
         import ru.koldoon.fc.resources.styles.palette;
         import ru.koldoon.fc.utils.F;
 
-        public var selection:INodesSelection;
+        public var selection:IPanelSelection;
 
 
         private function onAdded():void {

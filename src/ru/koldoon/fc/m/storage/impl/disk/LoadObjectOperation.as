@@ -6,23 +6,35 @@ package ru.koldoon.fc.m.storage.impl.disk {
     import flash.filesystem.FileMode;
     import flash.filesystem.FileStream;
 
-    import ru.koldoon.fc.m.async.impl.AbstractProgressiveAsyncOperation;
+    import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
+    import ru.koldoon.fc.m.async.impl.Progress;
+    import ru.koldoon.fc.m.async.progress.IProgress;
+    import ru.koldoon.fc.m.async.progress.IProgressReporter;
 
-    public class LoadObjectOperation extends AbstractProgressiveAsyncOperation {
+    public class LoadObjectOperation extends AbstractAsyncOperation implements IProgressReporter {
         public function LoadObjectOperation(location:File) {
             this.location = location;
         }
 
+
+        private var progress:Progress = new Progress();
         private var location:File;
         private var f:File;
         private var fs:FileStream;
         private var fileName:String;
         private var format:String = SerializationFormat.AMF;
 
+
+        public function getProgress():IProgress {
+            return progress;
+        }
+
+
         /**
          * Value Loaded
          */
         public var value:*;
+
 
         /**
          * Set Object Name to load
@@ -34,10 +46,12 @@ package ru.koldoon.fc.m.storage.impl.disk {
             return this;
         }
 
+
         public function serializationFormat(f:String):LoadObjectOperation {
             format = f;
             return this;
         }
+
 
         override protected function begin():void {
             value = null;
@@ -56,14 +70,17 @@ package ru.koldoon.fc.m.storage.impl.disk {
             fs.openAsync(f, FileMode.READ);
         }
 
+
         private function fs_onProgress(event:ProgressEvent):void {
-            progress_.setPercent(event.bytesLoaded / event.bytesTotal * 100);
+            progress.setPercent(event.bytesLoaded / event.bytesTotal * 100, this);
         }
+
 
         private function fs_onIOError(event:IOErrorEvent):void {
             fs.close();
             fault();
         }
+
 
         private function fs_onComplete(event:Event):void {
             var err:Boolean = false;

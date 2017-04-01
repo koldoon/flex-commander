@@ -1,7 +1,7 @@
 package ru.koldoon.fc.m.async.impl {
     import org.osflash.signals.Signal;
 
-    import ru.koldoon.fc.m.async.IInteractionMessage;
+    import ru.koldoon.fc.m.async.interactive.IInteractionMessage;
 
     public class InteractionMessage implements IInteractionMessage {
         public function InteractionMessage(type:String) {
@@ -23,11 +23,13 @@ package ru.koldoon.fc.m.async.impl {
 
         }
 
+
         /**
          * @inheritDoc
          */
         public function response(option:* = null):void {
             _onResponse.dispatch(option);
+            _onResponse.removeAll();
         }
 
 

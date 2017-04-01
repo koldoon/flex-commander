@@ -95,7 +95,7 @@
         private function onDeactivate():void {
             proposedFocusObject = focusManager.getFocus();
             if (stage) {
-                stage.frameRate = 4;
+                stage.frameRate = 600;
             }
             mouseEnabled = mouseChildren = false;
         }

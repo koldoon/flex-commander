@@ -104,7 +104,7 @@
 
         import org.osflash.signals.Signal;
 
-        import ru.koldoon.fc.m.app.INodesSelection;
+        import ru.koldoon.fc.m.app.IPanelSelection;
         import ru.koldoon.fc.m.app.impl.BindingProperties;
         import ru.koldoon.fc.m.popups.IPopupManager;
         import ru.koldoon.fc.m.tree.IDirectory;
@@ -147,7 +147,7 @@
         /**
          * @inheritDoc
          */
-        public function get selection():INodesSelection {
+        public function get selection():IPanelSelection {
             return selection_;
         }
 

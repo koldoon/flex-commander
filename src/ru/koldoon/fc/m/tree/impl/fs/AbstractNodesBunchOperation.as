@@ -1,33 +1,28 @@
 package ru.koldoon.fc.m.tree.impl.fs {
-    import ru.koldoon.fc.m.async.impl.AbstractProgressiveAsyncOperation;
-    import ru.koldoon.fc.m.tree.INode;
+    import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
+    import ru.koldoon.fc.m.async.impl.Progress;
+    import ru.koldoon.fc.m.async.progress.IProgress;
+    import ru.koldoon.fc.m.tree.INodesBunchOperation;
 
-    public class AbstractNodesBunchOperation extends AbstractProgressiveAsyncOperation {
+    public class AbstractNodesBunchOperation extends AbstractAsyncOperation implements INodesBunchOperation {
 
-        /**
-         * Total nodes on queue to process
-         */
-        public var nodesTotal:int;
+        public function get nodes():Array {
+            return _nodes;
+        }
 
-        /**
-         * Nodes already processed count
-         */
-        public var nodesProcessed:int;
 
-        /**
-         * Total nodes' size in bytes. Directories are not included,
-         * we take them as zero-sized objects
-         */
-        public var bytesTotal:int;
+        public function get nodesProcessed():Number {
+            return _nodesProcessed;
+        }
 
-        /**
-         * Total bytes of nodes processed.
-         */
-        public var bytesProcessed:int;
 
-        /**
-         * Currently being processed node.
-         */
-        public var currentNode:INode;
+        public function getProgress():IProgress {
+            return progress;
+        }
+
+
+        protected var _nodes:Array;
+        protected var _nodesProcessed:Number;
+        protected var progress:Progress = new Progress();
     }
 }

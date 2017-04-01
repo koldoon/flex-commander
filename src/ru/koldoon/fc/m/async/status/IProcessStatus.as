@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.async {
+package ru.koldoon.fc.m.async.status {
 
     /**
      * Operation status switcher and notifier
@@ -54,46 +54,6 @@ package ru.koldoon.fc.m.async {
          */
         function get isFault():Boolean;
 
-
-//        /**
-//         * State machine methods.
-//         * Use the following methods to track some process execution statuses
-//         */
-//
-//        /**
-//         * Set status to Processing and dispatch all appropriate signals
-//         * @param updating Set <code>updating</code> flag. Default is false.
-//         * @param data Any related data to pass to signal listener
-//         */
-//        function setProcessing(updating:Boolean = false, data:* = null):void;
-//
-//
-//        /**
-//         * Set status to Complete.
-//         * @param data Any related data to pass to signal listener
-//         */
-//        function setComplete(data:* = null):void;
-//
-//
-//        /**
-//         * Set status to Pending.
-//         */
-//        function setPending():void;
-//
-//
-//        /**
-//         * Set status to Fault.
-//         * @param data Any related data to pass to signal listener
-//         */
-//        function setFault(data:* = null):void;
-//
-//
-//        /**
-//         * Set status to Canceled.
-//         * @param data Any related data to pass to signal listener
-//         */
-//        function setCanceled(data:* = null):void;
-//
 
         /**
          * Status Change signals.

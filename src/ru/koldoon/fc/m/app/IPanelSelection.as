@@ -6,7 +6,7 @@ package ru.koldoon.fc.m.app {
     /**
      * Manages Panel Selected Nodes
      */
-    public interface INodesSelection {
+    public interface IPanelSelection {
 
         /**
          * Check if particular node is selected

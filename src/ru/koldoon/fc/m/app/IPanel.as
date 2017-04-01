@@ -30,7 +30,7 @@ package ru.koldoon.fc.m.app {
         /**
          * Manage Panel selection
          */
-        function get selection():INodesSelection;
+        function get selection():IPanelSelection;
 
 
         /**

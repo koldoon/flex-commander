@@ -1,12 +1,23 @@
 package ru.koldoon.fc.m.async.impl {
-    import org.osflash.signals.Signal;
+    import mx.logging.ILogger;
+    import mx.logging.Log;
 
-    import ru.koldoon.fc.m.async.IProcessStatus;
+    import org.osflash.signals.Signal;
+    import org.spicefactory.lib.reflect.ClassInfo;
+
+    import ru.koldoon.fc.m.async.status.IProcessStatus;
 
     /**
-     * Common implementation of IProcessStatus
+     * Common implementation of IProcessStatus state machine
      */
     public class ProcessStatus implements IProcessStatus {
+        protected static var LOG:ILogger;
+
+
+        public function ProcessStatus() {
+            LOG = Log.getLogger("fc." + ClassInfo.forInstance(this).simpleName);
+        }
+
 
         /**
          * @inheritDoc
@@ -65,7 +76,7 @@ package ru.koldoon.fc.m.async.impl {
 
 
         /**
-         * @inheritDoc
+         * Set status to Pending.
          */
         public function setPending():void {
             updating = status != INIT;
@@ -74,7 +85,9 @@ package ru.koldoon.fc.m.async.impl {
 
 
         /**
-         * @inheritDoc
+         * Set status to Processing and dispatch all appropriate signals
+         * @param updating Set <code>updating</code> flag. Default is false.
+         * @param data Any related data to pass to signal listener
          */
         public function setProcessing(updating:Boolean = false, data:* = null):void {
             this.updating = updating;
@@ -86,7 +99,8 @@ package ru.koldoon.fc.m.async.impl {
 
 
         /**
-         * @inheritDoc
+         * Set status to Complete.
+         * @param data Any related data to pass to signal listener
          */
         public function setComplete(data:* = null):void {
             updating = false;
@@ -101,7 +115,8 @@ package ru.koldoon.fc.m.async.impl {
 
 
         /**
-         * @inheritDoc
+         * Set status to Fault.
+         * @param data Any related data to pass to signal listener
          */
         public function setFault(data:* = null):void {
             status = FAULT;
@@ -116,7 +131,8 @@ package ru.koldoon.fc.m.async.impl {
 
 
         /**
-         * @inheritDoc
+         * Set status to Canceled.
+         * @param data Any related data to pass to signal listener
          */
         public function setCanceled(data:* = null):void {
             status = CANCEL;

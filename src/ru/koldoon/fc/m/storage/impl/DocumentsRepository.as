@@ -35,9 +35,10 @@ package ru.koldoon.fc.m.storage.impl {
             docsIndex = new DocumentsIndex();
 
             pushDiskOperation(function ():IAsyncOperation {
-                return new LoadObjectOperation(location)
-                    .name("__COLLECTION_INDEX")
-                    .onComplete(initCollectionDescriptor)
+                var op:IAsyncOperation = new LoadObjectOperation(location).name("__COLLECTION_INDEX");
+                op.getStatus().onComplete(initCollectionDescriptor);
+                return op;
+
             }, true);
         }
 
@@ -55,12 +56,12 @@ package ru.koldoon.fc.m.storage.impl {
                     val.applyResult(documentsCache[name]);
                 }
                 else {
-                    return new LoadObjectOperation(location)
-                        .name(name)
-                        .onComplete(function (op:LoadObjectOperation):void {
-                            documentsCache[name] = op.value;
-                            val.applyResult(op.value);
-                        });
+                    var op:IAsyncOperation = new LoadObjectOperation(location).name(name);
+                    op.getStatus().onComplete(function (op:LoadObjectOperation):void {
+                        documentsCache[name] = op.value;
+                        val.applyResult(op.value);
+                    });
+                    return op;
                 }
                 return null;
             });
@@ -75,7 +76,7 @@ package ru.koldoon.fc.m.storage.impl {
                 return new SaveObjectOperation(location)
                     .object(name, value)
                     .onStart(function (op:SaveObjectOperation):void {
-                        if (!op.status.isUpdating) {
+                        if (!op.getStatus().isUpdating) {
                             docsIndex.files.unshift(name);
                         }
                     })
@@ -245,11 +246,12 @@ package ru.koldoon.fc.m.storage.impl {
             // executor might not return any IAsyncOperation value if it is synchronous
             if (currentAsyncOperation) {
                 currentAsyncOperation
+                    .execute()
+                    .getStatus()
                     .onComplete(function (op:IAsyncOperation):void {
                         currentAsyncOperation = null;
                         TICKER.addEventListener(Event.ENTER_FRAME, processNextDiskOperationsQueue);
-                    })
-                    .execute();
+                    });
             }
             else {
                 TICKER.addEventListener(Event.ENTER_FRAME, processNextDiskOperationsQueue);

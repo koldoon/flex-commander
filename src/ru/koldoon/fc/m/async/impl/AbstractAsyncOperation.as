@@ -9,7 +9,7 @@ package ru.koldoon.fc.m.async.impl {
     import org.spicefactory.lib.reflect.ClassInfo;
 
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.IProcessStatus;
+    import ru.koldoon.fc.m.async.status.IProcessStatus;
 
     public class AbstractAsyncOperation implements IAsyncOperation {
         protected static var LOG:ILogger;
@@ -17,12 +17,11 @@ package ru.koldoon.fc.m.async.impl {
 
         public function AbstractAsyncOperation() {
             LOG = Log.getLogger("fc." + ClassInfo.forInstance(this).simpleName);
-            _status = new ProcessStatus();
         }
 
 
-        public function get status():IProcessStatus {
-            return _status;
+        public function getStatus():IProcessStatus {
+            return status;
         }
 
 
@@ -37,8 +36,10 @@ package ru.koldoon.fc.m.async.impl {
             ticker.addEventListener(Event.ENTER_FRAME, function call_execute(e:Event):void {
                 ticker.removeEventListener(Event.ENTER_FRAME, call_execute);
 
-                _status.setProcessing(!status.isInited, this);
-                begin();
+                if (!status.isCanceled) {
+                    status.setProcessing(!status.isInited, this);
+                    begin();
+                }
             });
             return this;
         }
@@ -50,7 +51,7 @@ package ru.koldoon.fc.m.async.impl {
 
 
         public function cancel():void {
-            _status.setCanceled(this);
+            status.setCanceled(this);
         }
 
 
@@ -59,7 +60,7 @@ package ru.koldoon.fc.m.async.impl {
         // -----------------------------------------------------------------------------------
 
         protected static var ticker:Shape = new Shape();
-        protected var _status:ProcessStatus;
+        protected var status:ProcessStatus = new ProcessStatus();
 
 
         /**
@@ -75,12 +76,12 @@ package ru.koldoon.fc.m.async.impl {
 
 
         protected function done():void {
-            _status.setComplete(this);
+            status.setComplete(this);
         }
 
 
         protected function fault():void {
-            _status.setFault(this);
+            status.setFault(this);
         }
 
     }

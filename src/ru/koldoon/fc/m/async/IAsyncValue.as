@@ -4,7 +4,7 @@ package ru.koldoon.fc.m.async {
      */
     public interface IAsyncValue extends IPromise {
 
-        function get value():*;
+        function getValue():*;
 
     }
 }

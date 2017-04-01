@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<s:TitleWindow
+<s:Panel
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
     title="Copy {nodeName || nodesCount}{nodesCount > 1 ? ' items' : ''}" minWidth="1000">
@@ -10,6 +10,8 @@
         <fx:String id="targetDir"/>
         <fx:String id="srcDir"/>
         <fx:Boolean id="followSymlinks"/>
+        <fx:Boolean id="preserveAttributes"/>
+        <fx:Boolean id="skipExtAttrs"/>
         <fx:Boolean id="overwriteAll"/>
     </fx:Declarations>
 
@@ -36,16 +38,16 @@
     <s:Group>
         <s:layout>
             <s:TileLayout
-                requestedColumnCount="3" horizontalGap="40" verticalGap="20"
-                paddingTop="20"  horizontalAlign="left"/>
+                requestedColumnCount="2" horizontalGap="40" verticalGap="20"
+                paddingTop="20" horizontalAlign="left" orientation="rows"/>
         </s:layout>
 
         <s:CheckBox
             id="preserveAttributesCheckBox"
-            label="Preserve Attributes" selected="true"/>
+            label="Preserve Attributes" selected="@{preserveAttributes}"/>
 
         <s:CheckBox
-            label="Don't Copy Extended Attrs" selected="@{overwriteAll}"/>
+            label="Don't Copy Extended Attrs" selected="@{skipExtAttrs}"/>
 
         <s:CheckBox
             id="followSymlinksCheckBox"
@@ -65,4 +67,4 @@
         <s:Button id="helpButton" label="?" toolTip="Help"/>
     </s:controlBarContent>
 
-</s:TitleWindow>
+</s:Panel>

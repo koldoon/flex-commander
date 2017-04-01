@@ -1,7 +1,7 @@
 package ru.koldoon.fc.m.tree.impl {
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
-    import ru.koldoon.fc.utils.F;
+    import ru.koldoon.fc.m.tree.impl.fs.FileNodeUtil;
 
     /**
      * Common implementation of Node representing File in different
@@ -29,7 +29,7 @@ package ru.koldoon.fc.m.tree.impl {
 
 
         public var attributes:String;
-        public var size:int;
+        public var size:Number;
         public var modified:Date;
         public var executable:Boolean;
         public var link:Boolean;
@@ -41,21 +41,7 @@ package ru.koldoon.fc.m.tree.impl {
 
 
         public function getFormattedSize():String {
-            if (size > 1024 * 1024 * 1024 * 1024) {
-                return F.getInstance().number1.format(size / 1024 / 1024 / 1024 / 1024) + "T";
-            }
-            else if (size > 1024 * 1024 * 1024) {
-                return F.getInstance().number1.format(size / 1024 / 1024 / 1024) + "G";
-            }
-            else if (size > 1024 * 1024) {
-                return F.getInstance().number1.format(size / 1024 / 1024) + "M";
-            }
-            else if (size > 1024) {
-                return F.getInstance().number1.format(size / 1024) + "K";
-            }
-            else {
-                return F.getInstance().number1.format(size);
-            }
+            return FileNodeUtil.getFormattedSize(size);
         }
     }
 }

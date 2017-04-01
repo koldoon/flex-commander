@@ -1,4 +1,6 @@
 package ru.koldoon.fc.m.tree.impl {
+    import flash.utils.Dictionary;
+
     import ru.koldoon.fc.m.async.IAsyncCollection;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
@@ -18,7 +20,7 @@ package ru.koldoon.fc.m.tree.impl {
          * @inheritDoc
          */
         public function get nodes():Array {
-            return nodes_;
+            return _nodes;
         }
 
 
@@ -28,9 +30,17 @@ package ru.koldoon.fc.m.tree.impl {
         public function getListing():IAsyncCollection {
             var tp:ITreeProvider = getTreeProvider();
             if (tp) {
+                if (!listings) {
+                    listings = new Dictionary();
+                }
                 var op:IAsyncCollection = tp.getListingFor(this);
+                listings[op] = true;
                 op.onReady(function (op:IAsyncCollection):void {
-                    nodes_ = op.items;
+                    _nodes = op.items;
+                    delete listings[op];
+                });
+                op.onReject(function (op:IAsyncCollection):void {
+                    delete listings[op];
                 });
                 return op;
             }
@@ -40,6 +50,7 @@ package ru.koldoon.fc.m.tree.impl {
         }
 
 
-        private var nodes_:Array = [];
+        private var _nodes:Array = [];
+        private var listings:Dictionary;
     }
 }

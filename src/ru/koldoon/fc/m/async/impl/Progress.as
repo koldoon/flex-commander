@@ -1,7 +1,7 @@
 package ru.koldoon.fc.m.async.impl {
     import org.osflash.signals.Signal;
 
-    import ru.koldoon.fc.m.async.IProgress;
+    import ru.koldoon.fc.m.async.progress.IProgress;
 
     /**
      * Basic implementation of IProgress
@@ -19,34 +19,34 @@ package ru.koldoon.fc.m.async.impl {
 
 
         public function onProgress(handler:Function):IProgress {
-            if (!_onProgress) {
-                _onProgress = new Signal();
+            if (!updated) {
+                updated = new Signal();
             }
-            _onProgress.add(handler);
+            updated.add(handler);
             return this;
         }
 
 
         public function removeEventHandler(handler:Function):void {
-            if (_onProgress) {
-                _onProgress.remove(handler);
+            if (updated) {
+                updated.remove(handler);
             }
         }
 
 
-        public function setPercent(p:Number):Progress {
+        public function setPercent(p:Number, operation:*):Progress {
             _percent = p;
-            if (_onProgress) {
-                _onProgress.dispatch();
+            if (updated) {
+                updated.dispatch(operation);
             }
             return this;
         }
 
 
-        public function setMessage(m:String):Progress {
+        public function setMessage(m:String, operation:*):Progress {
             _message = m;
-            if (_onProgress) {
-                _onProgress.dispatch();
+            if (updated) {
+                updated.dispatch(operation);
             }
             return this;
         }
@@ -54,6 +54,6 @@ package ru.koldoon.fc.m.async.impl {
 
         private var _percent:Number;
         private var _message:String;
-        private var _onProgress:Signal;
+        private var updated:Signal;
     }
 }

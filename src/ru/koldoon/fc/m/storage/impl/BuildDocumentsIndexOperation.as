@@ -4,23 +4,30 @@ package ru.koldoon.fc.m.storage.impl {
     import flash.events.FileListEvent;
     import flash.filesystem.File;
 
-    import ru.koldoon.fc.m.async.impl.AbstractProgressiveAsyncOperation;
+    import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
     import ru.koldoon.fc.m.async.impl.Progress;
+    import ru.koldoon.fc.m.async.progress.IProgress;
+    import ru.koldoon.fc.m.async.progress.IProgressReporter;
 
-    public class BuildDocumentsIndexOperation extends AbstractProgressiveAsyncOperation {
+    public class BuildDocumentsIndexOperation extends AbstractAsyncOperation implements IProgressReporter {
         public function BuildDocumentsIndexOperation(location:File) {
             super();
             this.location = location;
-            progress_ = new Progress();
         }
 
 
+        private var progress:Progress = new Progress()
         private var docsIndex:DocumentsIndex;
         private var location:File;
         private var files:Array;
         private var filesCount:Number;
         private var processingItemIndex:Number;
         private var TICKER:Shape = new Shape();
+
+
+        public function getProgress():IProgress {
+            return progress;
+        }
 
 
         /**
@@ -72,7 +79,7 @@ package ru.koldoon.fc.m.storage.impl {
                 processingItemIndex += 1;
             }
 
-            progress_.setPercent(processingItemIndex / filesCount * 100);
+            progress.setPercent(processingItemIndex / filesCount * 100, this);
 
             if (processingItemIndex >= filesCount - 1) {
                 files = null;

@@ -2,14 +2,12 @@
 <s:Panel
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
-    title="Copying {nodesTotal} {nodesTotal > 1 ? 'items' : 'item'}" width="1400">
+    title="Copying {itemsTotal} {itemsTotal > 1 ? 'items' : 'item'}" width="700">
 
     <fx:Declarations>
-        <fx:int id="nodesTotal"/>
-        <fx:int id="nodesProcessed"/>
-        <fx:String id="currentNode"/>
-        <fx:String id="targetDir"/>
-        <fx:String id="srcDir"/>
+        <fx:Number id="itemsTotal"/>
+        <fx:Number id="bytesTotal"/>
+        <fx:Number id="percentDone"/>
     </fx:Declarations>
 
     <s:layout>
@@ -18,29 +16,27 @@
             gap="20" horizontalAlign="justify"/>
     </s:layout>
 
+    <s:Label
+        text="Preparing To Copy..."
+        styleName="white" maxDisplayedLines="1"/>
+
     <s:Form styleName="simple">
 
-        <s:FormItem label="Item:" width="100%">
+        <s:FormItem label="Items Found:">
             <s:Label
-                text="{currentNode}"
+                text="{itemsTotal}"
                 styleName="blue0" maxDisplayedLines="1" width="100%"/>
         </s:FormItem>
 
-        <s:FormItem label="From:">
+        <s:FormItem label="Size Total:">
             <s:Label
-                text="{srcDir}"
+                text="{FileNodeUtil.getFormattedSize(bytesTotal)}"
                 styleName="blue0" maxDisplayedLines="1" width="100%"/>
         </s:FormItem>
 
-        <s:FormItem label="To:">
+        <s:FormItem label="Done:">
             <s:Label
-                text="{targetDir}"
-                styleName="blue0" maxDisplayedLines="1" width="100%"/>
-        </s:FormItem>
-
-        <s:FormItem label="Progress:">
-            <s:Label
-                text="{nodesProcessed} / {nodesTotal}  {Number(nodesProcessed / nodesTotal * 100).toFixed(2)}%"
+                text="{percentDone.toFixed(2)}%"
                 styleName="blue0"/>
         </s:FormItem>
 
@@ -52,4 +48,7 @@
         <s:Button id="cancelButton" label="Cancel"/>
     </s:controlBarContent>
 
+    <fx:Script><![CDATA[
+        import ru.koldoon.fc.m.tree.impl.fs.FileNodeUtil;
+        ]]></fx:Script>
 </s:Panel>

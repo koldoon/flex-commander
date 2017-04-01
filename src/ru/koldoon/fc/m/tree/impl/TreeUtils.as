@@ -5,6 +5,10 @@ package ru.koldoon.fc.m.tree.impl {
     public class TreeUtils {
 
         public static function getPathString(node:INode):String {
+            if (!node) {
+                return "";
+            }
+
             var path:Array = node.getPath();
             var fsPath:Array = [];
 

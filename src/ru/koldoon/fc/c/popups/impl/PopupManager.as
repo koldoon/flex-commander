@@ -6,6 +6,7 @@ package ru.koldoon.fc.c.popups.impl {
     import flash.events.MouseEvent;
     import flash.utils.Dictionary;
 
+    import mx.core.IVisualElement;
     import mx.core.UIComponent;
     import mx.events.CloseEvent;
     import mx.graphics.SolidColor;
@@ -21,13 +22,24 @@ package ru.koldoon.fc.c.popups.impl {
     public class PopupManager extends Group implements IPopupManager {
         public function PopupManager() {
             calloutArranger = new CalloutArranger(this);
+            addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+        }
 
-            fogVisualElement = new Rect();
-            fogVisualElement.fill = new SolidColor(0, 0.2);
+
+        override protected function createChildren():void {
+            super.createChildren();
+
+            fogVisualElement = new Group();
             fogVisualElement.left = fogVisualElement.right = 0;
             fogVisualElement.top = fogVisualElement.bottom = 0;
+            fogVisualElement.addEventListener(MouseEvent.MOUSE_DOWN, onFogMouseDown);
 
-            addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            var fogFill:Rect = new Rect();
+            fogFill.left = fogFill.right = 0;
+            fogFill.top = fogFill.bottom = 0;
+            fogFill.fill = new SolidColor(0, 0.25);
+
+            fogVisualElement.addElement(fogFill);
         }
 
 
@@ -68,12 +80,18 @@ package ru.koldoon.fc.c.popups.impl {
         private var displayQueue:Vector.<IPopupDescriptor> = new Vector.<IPopupDescriptor>();
         private var popupsVisible:Vector.<IPopupDescriptor> = new Vector.<IPopupDescriptor>();
         private var popupFromQueueVisible:PopupDescriptor;
-        private var fogVisualElement:Rect;
+        private var fogVisualElement:Group;
         private var calloutArranger:CalloutArranger;
         private var popupsClicked:Dictionary = new Dictionary(true);
         private var modalPopupsVisible:int = 0;
         private var lockedChildren:Dictionary = new Dictionary(true);
         private var lastFocusedObject:InteractiveObject;
+
+
+        private function onFogMouseDown(event:MouseEvent):void {
+            event.stopPropagation();
+            onStageMouseDown(event);
+        }
 
 
         private function onAddedToStage(event:Event):void {
@@ -95,9 +113,14 @@ package ru.koldoon.fc.c.popups.impl {
             }
 
             var pd:PopupDescriptor = PopupDescriptor(displayQueue[0]);
-
             if (pd.inQueue_ && popupFromQueueVisible) {
                 return;
+            }
+
+            displayQueue.shift();
+            popupsVisible.push(pd);
+            if (pd.inQueue_) {
+                popupFromQueueVisible = pd;
             }
 
             // put popup at right z-index
@@ -106,8 +129,20 @@ package ru.koldoon.fc.c.popups.impl {
                 if (!containsElement(fogVisualElement)) {
                     addElement(fogVisualElement);
                 }
-                // after fog
-                addElementAt(pd.instance_, getElementIndex(fogVisualElement) + 1);
+
+                if (numElements > 0 && getElementIndex(fogVisualElement) != numElements - 1) {
+                    // move fog to top
+                    setElementIndex(fogVisualElement, numElements - 1);
+                }
+
+                // hide other modal popups
+                for each (var vpd:PopupDescriptor in popupsVisible) {
+                    if (vpd.modal_ && vpd != pd) {
+                        vpd.instance_.visible = false;
+                    }
+                }
+
+                addElement(pd.instance_);
             }
             else {
                 if (!containsElement(fogVisualElement)) {
@@ -128,6 +163,11 @@ package ru.koldoon.fc.c.popups.impl {
             });
 
             function performPopupLayoutAfterValidate():void {
+                if (popupsVisible.indexOf(pd) == -1) {
+                    // Popup was removed before shown
+                    return;
+                }
+
                 // perform layout
                 alignPopup(pd);
                 alignCallout(pd);
@@ -143,12 +183,6 @@ package ru.koldoon.fc.c.popups.impl {
                 if (pd.hideByClickOutside_) {
                     pd.instance_.addEventListener(MouseEvent.MOUSE_DOWN, onPopupMouseDown, false, 0, true);
                 }
-
-                popupsVisible.push(pd);
-                if (pd.inQueue_) {
-                    popupFromQueueVisible = pd;
-                }
-                displayQueue.shift();
 
                 pd.instance_.visible = true;
                 lockEnvironmentAndShowContent();
@@ -167,7 +201,7 @@ package ru.koldoon.fc.c.popups.impl {
                 return;
             }
 
-            lastFocusedObject = stage.focus;
+            lastFocusedObject = stage.focus || lastFocusedObject;
             var numChildren:int = parent.numChildren;
             for (var i:int = 0; i < numChildren; i++) {
                 var child:UIComponent = parent.getChildAt(i) as UIComponent;
@@ -186,9 +220,12 @@ package ru.koldoon.fc.c.popups.impl {
 
 
         private function releaseEnvironmentAndHideContent():void {
-            focusEnabled = mouseEnabled = visible = false;
             if (modalPopupsVisible) {
                 return;
+            }
+
+            if (popupsVisible.length == 0) {
+                focusEnabled = mouseEnabled = visible = false;
             }
 
             for (var child:* in lockedChildren) {
@@ -256,12 +293,27 @@ package ru.koldoon.fc.c.popups.impl {
 
             if (pd.modal_) {
                 modalPopupsVisible -= 1;
+
                 var nextPopup:PopupDescriptor;
                 if (displayQueue.length > 0) {
                     nextPopup = PopupDescriptor(displayQueue[0]);
                 }
-                if (containsElement(fogVisualElement) && !modalPopupsVisible && (!nextPopup || !nextPopup.modal_)) {
-                    removeElement(fogVisualElement);
+
+                if (containsElement(fogVisualElement)) {
+                    if (!modalPopupsVisible && (!nextPopup || !nextPopup.modal_)) {
+                        removeElement(fogVisualElement);
+                    }
+                    else if (numElements > 1 && getElementIndex(fogVisualElement) != numElements - 2) {
+                        setElementIndex(fogVisualElement, numElements - 2);
+                    }
+                }
+            }
+
+            if (numElements > 0) {
+                var activeElement:IVisualElement = getElementAt(numElements - 1);
+                activeElement.visible = true;
+                if (activeElement is UIComponent) {
+                    UIComponent(activeElement).setFocus();
                 }
             }
 
@@ -271,7 +323,10 @@ package ru.koldoon.fc.c.popups.impl {
                 pd.instance_.removeEventListener(MouseEvent.MOUSE_DOWN, onPopupMouseDown);
             }
 
-            removeElement(pd.instance_);
+            if (containsElement(pd.instance_)) {
+                removeElement(pd.instance_);
+            }
+
             pd.instance_.removeEventListener(CloseEvent.CLOSE, onPopupSelfClose);
             pd.onPopupClose_.dispatch(pd.instance_);
             addEventListener(Event.ENTER_FRAME, processQueue);

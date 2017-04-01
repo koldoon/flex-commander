@@ -5,7 +5,6 @@ package ru.koldoon.fc.m.storage.impl {
 
     import mx.collections.ArrayCollection;
 
-    import ru.koldoon.fc.m.async.impl.AbstractProgressiveAsyncOperation;
     import ru.koldoon.fc.m.storage.impl.disk.LoadObjectOperation;
 
     public class SelectDocumentsOperation extends AbstractProgressiveAsyncOperation {
@@ -91,7 +90,7 @@ package ru.koldoon.fc.m.storage.impl {
 
 
                     processingItemIndex += 1;
-                    progress_.setPercent(processingItemIndex / totalCount * 100);
+                    _progress.setPercent(processingItemIndex / totalCount * 100);
                 }
             }
         }

@@ -10,18 +10,18 @@ package ru.koldoon.fc.m.tree {
          * effective way to move objects in different structures.
          * @nodes List of INode
          */
-        function move(source:IDirectory, destination:IDirectory, nodes:Array = null):IAsyncOperation;
+        function move(source:IDirectory, destination:IDirectory, selector:ITreeSelector):IAsyncOperation;
 
 
         /**
          * Performs on DESTINATION ITreeProvider. Copy Nodes and their associated data
-         * to a particular Dir
-         * @param source Source nodes subtree root.
-         * @param destination Target directory root.
-         * @param nodes List of INode. If param omitted then all source dir content should
-         * be copied to destination dir.
+         * to a particular Dir. Source and Destination Roots are needed to calculate relative
+         * path for nodes and their target position
+         * @param source Source nodes subtree ROOT.
+         * @param destination Target directory ROOT.
+         * @param selector Nodes list async selector
          */
-        function copy(source:IDirectory, destination:IDirectory, nodes:Array = null):IAsyncOperation;
+        function copy(source:IDirectory, destination:IDirectory, selector:ITreeSelector):IAsyncOperation;
 
 
         /**

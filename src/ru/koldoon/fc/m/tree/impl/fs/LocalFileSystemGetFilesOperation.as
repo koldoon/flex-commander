@@ -30,7 +30,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
             done();
         }
 
-
+        // TODO: This method can be optimized with cache
         private function getFileSystemPath(node:INode):String {
             var p:INode = node;
             var fsPath:Array = [];

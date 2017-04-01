@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<s:Panel
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" xmlns:core="mx.core.*"
+    skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
+    title="Confirmation" minWidth="500" maxWidth="1600">
+
+    <s:layout>
+        <s:VerticalLayout
+            padding="40" gap="20" horizontalAlign="justify"/>
+    </s:layout>
+
+    <s:Label
+        id="textLabel"
+        styleName="white" width="100%"
+        text="{message.text}"/>
+
+    <s:controlBarContent>
+        <s:DataGroup
+            id="buttonsDataGroup"
+            dataProvider="{new ArrayList(message.options)}">
+
+            <s:layout>
+                <s:HorizontalLayout gap="20"/>
+            </s:layout>
+
+            <s:itemRenderer>
+                <core:ClassFactory
+                    id="buttonsFactory"
+                    generator="ru.koldoon.fc.m.app.impl.commands.copy.OptionRenderer"
+                    properties="{{ message: this.message }}"/>
+            </s:itemRenderer>
+        </s:DataGroup>
+    </s:controlBarContent>
+
+    <fx:Script><![CDATA[
+        import mx.collections.ArrayList;
+
+        import ru.koldoon.fc.m.async.interactive.IInteractionMessage;
+
+        [Bindable]
+        public var message:IInteractionMessage;
+        ]]></fx:Script>
+</s:Panel>
