@@ -14,6 +14,7 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.IFilesProvider;
     import ru.koldoon.fc.m.tree.ITreeSelector;
+    import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
     import ru.koldoon.fc.m.tree.impl.fs.*;
     import ru.koldoon.fc.m.tree.impl.fs.console.LocalFileSystemCopyCommandLineOperation;
@@ -23,6 +24,7 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
     public class LocalFileSystemCopyOperation extends AbstractNodesBunchOperation implements IInteractiveOperation, IParametrized {
         public static const OVERWRITE_ALL:String = "OVERWRITE_ALL";
         public static const SKIP_ALL:String = "SKIP_ALL";
+        public static const PRESERVE_ATTRIBUTES:String = "PRESERVE_ATTRIBUTES";
 
 
         public function LocalFileSystemCopyOperation() {
@@ -68,7 +70,7 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
 
         override protected function begin():void {
             filesProvider
-                .getFiles([srcDir, dstDir])
+                .getFiles([srcDir, dstDir], parameters.param(CopyCommand.FOLLOW_LINKS).value)
                 .onReady(function (ac:IAsyncCollection):void {
                     sourcePath = ac.items[0];
                     destinationPath = ac.items[1];
@@ -83,7 +85,7 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
                         _nodes = op.nodes;
                         // Scan for files references in the list of INode recursively.
                         filesProvider
-                            .getFiles(op.nodes)
+                            .getFiles(op.nodes, parameters.param(CopyCommand.FOLLOW_LINKS).value)
                             .onReady(onFilesReferencesReady);
                     }
                     else {
@@ -168,8 +170,9 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
             }
             else {
                 var fsRef:FileSystemReference = filesReferences[nodesProcessed];
+                var dir:DirectoryNode = fsRef.node as DirectoryNode;
 
-                if (fsRef.node is IDirectory) {
+                if (dir && (!dir.link || parameters.param(CopyCommand.FOLLOW_LINKS).value)) {
                     cmdLineOperation = new LocalFileSystemMkDirCommandLineOperation()
                         .path(getFileTargetPath(fsRef.path))
                         .execute();

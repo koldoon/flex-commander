@@ -1,6 +1,5 @@
 package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
-    import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.ITreeProvider;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
@@ -42,9 +41,10 @@ package ru.koldoon.fc.m.tree.impl.fs {
         private function getFileSystemPath(node:INode):String {
             var p:INode = node;
             var fsPath:Array = [];
+            var head:Boolean = true;
 
             while (p && !(p is ITreeProvider)) {
-                if (notEmpty(p.link) && _followLinks) {
+                if (notEmpty(p.link) && (!head || _followLinks)) {
                     if (p.link.charAt(0) == "/") {
                         // Root directory reference.
                         // Such references may occur with link nodes present in path
@@ -59,14 +59,12 @@ package ru.koldoon.fc.m.tree.impl.fs {
                     fsPath.unshift(p.name);
                 }
 
+                head = false;
                 p = p.parent;
             }
 
+            // Add root "/"
             fsPath.unshift("");
-
-            if (node is IDirectory) {
-                fsPath.push(""); // to add the last "/"
-            }
 
             return fsPath.join("/");
         }

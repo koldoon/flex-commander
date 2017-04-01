@@ -47,9 +47,9 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
 
         override protected function begin():void {
-            // getting actual path using common interface method
+            // getting actual path
             IFilesProvider(directory_.getTreeProvider())
-                .getFiles([directory_])
+                .getFiles([directory_], true)
                 .onReady(onFilesReferencesReady);
         }
 
@@ -59,7 +59,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
          */
         private function onFilesReferencesReady(ac:IAsyncCollection):void {
             command("bin/listing.sh");
-            commandArguments([FileSystemReference(ac.items[0]).path]);
+            commandArguments([FileSystemReference(ac.items[0]).path + "/"]);
 
             nodes = [];
             if (directory_.getParentDirectory()) {

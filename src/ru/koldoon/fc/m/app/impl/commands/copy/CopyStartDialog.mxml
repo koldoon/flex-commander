@@ -39,7 +39,7 @@
         <s:layout>
             <s:TileLayout
                 requestedColumnCount="2" horizontalGap="40" verticalGap="20"
-                paddingTop="20" horizontalAlign="left" orientation="rows"/>
+                paddingTop="20" horizontalAlign="justify" orientation="rows"/>
         </s:layout>
 
         <s:CheckBox
@@ -48,10 +48,6 @@
 
         <s:CheckBox
             label="Don't Copy Extended Attrs" selected="@{skipExtAttrs}"/>
-
-        <s:CheckBox
-            id="followSymlinksCheckBox"
-            label="Follow Symlinks" selected="@{followSymlinks}"/>
 
         <s:CheckBox
             id="overwriteAllCheckBox"

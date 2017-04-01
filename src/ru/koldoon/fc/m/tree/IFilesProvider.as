@@ -15,9 +15,10 @@ package ru.koldoon.fc.m.tree {
          * if operations of copy/move/remove are performed between different ITreeProviders.
          *
          * @param nodes List of INode
+         * @param followLinks follow to link if target path is a link. Intermediate links are always followed
          * @return Collection of FileSystemReference
          */
-        function getFiles(nodes:Array):IAsyncCollection;
+        function getFiles(nodes:Array, followLinks:Boolean = true):IAsyncCollection;
 
 
         /**

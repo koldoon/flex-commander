@@ -79,25 +79,14 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
-            setSourceNodeName();
-
-
-            function setSourceNodeName():void {
-                if (srcNodes.length == 1) {
-                    p.nodeName = p.followSymlinks ? INode(srcNodes[0]).link : INode(srcNodes[0]).name;
-                }
-                else {
-                    p.nodeName = null;
-                }
+            if (srcNodes.length == 1) {
+                p.nodeName = INode(srcNodes[0]).name;
             }
 
 
             function onPopupClick(e:MouseEvent):void {
                 if (p.cancelButton == e.target) {
                     app.popupManager.remove(pd);
-                }
-                else if (p.followSymlinksCheckBox == e.target) {
-                    setSourceNodeName();
                 }
                 else if (p.okButton == e.target) {
                     app.popupManager.remove(pd);

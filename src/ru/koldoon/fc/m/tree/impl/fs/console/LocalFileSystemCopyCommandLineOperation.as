@@ -44,7 +44,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
 
             var args:Array = [];
             if (!_skipExisting && !_overwriteExisting) {
-                args.push("-i");
+                args.push("-iaR");
             }
             if (_preserveAttrs) {
                 args.push("-p");
@@ -55,10 +55,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
             if (_skipExisting) {
                 args.push("-n");
             }
-            if (_followSymlinks) {
-                args.push("-R");
-                args.push("-H");
-            }
+
             args.push(_sourceFilePath);
             args.push(_targetFilePath);
             commandArguments(args);

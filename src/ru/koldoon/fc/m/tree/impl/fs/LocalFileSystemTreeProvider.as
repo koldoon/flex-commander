@@ -70,10 +70,11 @@ package ru.koldoon.fc.m.tree.impl.fs {
         /**
          * @inheritDoc
          */
-        public function getFiles(nodes:Array):IAsyncCollection {
+        public function getFiles(nodes:Array, followLinks:Boolean = true):IAsyncCollection {
             var ac:AsyncCollection = new AsyncCollection();
             var op:IAsyncOperation = new LocalFileSystemGetFilesOperation()
                 .nodes(nodes)
+                .followLinks(followLinks)
                 .execute();
 
             op.getStatus()

@@ -129,7 +129,6 @@
             var node:INode = value as INode;
             var file:FileNode = data as FileNode;
             var dir:DirectoryNode = data as DirectoryNode;
-            var parent:FileNode = node.parent as FileNode;
 
             if (!node) {
                 return;
@@ -144,7 +143,7 @@
             }
             else {
                 nameLabel.text = file.type ? file.name.substr(0, file.name.length - file.type.length - 1) : file.name;
-                typeLabel.text = dir ? "" : parent.type;
+                typeLabel.text = dir ? "" : file.type;
 
                 // icon.fa_circle_o is used for measurement purpose
                 iconLabel.text =
