@@ -10,10 +10,10 @@ package ru.koldoon.fc.m.tree.impl {
         public static const PARENT_NODE:AbstractNode = new AbstractNode(null, "..");
 
 
-        public function AbstractNode(parent:INode, value:String, label:String = null) {
+        public function AbstractNode(parent:INode, name:String = null, link:String = null) {
             _parent = parent;
-            _value = value;
-            _label = label;
+            _link = link;
+            _name = name;
         }
 
 
@@ -28,25 +28,16 @@ package ru.koldoon.fc.m.tree.impl {
         /**
          * @inheritDoc
          */
-        [Bindable(event="__noChangeEvent__")]
-        public function get value():String {
-            return _value;
+        public function get link():String {
+            return _link;
         }
 
 
         /**
          * @inheritDoc
          */
-        public function get type():String {
-            return _type;
-        }
-
-
-        /**
-         * @inheritDoc
-         */
-        public function get label():String {
-            return _label || _value;
+        public function get name():String {
+            return _name;
         }
 
 
@@ -54,7 +45,8 @@ package ru.koldoon.fc.m.tree.impl {
          * @inheritDoc
          */
         public function get info():String {
-            return _value;
+            // default implementation
+            return _link;
         }
 
 
@@ -97,13 +89,12 @@ package ru.koldoon.fc.m.tree.impl {
 
 
         public function toString():String {
-            return label;
+            return name || link;
         }
 
 
-        protected var _type:String;
         protected var _parent:INode;
-        protected var _value:String;
-        protected var _label:String;
+        protected var _link:String;
+        protected var _name:String;
     }
 }

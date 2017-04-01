@@ -218,11 +218,11 @@
                 }
             }
             else {
-                if (a["label"] == b["label"]) {
+                if (a["name"] == b["name"]) {
                     return 0;
                 }
                 else {
-                    return a["label"] < b["label"] ? -1 : 1;
+                    return a["name"] < b["name"] ? -1 : 1;
                 }
             }
         }

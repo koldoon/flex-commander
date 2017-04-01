@@ -86,16 +86,16 @@ package ru.koldoon.fc.m.tree.impl.fs {
                 }
 
                 var f:FileNode;
+                var isLink:Boolean = file[1] == "l";
 
                 if (file[2] == "d") {
-                    f = new DirectoryNode(directory_, file[7] || file[6], file[6]);
+                    f = new DirectoryNode(directory_, file[6], isLink ? file[7] : null);
                 }
                 else {
-                    f = new FileNode(directory_, file[7] || file[6], file[6]);
+                    f = new FileNode(directory_, file[6], isLink ? file[7] : null);
                 }
 
                 f.executable = file[2] != "d" && file[3].indexOf("x") != -1;
-                f.link = (file[1] == "l");
                 f.attributes = file[3];
                 f.size = (file[2] == "d") ? -1 : file[4];
                 f.modified = new Date(1000 * file[5]);

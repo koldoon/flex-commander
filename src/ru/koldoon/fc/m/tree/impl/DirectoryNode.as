@@ -11,8 +11,8 @@ package ru.koldoon.fc.m.tree.impl {
      * in different File System-s and Archives.
      */
     public class DirectoryNode extends FileNode implements IDirectory {
-        public function DirectoryNode(parent:INode, value:String, label:String = null) {
-            super(parent, value, label);
+        public function DirectoryNode(parent:INode, name:String, link:String = null) {
+            super(parent, name, link);
         }
 
 

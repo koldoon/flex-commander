@@ -2,6 +2,7 @@ package ru.koldoon.fc.m.tree.impl {
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.impl.fs.FileNodeUtil;
+    import ru.koldoon.fc.utils.notEmpty;
 
     /**
      * Common implementation of Node representing File in different
@@ -16,13 +17,13 @@ package ru.koldoon.fc.m.tree.impl {
         public static const FILE_TYPE_RXP:RegExp = /^([^\/*?|]+)\.([^\/*?|\s]{1,12})$/;
 
 
-        public function FileNode(parent:INode, value:String, label:String = null) {
-            super(parent, value, label);
+        public function FileNode(parent:INode, name:String, link:String = null) {
+            super(parent, name, link);
 
             if (!(this is IDirectory)) {
-                var t:Object = FILE_TYPE_RXP.exec(label || value);
+                var t:Object = FILE_TYPE_RXP.exec(name);
                 if (t) {
-                    _type = t[2];
+                    type = t[2];
                 }
             }
         }
@@ -32,11 +33,11 @@ package ru.koldoon.fc.m.tree.impl {
         public var size:Number;
         public var modified:Date;
         public var executable:Boolean;
-        public var link:Boolean;
+        public var type:String;
 
 
         override public function get info():String {
-            return link ? '-> ' + value : label;
+            return notEmpty(link) ? '-> ' + link : name;
         }
 
 

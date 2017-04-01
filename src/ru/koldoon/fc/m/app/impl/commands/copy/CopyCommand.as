@@ -84,7 +84,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
             function setSourceNodeName():void {
                 if (srcNodes.length == 1) {
-                    p.nodeName = p.followSymlinks ? INode(srcNodes[0]).value : INode(srcNodes[0]).label;
+                    p.nodeName = p.followSymlinks ? INode(srcNodes[0]).link : INode(srcNodes[0]).name;
                 }
                 else {
                     p.nodeName = null;

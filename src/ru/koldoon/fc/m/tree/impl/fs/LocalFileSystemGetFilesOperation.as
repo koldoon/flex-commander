@@ -8,7 +8,8 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
     public class LocalFileSystemGetFilesOperation extends AbstractAsyncOperation {
 
-        private var nodes_:Array;
+        private var _nodes:Array;
+        private var _followLinks:Boolean = true;
 
         /**
          * list of FileSystemReference objects
@@ -17,18 +18,25 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
 
         public function nodes(n:Array):LocalFileSystemGetFilesOperation {
-            nodes_ = n;
+            _nodes = n;
+            return this;
+        }
+
+
+        public function followLinks(value:Boolean = true):LocalFileSystemGetFilesOperation {
+            _followLinks = value;
             return this;
         }
 
 
         override protected function begin():void {
             files = [];
-            for each (var node:INode in nodes_) {
+            for each (var node:INode in _nodes) {
                 files.push(new FileSystemReference(getFileSystemPath(node), node));
             }
             done();
         }
+
 
         // TODO: This method can be optimized with cache
         private function getFileSystemPath(node:INode):String {
@@ -36,16 +44,19 @@ package ru.koldoon.fc.m.tree.impl.fs {
             var fsPath:Array = [];
 
             while (p && !(p is ITreeProvider)) {
-                if (notEmpty(p.value)) {
-                    if (p.value.charAt(0) == "/") {
+                if (notEmpty(p.link) && _followLinks) {
+                    if (p.link.charAt(0) == "/") {
                         // Root directory reference.
                         // Such references may occur with link nodes present in path
-                        fsPath.unshift(p.value.substr(1));
+                        fsPath.unshift(p.link.substr(1));
                         break;
                     }
                     else {
-                        fsPath.unshift(p.value);
+                        fsPath.unshift(p.link);
                     }
+                }
+                else if (notEmpty(p.name)) {
+                    fsPath.unshift(p.name);
                 }
 
                 p = p.parent;

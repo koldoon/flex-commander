@@ -13,8 +13,8 @@ package ru.koldoon.fc.m.tree.impl {
             var fsPath:Array = [];
 
             for each (var n:INode in path) {
-                if (notEmpty(n.label)) {
-                    fsPath.push(n.label);
+                if (notEmpty(n.name)) {
+                    fsPath.push(n.name);
                 }
             }
             return "/" + fsPath.join("/");

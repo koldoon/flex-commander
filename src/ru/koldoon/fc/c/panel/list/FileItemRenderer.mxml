@@ -57,14 +57,14 @@
     </s:Rect>
 
     <s:Label
-        id="attrLabel"
+        id="iconLabel"
         verticalCenter="0" left="30"
         styleName="h5 blue0 icon"
         styleName.selected="h5 white icon"
         alpha="0.6"/>
 
     <s:HGroup
-        left="{attrLabel.width + 50}" right="40" gap="20"
+        left="{iconLabel.width + 50}" right="40" gap="20"
         verticalAlign="baseline" verticalCenter="2">
 
         <s:Label
@@ -126,28 +126,42 @@
         override public function set data(value:Object):void {
             super.data = value;
 
-            var node:AbstractNode = data as AbstractNode;
-            var dir:DirectoryNode = data as DirectoryNode;
+            var node:INode = value as INode;
             var file:FileNode = data as FileNode;
+            var dir:DirectoryNode = data as DirectoryNode;
+            var parent:FileNode = node.parent as FileNode;
 
-            nameLabel.text = node.type ? node.label.substr(0, node.label.length - node.type.length - 1) : node.label;
-            typeLabel.text = dir ? "" : node.type;
-
-            attrLabel.text =
-                file && file.link ? icon.fa_link :
-                dir || node == AbstractNode.PARENT_NODE ? icon.fa_folder :
-                file && file.executable ? icon.fa_asterisk : icon.fa_circle_o;
-
-            // To save natural measuring we never set icon text to null
-            attrLabel.visible = attrLabel.text != icon.fa_circle_o;
-
-            if (file) {
-                sizeLabel.text = file.size >= 0 ? file.getFormattedSize() : "";
-                dateLabel.text = F.getInstance().dateOnlyNumbers.format(file.modified);
+            if (!node) {
+                return;
             }
-            else {
+
+            if (node == AbstractNode.PARENT_NODE) {
+                nameLabel.text = node.name;
+                iconLabel.text = icon.fa_folder;
+                typeLabel.text = "";
                 sizeLabel.text = "";
                 dateLabel.text = "";
+            }
+            else {
+                nameLabel.text = file.type ? file.name.substr(0, file.name.length - file.type.length - 1) : file.name;
+                typeLabel.text = dir ? "" : parent.type;
+
+                // icon.fa_circle_o is used for measurement purpose
+                iconLabel.text =
+                    file && file.link ? icon.fa_link :
+                    dir ? icon.fa_folder :
+                    file && file.executable ? icon.fa_asterisk : icon.fa_circle_o;
+
+                iconLabel.visible = iconLabel.text != icon.fa_circle_o;
+
+                if (file) {
+                    sizeLabel.text = file.size >= 0 ? file.getFormattedSize() : "";
+                    dateLabel.text = F.getInstance().dateOnlyNumbers.format(file.modified);
+                }
+                else {
+                    sizeLabel.text = "";
+                    dateLabel.text = "";
+                }
             }
 
             onSelectionChange();

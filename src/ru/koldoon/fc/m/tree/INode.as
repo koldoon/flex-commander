@@ -8,21 +8,16 @@ package ru.koldoon.fc.m.tree {
 
 
         /**
-         * File Name or Another Node Identifier
+         * Link info, if this node is a link.
+         * Usually an absolute or relative path.
          */
-        function get value():String;
+        function get link():String;
 
 
         /**
-         * Label Display
+         * Label Display and main node reference
          */
-        function get label():String;
-
-
-        /**
-         * Usually File Extension
-         */
-        function get type():String;
+        function get name():String;
 
 
         /**

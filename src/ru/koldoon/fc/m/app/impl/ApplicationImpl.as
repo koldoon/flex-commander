@@ -103,7 +103,7 @@ package ru.koldoon.fc.m.app.impl {
 
                     if (bp.nodeValue && cmd.isExecutable(bp.executionTarget)) {
                         var node:INode = getTargetPanel(bp.executionTarget).selectedNode;
-                        if (node && bp.nodeValue.exec(node.value)) {
+                        if (node && bp.nodeValue.exec(node.link || node.name)) {
                             cmd.execute(bp.executionTarget);
                             return;
                         }
