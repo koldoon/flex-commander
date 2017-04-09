@@ -2,7 +2,7 @@
 <s:Application
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
-    xmlns:debug="ru.koldoon.debug.*"
+    xmlns:debug="ru.koldoon.fc.c.debug.*"
 
     backgroundColor="#011130" applicationDPI="320"
     activate="onActivate()" deactivate="onDeactivate()"

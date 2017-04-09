@@ -44,17 +44,16 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
 
             var args:Array = [];
             if (!_skipExisting && !_overwriteExisting) {
-                args.push("-iaR");
+                args.push("-ipaR");
             }
-            if (_preserveAttrs) {
-                args.push("-p");
-            }
-            if (_overwriteExisting) {
-                args.push("-f");
-            }
+
             if (_skipExisting) {
                 args.push("-n");
             }
+            else if (_overwriteExisting) {
+                args.push("-f");
+            }
+
 
             args.push(_sourceFilePath);
             args.push(_targetFilePath);
@@ -71,7 +70,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
             if (o) {
                 interaction.setMessage(
                     new InteractionMessage(InteractionMessageType.CONFIRMATION)
-                        .setText(StringUtil.substitute("Overwrite existing file?\n{0}", o[1]))
+                        .setText(StringUtil.substitute("Could not copy: File exists.\nOverwrite existing file?\n\n{0}\n", o[1]))
                         .responseOptions([
                             new InteractionOption("n", "Skip"),
                             new InteractionOption("y", "Overwrite")])
@@ -90,12 +89,6 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         }
 
 
-        public function preserveAttrs(value:Boolean):LocalFileSystemCopyCommandLineOperation {
-            _preserveAttrs = value;
-            return this;
-        }
-
-
         public function overwriteExisting(value:Boolean):LocalFileSystemCopyCommandLineOperation {
             _overwriteExisting = value;
             return this;
@@ -108,8 +101,8 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         }
 
 
-        public function followSymlinks(value:Boolean):LocalFileSystemCopyCommandLineOperation {
-            _followSymlinks = value;
+        public function skipExtAttrs(value:Boolean):LocalFileSystemCopyCommandLineOperation {
+            _skipExtAttrs = value;
             return this;
         }
 
@@ -124,10 +117,9 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         private var _sourceFilePath:String;
         private var _targetFilePath:String;
 
-        private var _preserveAttrs:Boolean = true;
         private var _overwriteExisting:Boolean;
         private var _skipExisting:Boolean;
-        private var _followSymlinks:Boolean;
+        private var _skipExtAttrs:Boolean;
 
     }
 }

@@ -2,17 +2,17 @@
 <s:Panel
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
-    title="Copy {nodeName || nodesCount}{nodesCount > 1 ? ' items' : ''}" minWidth="1000">
+    title="Copy {nodeName || nodesCount}{nodesCount > 1 ? ' items' : ''}"
+    minWidth="1000" maxWidth="2000">
 
     <fx:Declarations>
         <fx:int id="nodesCount"/>
         <fx:String id="nodeName"/>
         <fx:String id="targetDir"/>
         <fx:String id="srcDir"/>
-        <fx:Boolean id="followSymlinks"/>
-        <fx:Boolean id="preserveAttributes"/>
-        <fx:Boolean id="skipExtAttrs"/>
-        <fx:Boolean id="overwriteAll"/>
+        <s:ArrayList id="parameters"/>
+        <!--<fx:Boolean id="skipExtAttrs"/>-->
+        <!--<fx:Boolean id="overwriteAll"/>-->
     </fx:Declarations>
 
     <s:layout>
@@ -32,35 +32,29 @@
             <s:TextInput text="{targetDir}" width="100%" styleName="bordered" prompt="Target Directory"/>
         </s:FormItem>
 
+        <s:FormItem label="">
+            <s:DataGroup
+                width="100%"
+                itemRenderer="ru.koldoon.fc.c.params.BooleanParamRenderer"
+                dataProvider="{parameters}">
+
+                <s:layout>
+                    <s:TileLayout
+                        requestedColumnCount="2" horizontalGap="40" verticalGap="20"
+                        paddingTop="20" horizontalAlign="left" orientation="rows"/>
+                </s:layout>
+            </s:DataGroup>
+        </s:FormItem>
+
     </s:Form>
 
 
-    <s:Group>
-        <s:layout>
-            <s:TileLayout
-                requestedColumnCount="2" horizontalGap="40" verticalGap="20"
-                paddingTop="20" horizontalAlign="justify" orientation="rows"/>
-        </s:layout>
-
-        <s:CheckBox
-            id="preserveAttributesCheckBox"
-            label="Preserve Attributes" selected="@{preserveAttributes}"/>
-
-        <s:CheckBox
-            label="Don't Copy Extended Attrs" selected="@{skipExtAttrs}"/>
-
-        <s:CheckBox
-            id="overwriteAllCheckBox"
-            label="Overwrite All" selected="@{overwriteAll}"/>
-
-    </s:Group>
-
     <s:controlBarContent>
-        <s:Button id="okButton" label="Copy" styleName="default"/>
-        <s:Button id="queueButton" label="Queue"/>
-        <s:Button id="cancelButton" label="Cancel"/>
-        <s:Spacer width="100%"/>
         <s:Button id="helpButton" label="?" toolTip="Help"/>
+        <s:Spacer width="100%"/>
+        <s:Button id="cancelButton" label="Cancel"/>
+        <s:Button id="queueButton" label="Queue"/>
+        <s:Button id="okButton" label="Copy" styleName="default"/>
     </s:controlBarContent>
 
 </s:Panel>

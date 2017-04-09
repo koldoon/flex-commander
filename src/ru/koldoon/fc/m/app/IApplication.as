@@ -10,6 +10,7 @@ package ru.koldoon.fc.m.app {
         function get rightPanel():IPanel;
 
         function getTargetPanel(target:String):IPanel;
+        function getActivePanel():IPanel;
 
         /**
          * Application level PopupManager

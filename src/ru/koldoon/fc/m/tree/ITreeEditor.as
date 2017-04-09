@@ -8,7 +8,6 @@ package ru.koldoon.fc.m.tree {
          * to a particular Dir. Basically, this operation can be performed by
          * combination of "copy" and "remove" but for many cases there are much more
          * effective way to move objects in different structures.
-         * @nodes List of INode
          */
         function move(source:IDirectory, destination:IDirectory, selector:ITreeSelector):IAsyncOperation;
 
@@ -27,9 +26,14 @@ package ru.koldoon.fc.m.tree {
         /**
          * Removes nodes and their associated data (files in common)
          * @param nodes
-         * @return
          */
         function remove(nodes:Array):IAsyncOperation;
+
+
+        /**
+         * Create Sub-Directory
+         */
+        function createDirectory(name:String, parent:IDirectory):IAsyncOperation;
 
 
         /***

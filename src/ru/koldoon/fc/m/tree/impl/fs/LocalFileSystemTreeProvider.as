@@ -108,21 +108,37 @@ package ru.koldoon.fc.m.tree.impl.fs {
         // ITreeEditor
         // -----------------------------------------------------------------------------------
 
+        /**
+         * @inheritDoc
+         */
         public function move(source:IDirectory, destination:IDirectory, selector:ITreeSelector):IAsyncOperation {
             return null;
         }
 
 
+        /**
+         * @inheritDoc
+         */
         public function copy(source:IDirectory, destination:IDirectory, selector:ITreeSelector):IAsyncOperation {
             return new LocalFileSystemCopyOperation()
                 .source(source)
                 .treeSelector(selector)
-                .destination(destination)
-                .execute();
+                .destination(destination);
         }
 
 
+        /**
+         * @inheritDoc
+         */
         public function remove(nodes:Array):IAsyncOperation {
+            return null;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function createDirectory(name:String, parent:IDirectory):IAsyncOperation {
             return null;
         }
     }

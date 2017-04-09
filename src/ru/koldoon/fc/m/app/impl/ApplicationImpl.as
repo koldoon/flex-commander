@@ -46,7 +46,7 @@ package ru.koldoon.fc.m.app.impl {
          */
         public function getTargetPanel(target:String):IPanel {
             if (target == ExecutionTarget.ACTIVE_PANEL) {
-                return leftPanel.selectedNodeIndex != -1 ? leftPanel : rightPanel;
+                return getActivePanel();
             }
             else if (target == ExecutionTarget.LEFT_PANEL) {
                 return leftPanel;
@@ -55,6 +55,11 @@ package ru.koldoon.fc.m.app.impl {
                 return rightPanel;
             }
             return null;
+        }
+
+
+        public function getActivePanel():IPanel {
+            return leftPanel.selectedNodeIndex != -1 ? leftPanel : rightPanel;
         }
 
 

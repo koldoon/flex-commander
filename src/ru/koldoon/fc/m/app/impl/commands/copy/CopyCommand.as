@@ -3,7 +3,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
     import flash.events.MouseEvent;
     import flash.ui.Keyboard;
 
-    import org.spicefactory.lib.reflect.ClassInfo;
+    import mx.collections.ArrayList;
 
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
@@ -11,7 +11,6 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
     import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.interactive.IInteraction;
     import ru.koldoon.fc.m.async.interactive.IInteractiveOperation;
-    import ru.koldoon.fc.m.async.parametrized.IParameters;
     import ru.koldoon.fc.m.async.parametrized.IParametrized;
     import ru.koldoon.fc.m.popups.IPopupDescriptor;
     import ru.koldoon.fc.m.tree.IDirectory;
@@ -28,12 +27,6 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
     import spark.components.Button;
 
     public class CopyCommand extends AbstractBindableCommand {
-
-        public static const OVERWRITE_ALL_EXISTING:String = "OVERWRITE_ALL_EXISTING";
-        public static const SKIP_ALL_EXISTING:String = "SKIP_ALL_EXISTING";
-        public static const PRESERVE_ATTRIBUTES:String = "PRESERVE_ATTRIBUTES";
-        public static const FOLLOW_LINKS:String = "FOLLOW_LINKS";
-
 
         public function CopyCommand() {
             super();
@@ -57,13 +50,12 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
 
         override public function execute(target:String):void {
-            srcPanel = app.leftPanel.selectedNodeIndex != -1 ? app.leftPanel : app.rightPanel;
+            srcPanel = app.getActivePanel();
             dstPanel = (srcPanel == app.leftPanel) ? app.rightPanel : app.leftPanel; // opposite panel
             srcNodes = srcPanel.selection.length > 0 ? srcPanel.selection.getSelectedNodes() : [srcPanel.selectedNode];
             srcDir = srcPanel.directory;
             dstDir = dstPanel.directory;
             srcTP = srcPanel.directory.getTreeProvider();
-            dstTP = dstPanel.directory.getTreeProvider();
 
             showInitDialog();
         }
@@ -72,6 +64,15 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
         private function showInitDialog():void {
             var p:CopyStartDialog = new CopyStartDialog();
             var pd:IPopupDescriptor = app.popupManager.add().instance(p).modal(true);
+            var te:ITreeEditor = srcTP as ITreeEditor;
+
+            selector = new NodesSelectionOperation()
+                .sourceNodes(srcNodes)
+                .treeProvider(srcTP)
+                .recursive()
+                .followLinks(false);
+
+            copyOperation = te.copy(srcDir, dstDir, selector);
 
             p.nodesCount = srcNodes.length;
             p.targetDir = TreeUtils.getPathString(dstDir);
@@ -83,6 +84,10 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
                 p.nodeName = INode(srcNodes[0]).name;
             }
 
+            if (copyOperation is IParametrized) {
+                p.parameters = new ArrayList(IParametrized(copyOperation).getParameters().list);
+            }
+
 
             function onPopupClick(e:MouseEvent):void {
                 if (p.cancelButton == e.target) {
@@ -92,10 +97,6 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
                     app.popupManager.remove(pd);
                     beginCopy();
                 }
-
-                followLinks = p.followSymlinks;
-                preserveAttrs = p.preserveAttributes;
-                overwriteAll = p.overwriteAll;
             }
 
 
@@ -111,51 +112,17 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
         }
 
 
-        private function beginCopy():void {
-            if (ClassInfo.forInstance(srcTP).name == ClassInfo.forInstance(dstTP).name && srcTP is ITreeEditor) {
-                copyWithTreeEditor();
-            }
-            else {
-                // legacy operation through IFilesProvider
-            }
-        }
-
-
         /**
          * Stage 1: Collect all nodes to copy.
          */
-        private function copyWithTreeEditor():void {
+        private function beginCopy():void {
             var p:CopyPrepareDialog = new CopyPrepareDialog();
             var pd:IPopupDescriptor = app.popupManager.add().instance(p).modal(true);
             var bytesTotal:Number = 0;
-
-            selector = new NodesSelectionOperation()
-                .sourceNodes(srcNodes)
-                .treeProvider(srcTP)
-                .recursive()
-                .followLinks(followLinks);
-
-            var te:ITreeEditor = srcTP as ITreeEditor;
-            var cop:IAsyncOperation = te.copy(srcDir, dstDir, selector);
             var progressCursor:Number = 0;
 
-            if (cop is IParametrized) {
-                var parameters:IParameters = IParametrized(cop).getParameters();
-                parameters.param(OVERWRITE_ALL_EXISTING).value = overwriteAll;
-                parameters.param(PRESERVE_ATTRIBUTES).value = preserveAttrs;
-                parameters.param(FOLLOW_LINKS).value = followLinks;
-            }
-
-            cop.getStatus()
-                .onFinish(function (op:IAsyncOperation):void {
-                    dstPanel.directory
-                        .getListing()
-                        .onReady(function (data:Object):void {
-                            dstPanel.refresh();
-                        });
-                });
-
-            selector.getProgress()
+            selector
+                .getProgress()
                 .onProgress(function (op:NodesSelectionOperation):void {
                     bytesTotal += getBytesTotal(op.nodes.slice(progressCursor));
                     progressCursor = op.nodes.length;
@@ -165,12 +132,25 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
                     p.itemsTotal = op.nodes.length;
                 });
 
-            selector.getStatus()
+            selector
+                .getStatus()
                 .onComplete(function (op:NodesSelectionOperation):void {
-                    showCopyProgressDialog(cop);
+                    showCopyProgressDialog();
                 })
                 .onFinish(function (op:NodesSelectionOperation):void {
                     app.popupManager.remove(pd);
+                });
+
+            copyOperation
+                .execute()
+                .getStatus()
+                .onFinish(function (op:IAsyncOperation):void {
+                    dstPanel.directory
+                        .getListing()
+                        .onReady(function (data:Object):void {
+                            srcPanel.selection.reset();
+                            dstPanel.refresh();
+                        });
                 });
 
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
@@ -178,7 +158,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
             function onPopupClick(e:MouseEvent):void {
                 if (p.cancelButton == e.target) {
-                    cop.cancel();
+                    copyOperation.cancel();
                 }
                 else if (p.backgroundButton == e.target) {
                 }
@@ -187,25 +167,13 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
             function onPopupKeyDown(e:KeyboardEvent):void {
                 if (e.keyCode == Keyboard.ESCAPE) {
-                    cop.cancel();
+                    copyOperation.cancel();
                 }
             }
         }
 
 
-        private function getBytesTotal(nodes:Array):Number {
-            var bt:Number = 0;
-            for (var i:int = 0; i < nodes.length; i++) {
-                var fn:FileNode = nodes[i] as FileNode;
-                if (fn && !(fn is DirectoryNode)) {
-                    bt += fn.size;
-                }
-            }
-            return bt;
-        }
-
-
-        private function showCopyProgressDialog(op:IAsyncOperation):void {
+        private function showCopyProgressDialog():void {
             var p:CopyProgressDialog = new CopyProgressDialog();
             var pd:IPopupDescriptor = app.popupManager.add().instance(p).modal(true);
 
@@ -215,19 +183,20 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
-            op.getStatus()
+            copyOperation
+                .getStatus()
                 .onFinish(function (op:AbstractNodesBunchOperation):void {
                     app.popupManager.remove(pd);
                 });
 
-            if (op is IInteractiveOperation) {
-                IInteractiveOperation(op)
+            if (copyOperation is IInteractiveOperation) {
+                IInteractiveOperation(copyOperation)
                     .getInteraction()
                     .onMessage(onConfirmationMessage);
             }
 
-            if (op is INodesBunchOperation) {
-                INodesBunchOperation(op)
+            if (copyOperation is INodesBunchOperation) {
+                INodesBunchOperation(copyOperation)
                     .getProgress()
                     .onProgress(function (op:INodesBunchOperation):void {
                         p.currentNode = TreeUtils.getPathString(op.nodes[op.nodesProcessed]);
@@ -242,7 +211,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
             function onPopupClick(e:MouseEvent):void {
                 if (p.cancelButton == e.target) {
-                    op.cancel();
+                    copyOperation.cancel();
                     app.popupManager.remove(pd);
                 }
                 else if (p.backgroundButton == e.target) {
@@ -252,7 +221,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
             function onPopupKeyDown(e:KeyboardEvent):void {
                 if (e.keyCode == Keyboard.ESCAPE) {
-                    op.cancel();
+                    copyOperation.cancel();
                     app.popupManager.remove(pd);
                 }
             }
@@ -279,18 +248,27 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
         }
 
 
+        private function getBytesTotal(nodes:Array):Number {
+            var bt:Number = 0;
+            for (var i:int = 0; i < nodes.length; i++) {
+                var fn:FileNode = nodes[i] as FileNode;
+                if (fn && !(fn is DirectoryNode)) {
+                    bt += fn.size;
+                }
+            }
+            return bt;
+        }
+
+
         private var srcPanel:IPanel;
         private var dstPanel:IPanel;
         private var srcTP:ITreeProvider;
-        private var dstTP:ITreeProvider;
         private var srcDir:IDirectory;
         private var dstDir:IDirectory;
 
         private var srcNodes:Array;
 
         private var selector:NodesSelectionOperation;
-        private var followLinks:Boolean;
-        private var preserveAttrs:Boolean;
-        private var overwriteAll:Boolean;
+        private var copyOperation:IAsyncOperation;
     }
 }

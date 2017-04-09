@@ -1,5 +1,4 @@
 package ru.koldoon.fc.m.tree.impl.fs.copy {
-    import ru.koldoon.fc.m.app.impl.commands.copy.CopyCommand;
     import ru.koldoon.fc.m.async.IAsyncCollection;
     import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.impl.Interaction;
@@ -23,16 +22,14 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
 
     public class LocalFileSystemCopyOperation extends AbstractNodesBunchOperation implements IInteractiveOperation, IParametrized {
         public static const OVERWRITE_ALL:String = "OVERWRITE_ALL";
+        public static const SKIP_EXT_ATTRS:String = "SKIP_EXT_ATTRS";
         public static const SKIP_ALL:String = "SKIP_ALL";
-        public static const PRESERVE_ATTRIBUTES:String = "PRESERVE_ATTRIBUTES";
 
 
         public function LocalFileSystemCopyOperation() {
             parameters.setList([
-                new Param(CopyCommand.OVERWRITE_ALL_EXISTING, false),
-                new Param(CopyCommand.SKIP_ALL_EXISTING, false),
-                new Param(CopyCommand.PRESERVE_ATTRIBUTES, true),
-                new Param(CopyCommand.FOLLOW_LINKS, false)
+                new Param(SKIP_EXT_ATTRS, true),
+                new Param(OVERWRITE_ALL, false)
             ]);
 
             interaction.onMessage(onInteractionMessage);
@@ -70,7 +67,7 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
 
         override protected function begin():void {
             filesProvider
-                .getFiles([srcDir, dstDir], parameters.param(CopyCommand.FOLLOW_LINKS).value)
+                .getFiles([srcDir, dstDir], false)
                 .onReady(function (ac:IAsyncCollection):void {
                     sourcePath = ac.items[0];
                     destinationPath = ac.items[1];
@@ -85,7 +82,7 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
                         _nodes = op.nodes;
                         // Scan for files references in the list of INode recursively.
                         filesProvider
-                            .getFiles(op.nodes, parameters.param(CopyCommand.FOLLOW_LINKS).value)
+                            .getFiles(op.nodes, false)
                             .onReady(onFilesReferencesReady);
                     }
                     else {
@@ -133,8 +130,8 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
          */
         private function onInteractionMessage(i:Interaction):void {
             var msg:InteractionMessage = i.getMessage() as InteractionMessage;
-            msg.options.push(new InteractionOption("n", "Skip All", SKIP_ALL));
-            msg.options.push(new InteractionOption("y", "Overwrite All", OVERWRITE_ALL));
+            msg.options.push(new InteractionOption("n", "Skip All", LocalFileSystemCopyOperation.SKIP_ALL));
+            msg.options.push(new InteractionOption("y", "Overwrite All", LocalFileSystemCopyOperation.OVERWRITE_ALL));
             msg.onResponse(onInteractionResponse);
         }
 
@@ -144,11 +141,8 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
          * @param option
          */
         private function onInteractionResponse(option:InteractionOption):void {
-            if (option.context == OVERWRITE_ALL) {
-                parameters.param(CopyCommand.OVERWRITE_ALL_EXISTING).value = true;
-            }
-            else if (option.context == SKIP_ALL) {
-                parameters.param(CopyCommand.SKIP_ALL_EXISTING).value = true;
+            if (notEmpty(option.context)) {
+                parameters.param(option.context).value = true;
             }
         }
 
@@ -172,7 +166,7 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
                 var fsRef:FileSystemReference = filesReferences[nodesProcessed];
                 var dir:DirectoryNode = fsRef.node as DirectoryNode;
 
-                if (dir && (!dir.link || parameters.param(CopyCommand.FOLLOW_LINKS).value)) {
+                if (dir && !dir.link) {
                     cmdLineOperation = new LocalFileSystemMkDirCommandLineOperation()
                         .path(getFileTargetPath(fsRef.path))
                         .execute();
@@ -185,21 +179,25 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
                     cmdLineOperation = new LocalFileSystemCopyCommandLineOperation()
                         .sourceFilePath(fsRef.path)
                         .targetFilePath(getFileTargetPath(fsRef.path))
-                        .preserveAttrs(parameters.param(CopyCommand.PRESERVE_ATTRIBUTES).value)
-                        .overwriteExisting(parameters.param(CopyCommand.OVERWRITE_ALL_EXISTING).value)
-                        .skipExisting(parameters.param(CopyCommand.SKIP_ALL_EXISTING).value)
-                        .followSymlinks(parameters.param(CopyCommand.FOLLOW_LINKS).value)
+                        .overwriteExisting(parameters.param(OVERWRITE_ALL).value)
+                        .skipExisting(parameters.param(SKIP_ALL).value)
+                        .skipExtAttrs(parameters.param(SKIP_EXT_ATTRS).value)
                         .execute();
 
                     cmdLineOperation
                         .getStatus()
                         .onComplete(continueCopy)
-                        .onFault(function (op:IAsyncOperation):void { fault() });
+                        .onFault(onCmdLineOperationFault);
 
                     // Traverse remote interaction to ours
-                    interaction.listenTo(IInteractiveOperation(cmdLineOperation).getInteraction())
+                    interaction.listenTo(IInteractiveOperation(cmdLineOperation).getInteraction());
                 }
             }
+        }
+
+
+        private function onCmdLineOperationFault(op:IAsyncOperation):void {
+            fault();
         }
 
 

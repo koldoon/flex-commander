@@ -33,6 +33,10 @@ package ru.koldoon.fc.m.async.impl {
          * method instead.
          */
         public function execute():IAsyncOperation {
+            if (status.isProcessing) {
+                return this;
+            }
+
             ticker.addEventListener(Event.ENTER_FRAME, function call_execute(e:Event):void {
                 ticker.removeEventListener(Event.ENTER_FRAME, call_execute);
 

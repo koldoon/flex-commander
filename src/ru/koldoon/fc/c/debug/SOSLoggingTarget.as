@@ -6,7 +6,7 @@
  *          $Date$
  *          $Rev$
  */
-package ru.koldoon.debug {
+package ru.koldoon.fc.c.debug {
     import flash.events.Event;
     import flash.events.IOErrorEvent;
     import flash.events.SecurityErrorEvent;
