@@ -69,7 +69,7 @@
 
         import ru.koldoon.fc.m.app.impl.ApplicationImpl;
         import ru.koldoon.fc.m.app.impl.commands.StartupCommand;
-        import ru.koldoon.fc.m.async.IAsyncCollection;
+        import ru.koldoon.fc.m.async.ICollectionPromise;
         import ru.koldoon.fc.m.tree.impl.fs.LocalFileSystemTreeProvider;
 
         private var proposedFocusObject:IFocusManagerComponent;
@@ -109,12 +109,12 @@
 
 
             app.leftPanel.directory = new LocalFileSystemTreeProvider().getRootDirectory();
-            app.leftPanel.directory.getListing().onReady(function (ac:IAsyncCollection):void {
+            app.leftPanel.directory.getListing().onReady(function (ac:ICollectionPromise):void {
                 app.leftPanel.refresh();
             });
 
             app.rightPanel.directory = new LocalFileSystemTreeProvider().getRootDirectory();
-            app.rightPanel.directory.getListing().onReady(function (ac:IAsyncCollection):void {
+            app.rightPanel.directory.getListing().onReady(function (ac:ICollectionPromise):void {
                 app.rightPanel.refresh();
             });
         }

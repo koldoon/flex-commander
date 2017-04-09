@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<s:Panel
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
+    title="Copy {nodeName || nodesCount}{nodesCount > 1 ? ' items' : ''}"
+    minWidth="1000" maxWidth="2000">
+
+    <fx:Declarations>
+        <fx:int id="nodesCount"/>
+        <fx:Array id="parameters"/>
+        <fx:String id="nodeName"/>
+        <fx:String id="targetDir"/>
+        <fx:String id="srcDir"/>
+    </fx:Declarations>
+
+    <s:layout>
+        <s:VerticalLayout
+            padding="20" paddingLeft="40" paddingRight="40"
+            gap="20" horizontalAlign="justify"/>
+    </s:layout>
+
+
+    <s:Form styleName="simple">
+
+        <s:FormItem label="From:">
+            <s:TextInput text="{srcDir}" width="100%" styleName="bordered" enabled="false"/>
+        </s:FormItem>
+
+        <s:FormItem label="To:">
+            <s:TextInput text="{targetDir}" width="100%" styleName="bordered" prompt="Target Directory"/>
+        </s:FormItem>
+
+        <s:FormItem label="">
+            <s:DataGroup
+                width="100%"
+                itemRenderer="ru.koldoon.fc.c.params.BooleanParamRenderer"
+                dataProvider="{new ArrayList(parameters)}">
+
+                <s:layout>
+                    <s:TileLayout
+                        requestedColumnCount="2" horizontalGap="40" verticalGap="20"
+                        paddingTop="20" horizontalAlign="left" orientation="rows"/>
+                </s:layout>
+            </s:DataGroup>
+        </s:FormItem>
+
+    </s:Form>
+
+
+    <s:controlBarContent>
+        <s:Button id="helpButton" label="?" toolTip="Help"/>
+        <s:Spacer width="100%"/>
+        <s:Button id="cancelButton" label="Cancel"/>
+        <s:Button id="queueButton" label="Queue"/>
+        <s:Button id="okButton" label="Copy" styleName="default"/>
+    </s:controlBarContent>
+
+    <fx:Script><![CDATA[
+        import mx.collections.ArrayList;
+        ]]></fx:Script>
+</s:Panel>

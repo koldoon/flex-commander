@@ -3,10 +3,10 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
     import flash.events.MouseEvent;
     import flash.ui.Keyboard;
 
-    import mx.collections.ArrayList;
-
+    import ru.koldoon.fc.c.confirmation.ConfirmationDialog;
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
+    import ru.koldoon.fc.m.app.impl.SelectNodesOperation;
     import ru.koldoon.fc.m.app.impl.commands.*;
     import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.interactive.IInteraction;
@@ -19,17 +19,16 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
     import ru.koldoon.fc.m.tree.ITreeEditor;
     import ru.koldoon.fc.m.tree.ITreeProvider;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
+    import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileNode;
     import ru.koldoon.fc.m.tree.impl.TreeUtils;
-    import ru.koldoon.fc.m.tree.impl.fs.AbstractNodesBunchOperation;
 
     import spark.components.Button;
 
     public class CopyCommand extends AbstractBindableCommand {
 
         public function CopyCommand() {
-            super();
             bindingProperties_ = [
                 new BindingProperties("F5")
             ];
@@ -37,7 +36,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
 
         override public function isExecutable(target:String):Boolean {
-            var sp:IPanel = app.leftPanel == app.getTargetPanel(target) ? app.leftPanel : app.rightPanel;
+            var sp:IPanel = app.getActivePanel();
             var srcNodes:Array = sp.selection.length > 0 ? sp.selection.getSelectedNodes() : [sp.selectedNode];
 
             if (srcNodes.length == 1 && (!srcNodes[0] || srcNodes[0] == AbstractNode.PARENT_NODE)) {
@@ -62,11 +61,11 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
 
         private function showInitDialog():void {
-            var p:CopyStartDialog = new CopyStartDialog();
+            var p:CopyInitDialog = new CopyInitDialog();
             var pd:IPopupDescriptor = app.popupManager.add().instance(p).modal(true);
             var te:ITreeEditor = srcTP as ITreeEditor;
 
-            selector = new NodesSelectionOperation()
+            selector = new SelectNodesOperation()
                 .sourceNodes(srcNodes)
                 .treeProvider(srcTP)
                 .recursive()
@@ -81,11 +80,11 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
             if (srcNodes.length == 1) {
-                p.nodeName = INode(srcNodes[0]).name;
+                p.nodeName = "\"" + INode(srcNodes[0]).name + "\"";
             }
 
             if (copyOperation is IParametrized) {
-                p.parameters = new ArrayList(IParametrized(copyOperation).getParameters().list);
+                p.parameters = IParametrized(copyOperation).getParameters().list;
             }
 
 
@@ -123,7 +122,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
             selector
                 .getProgress()
-                .onProgress(function (op:NodesSelectionOperation):void {
+                .onProgress(function (op:SelectNodesOperation):void {
                     bytesTotal += getBytesTotal(op.nodes.slice(progressCursor));
                     progressCursor = op.nodes.length;
 
@@ -134,24 +133,15 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
             selector
                 .getStatus()
-                .onComplete(function (op:NodesSelectionOperation):void {
+                .onComplete(function (op:SelectNodesOperation):void {
                     showCopyProgressDialog();
                 })
-                .onFinish(function (op:NodesSelectionOperation):void {
+                .onFinish(function (op:SelectNodesOperation):void {
                     app.popupManager.remove(pd);
                 });
 
             copyOperation
-                .execute()
-                .getStatus()
-                .onFinish(function (op:IAsyncOperation):void {
-                    dstPanel.directory
-                        .getListing()
-                        .onReady(function (data:Object):void {
-                            srcPanel.selection.reset();
-                            dstPanel.refresh();
-                        });
-                });
+                .execute();
 
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
@@ -186,7 +176,13 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
             copyOperation
                 .getStatus()
                 .onFinish(function (op:AbstractNodesBunchOperation):void {
-                    app.popupManager.remove(pd);
+                    dstPanel.directory
+                        .getListing()
+                        .onReady(function (data:Object):void {
+                            app.popupManager.remove(pd);
+                            srcPanel.selection.reset();
+                            dstPanel.refresh();
+                        });
                 });
 
             if (copyOperation is IInteractiveOperation) {
@@ -268,7 +264,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
         private var srcNodes:Array;
 
-        private var selector:NodesSelectionOperation;
+        private var selector:SelectNodesOperation;
         private var copyOperation:IAsyncOperation;
     }
 }

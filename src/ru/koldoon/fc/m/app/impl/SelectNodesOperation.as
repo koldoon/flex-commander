@@ -1,9 +1,9 @@
-package ru.koldoon.fc.m.app.impl.commands.copy {
+package ru.koldoon.fc.m.app.impl {
     import flash.utils.Dictionary;
 
     import ru.koldoon.fc.m.async.IPromise;
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.AsyncCollection;
+    import ru.koldoon.fc.m.async.impl.CollectionPromise;
     import ru.koldoon.fc.m.async.impl.Progress;
     import ru.koldoon.fc.m.async.progress.IProgress;
     import ru.koldoon.fc.m.async.progress.IProgressReporter;
@@ -22,7 +22,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
      *
      * With default settings this operation returns a list of given source nodes
      */
-    public class NodesSelectionOperation extends AbstractAsyncOperation implements IProgressReporter, ITreeSelector {
+    public class SelectNodesOperation extends AbstractAsyncOperation implements IProgressReporter, ITreeSelector {
         public static var MAX_LISTINGS:int = 20;
 
 
@@ -45,7 +45,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
         /**
          * Initial Nodes list to go through recursively
          */
-        public function sourceNodes(value:Array):NodesSelectionOperation {
+        public function sourceNodes(value:Array):SelectNodesOperation {
             _sourceNodes = value;
             return this;
         }
@@ -55,7 +55,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
          * Go into DirectoryNode if it has a <code>link</code> flag set
          * NOTE: option <code>recursive<code> must also be set.
          */
-        public function followLinks(fl:Boolean = true):NodesSelectionOperation {
+        public function followLinks(fl:Boolean = true):SelectNodesOperation {
             _followLinks = fl;
             return this;
         }
@@ -64,7 +64,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
         /**
          * Go into directories recursively
          */
-        public function recursive(r:Boolean = true):NodesSelectionOperation {
+        public function recursive(r:Boolean = true):SelectNodesOperation {
             _recursive = r;
             return this;
         }
@@ -83,7 +83,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
          * Listing operations ITreeProvider instance.
          * For the most cases this is a source directory TreeProvider.
          */
-        public function treeProvider(value:ITreeProvider):NodesSelectionOperation {
+        public function treeProvider(value:ITreeProvider):SelectNodesOperation {
             _treeProvider = value;
             return this;
         }
@@ -157,7 +157,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
         }
 
 
-        private function onDirectoryListingReady(ac:AsyncCollection):void {
+        private function onDirectoryListingReady(ac:CollectionPromise):void {
             delete listings[ac];
             listingsLen -= 1;
             totalListingsFinished += 1;

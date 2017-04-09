@@ -4,8 +4,8 @@ package ru.koldoon.fc.m.async {
     /**
      * Async resource getting operation promise
      */
-    public interface IAsyncOperation {
 
+    public interface IAsyncOperation {
         /**
          * Operation Status
          */

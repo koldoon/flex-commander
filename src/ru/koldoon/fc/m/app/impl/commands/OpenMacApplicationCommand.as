@@ -1,7 +1,7 @@
 package ru.koldoon.fc.m.app.impl.commands {
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
-    import ru.koldoon.fc.m.async.impl.AsyncCollection;
+    import ru.koldoon.fc.m.async.impl.CollectionPromise;
     import ru.koldoon.fc.m.os.CommandLineOperation;
     import ru.koldoon.fc.m.tree.IFilesProvider;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
@@ -30,7 +30,7 @@ package ru.koldoon.fc.m.app.impl.commands {
 
             filesProvider
                 .getFiles([panel.selectedNode])
-                .onReady(function (ac:AsyncCollection):void {
+                .onReady(function (ac:CollectionPromise):void {
                     var ref:FileSystemReference = ac.items[0];
                     new CommandLineOperation()
                         .command("bin/open.sh")

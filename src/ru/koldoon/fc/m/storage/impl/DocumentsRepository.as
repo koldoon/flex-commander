@@ -7,13 +7,13 @@ package ru.koldoon.fc.m.storage.impl {
 
     import org.osflash.signals.Signal;
 
-    import ru.koldoon.fc.m.async.IAsyncCollection;
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.IAsyncValue;
+    import ru.koldoon.fc.m.async.ICollectionPromise;
     import ru.koldoon.fc.m.async.IPromise;
-    import ru.koldoon.fc.m.async.impl.AsyncCollection;
-    import ru.koldoon.fc.m.async.impl.AsyncValue;
+    import ru.koldoon.fc.m.async.IValuePromise;
+    import ru.koldoon.fc.m.async.impl.CollectionPromise;
     import ru.koldoon.fc.m.async.impl.Promise;
+    import ru.koldoon.fc.m.async.impl.ValuePromise;
     import ru.koldoon.fc.m.storage.IAsyncDocumentsRepository;
     import ru.koldoon.fc.m.storage.impl.disk.LoadObjectOperation;
     import ru.koldoon.fc.m.storage.impl.disk.RemoveObjectOperation;
@@ -49,8 +49,8 @@ package ru.koldoon.fc.m.storage.impl {
         public var queueChanged:Signal = new Signal();
 
 
-        public function getDocument(name:String):IAsyncValue {
-            var val:AsyncValue = new AsyncValue();
+        public function getDocument(name:String):IValuePromise {
+            var val:ValuePromise = new ValuePromise();
             pushDiskOperation(function ():IAsyncOperation {
                 if (documentsCache[name] != null) {
                     val.applyResult(documentsCache[name]);
@@ -135,8 +135,8 @@ package ru.koldoon.fc.m.storage.impl {
         }
 
 
-        public function selectDocuments(filter:Function = null, limit:Number = Number.MAX_VALUE):IAsyncCollection {
-            var collection:AsyncCollection = new AsyncCollection();
+        public function selectDocuments(filter:Function = null, limit:Number = Number.MAX_VALUE):ICollectionPromise {
+            var collection:CollectionPromise = new CollectionPromise();
             pushDiskOperation(function ():IAsyncOperation {
                 return new SelectDocumentsOperation(location, docsIndex)
                     .filter(filter)
@@ -149,8 +149,8 @@ package ru.koldoon.fc.m.storage.impl {
         }
 
 
-        public function selectIndices(filter:Function = null):IAsyncCollection {
-            var collection:AsyncCollection = new AsyncCollection();
+        public function selectIndices(filter:Function = null):ICollectionPromise {
+            var collection:CollectionPromise = new CollectionPromise();
             pushDiskOperation(function ():IAsyncOperation {
                 return new SelectDocumentsIndicesOperation(docsIndex)
                     .filter(filter)

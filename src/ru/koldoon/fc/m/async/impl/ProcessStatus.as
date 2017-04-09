@@ -22,6 +22,19 @@ package ru.koldoon.fc.m.async.impl {
         /**
          * @inheritDoc
          */
+        public function get info():* {
+            return _info;
+        }
+
+
+        public function set info(value:*):void {
+            _info = value;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
         public function get isInited():Boolean {
             return status == INIT;
         }
@@ -242,7 +255,7 @@ package ru.koldoon.fc.m.async.impl {
 
         private var status:int = INIT;
         private var updating:Boolean = false;
-
+        private var _info:*;
 
         protected var _onStart:Signal;
         protected var _onFault:Signal;

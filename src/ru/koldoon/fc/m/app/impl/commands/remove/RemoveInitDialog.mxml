@@ -2,17 +2,14 @@
 <s:Panel
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
-    title="Copy {nodeName || nodesCount}{nodesCount > 1 ? ' items' : ''}"
+    title="Remove {nodeName || nodesCount}{nodesCount > 1 ? ' items' : ''}"
     minWidth="1000" maxWidth="2000">
 
     <fx:Declarations>
         <fx:int id="nodesCount"/>
+        <fx:Array id="parameters"/>
         <fx:String id="nodeName"/>
-        <fx:String id="targetDir"/>
         <fx:String id="srcDir"/>
-        <s:ArrayList id="parameters"/>
-        <!--<fx:Boolean id="skipExtAttrs"/>-->
-        <!--<fx:Boolean id="overwriteAll"/>-->
     </fx:Declarations>
 
     <s:layout>
@@ -28,15 +25,11 @@
             <s:TextInput text="{srcDir}" width="100%" styleName="bordered" enabled="false"/>
         </s:FormItem>
 
-        <s:FormItem label="To:">
-            <s:TextInput text="{targetDir}" width="100%" styleName="bordered" prompt="Target Directory"/>
-        </s:FormItem>
-
         <s:FormItem label="">
             <s:DataGroup
                 width="100%"
                 itemRenderer="ru.koldoon.fc.c.params.BooleanParamRenderer"
-                dataProvider="{parameters}">
+                dataProvider="{new ArrayList(parameters)}">
 
                 <s:layout>
                     <s:TileLayout
@@ -53,8 +46,10 @@
         <s:Button id="helpButton" label="?" toolTip="Help"/>
         <s:Spacer width="100%"/>
         <s:Button id="cancelButton" label="Cancel"/>
-        <s:Button id="queueButton" label="Queue"/>
-        <s:Button id="okButton" label="Copy" styleName="default"/>
+        <s:Button id="okButton" label="Remove" styleName="default"/>
     </s:controlBarContent>
 
+    <fx:Script><![CDATA[
+        import mx.collections.ArrayList;
+        ]]></fx:Script>
 </s:Panel>

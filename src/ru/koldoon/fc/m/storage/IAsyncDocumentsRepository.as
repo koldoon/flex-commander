@@ -1,7 +1,7 @@
 package ru.koldoon.fc.m.storage {
-    import ru.koldoon.fc.m.async.IAsyncCollection;
-    import ru.koldoon.fc.m.async.IAsyncValue;
+    import ru.koldoon.fc.m.async.ICollectionPromise;
     import ru.koldoon.fc.m.async.IPromise;
+    import ru.koldoon.fc.m.async.IValuePromise;
 
     /**
      * Named collection of a documents. Documents can have named indices or
@@ -13,7 +13,7 @@ package ru.koldoon.fc.m.storage {
          * @param index
          * @return
          */
-        function getDocument(index:String):IAsyncValue;
+        function getDocument(index:String):IValuePromise;
 
         /**
          * Set Item at particular index, replaces existing item if it is.
@@ -62,7 +62,7 @@ package ru.koldoon.fc.m.storage {
          * @return
          * @param filter function filter(item:*):Boolean {}
          */
-        function selectDocuments(filter:Function = null, limit:Number = Number.MAX_VALUE):IAsyncCollection;
+        function selectDocuments(filter:Function = null, limit:Number = Number.MAX_VALUE):ICollectionPromise;
 
         /**
          * Select indices of the Items corresponding to a filter.
@@ -71,6 +71,6 @@ package ru.koldoon.fc.m.storage {
          * @param filter function filter(item:*):Boolean {}
          * @return
          */
-        function selectIndices(filter:Function = null):IAsyncCollection;
+        function selectIndices(filter:Function = null):ICollectionPromise;
     }
 }

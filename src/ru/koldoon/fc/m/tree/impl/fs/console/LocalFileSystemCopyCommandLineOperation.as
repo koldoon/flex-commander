@@ -40,7 +40,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
 
 
         override protected function begin():void {
-            command("bin/cp.sh");
+            command("bin/cp");
 
             var args:Array = [];
             if (!_skipExisting && !_overwriteExisting) {

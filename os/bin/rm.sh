@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-/bin/cp "$@"
+/bin/rm "$@"

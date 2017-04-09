@@ -1,6 +1,6 @@
-package ru.koldoon.fc.m.tree.impl.fs.copy {
-    import ru.koldoon.fc.m.async.IAsyncCollection;
+package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.async.IAsyncOperation;
+    import ru.koldoon.fc.m.async.ICollectionPromise;
     import ru.koldoon.fc.m.async.impl.Interaction;
     import ru.koldoon.fc.m.async.impl.InteractionMessage;
     import ru.koldoon.fc.m.async.impl.InteractionOption;
@@ -13,9 +13,9 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.IFilesProvider;
     import ru.koldoon.fc.m.tree.ITreeSelector;
+    import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
-    import ru.koldoon.fc.m.tree.impl.fs.*;
     import ru.koldoon.fc.m.tree.impl.fs.console.LocalFileSystemCopyCommandLineOperation;
     import ru.koldoon.fc.m.tree.impl.fs.console.LocalFileSystemMkDirCommandLineOperation;
     import ru.koldoon.fc.utils.notEmpty;
@@ -68,7 +68,7 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
         override protected function begin():void {
             filesProvider
                 .getFiles([srcDir, dstDir], false)
-                .onReady(function (ac:IAsyncCollection):void {
+                .onReady(function (ac:ICollectionPromise):void {
                     sourcePath = ac.items[0];
                     destinationPath = ac.items[1];
                     onPreparingComplete();
@@ -110,7 +110,7 @@ package ru.koldoon.fc.m.tree.impl.fs.copy {
         private var interaction:Interaction = new Interaction();
 
 
-        private function onFilesReferencesReady(ac:IAsyncCollection):void {
+        private function onFilesReferencesReady(ac:ICollectionPromise):void {
             filesReferences = ac.items;
             onPreparingComplete();
         }

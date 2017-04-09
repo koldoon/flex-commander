@@ -1,6 +1,6 @@
 package ru.koldoon.fc.m.tree {
-    import ru.koldoon.fc.m.async.IAsyncCollection;
     import ru.koldoon.fc.m.async.IAsyncOperation;
+    import ru.koldoon.fc.m.async.ICollectionPromise;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
 
     /**
@@ -18,7 +18,7 @@ package ru.koldoon.fc.m.tree {
          * @param followLinks follow to link if target path is a link. Intermediate links are always followed
          * @return Collection of FileSystemReference
          */
-        function getFiles(nodes:Array, followLinks:Boolean = true):IAsyncCollection;
+        function getFiles(nodes:Array, followLinks:Boolean = true):ICollectionPromise;
 
 
         /**

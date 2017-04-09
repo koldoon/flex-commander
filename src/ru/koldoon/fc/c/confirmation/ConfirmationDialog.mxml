@@ -26,7 +26,7 @@
             <s:itemRenderer>
                 <core:ClassFactory
                     id="buttonsFactory"
-                    generator="ru.koldoon.fc.m.app.impl.commands.copy.OptionRenderer"
+                    generator="ru.koldoon.fc.c.confirmation.OptionRenderer"
                     properties="{{ message: this.message }}"/>
             </s:itemRenderer>
         </s:DataGroup>

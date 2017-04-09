@@ -1,10 +1,10 @@
 package ru.koldoon.fc.m.async.impl {
-    import ru.koldoon.fc.m.async.IAsyncValue;
+    import ru.koldoon.fc.m.async.IValuePromise;
 
     /**
      * Async Value Promise
      */
-    public class AsyncValue extends Promise implements IAsyncValue {
+    public class ValuePromise extends Promise implements IValuePromise {
         private var _value:*;
 
         public function get value():* {

@@ -1,5 +1,5 @@
 package ru.koldoon.fc.m.tree {
-    import ru.koldoon.fc.m.async.IAsyncCollection;
+    import ru.koldoon.fc.m.async.ICollectionPromise;
 
     public interface ITreeProvider extends INode {
 
@@ -7,7 +7,7 @@ package ru.koldoon.fc.m.tree {
          * Returns async collection of INode items
          * @return
          */
-        function getListingFor(dir:IDirectory):IAsyncCollection;
+        function getListingFor(dir:IDirectory):ICollectionPromise;
 
 
         /**

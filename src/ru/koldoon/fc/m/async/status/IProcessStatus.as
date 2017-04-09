@@ -6,9 +6,16 @@ package ru.koldoon.fc.m.async.status {
     public interface IProcessStatus {
 
         /**
-         * Current status getters. To simplify checking
-         * all getters organised as flags.
+         * Any associated with current status info data
          */
+        function get info():*;
+
+
+        function set info(value:*):void;
+
+
+        // Current status getters. To simplify checking
+        // all getters organised as flags.
 
         /**
          * Process instance was just created and have never
@@ -55,9 +62,7 @@ package ru.koldoon.fc.m.async.status {
         function get isFault():Boolean;
 
 
-        /**
-         * Status Change signals.
-         */
+        // Status Change signals.
 
         /**
          * Operation start Handler shortcut;

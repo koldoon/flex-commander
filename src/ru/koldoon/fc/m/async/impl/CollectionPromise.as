@@ -1,13 +1,13 @@
 package ru.koldoon.fc.m.async.impl {
     import mx.collections.IList;
 
-    import ru.koldoon.fc.m.async.IAsyncCollection;
+    import ru.koldoon.fc.m.async.ICollectionPromise;
 
     /**
      * Async Collection Promise
      */
-    public class AsyncCollection extends Promise implements IAsyncCollection {
-        public function AsyncCollection() {
+    public class CollectionPromise extends Promise implements ICollectionPromise {
+        public function CollectionPromise() {
             items_ = [];
         }
 

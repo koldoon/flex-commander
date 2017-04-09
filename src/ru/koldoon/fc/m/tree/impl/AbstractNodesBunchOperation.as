@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.tree.impl.fs {
+package ru.koldoon.fc.m.tree.impl {
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
     import ru.koldoon.fc.m.async.impl.Progress;
     import ru.koldoon.fc.m.async.progress.IProgress;

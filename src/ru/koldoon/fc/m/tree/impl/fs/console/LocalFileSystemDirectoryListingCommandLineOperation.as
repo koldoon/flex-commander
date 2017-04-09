@@ -1,5 +1,5 @@
-package ru.koldoon.fc.m.tree.impl.fs {
-    import ru.koldoon.fc.m.async.IAsyncCollection;
+package ru.koldoon.fc.m.tree.impl.fs.console {
+    import ru.koldoon.fc.m.async.ICollectionPromise;
     import ru.koldoon.fc.m.os.CommandLineOperation;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.IFilesProvider;
@@ -9,7 +9,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
     import ru.koldoon.fc.utils.notEmpty;
 
-    public class LocalFileSystemDirectoryListingOperation extends CommandLineOperation {
+    public class LocalFileSystemDirectoryListingCommandLineOperation extends CommandLineOperation {
         /**
          * Detects "total" string in ls listing (usually on the first place)
          */
@@ -40,7 +40,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
         private var directory_:IDirectory;
 
 
-        public function directory(p:IDirectory):LocalFileSystemDirectoryListingOperation {
+        public function directory(p:IDirectory):LocalFileSystemDirectoryListingCommandLineOperation {
             directory_ = p;
             return this;
         }
@@ -57,7 +57,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
         /**
          * Begin directory listing.
          */
-        private function onFilesReferencesReady(ac:IAsyncCollection):void {
+        private function onFilesReferencesReady(ac:ICollectionPromise):void {
             command("bin/listing.sh");
             commandArguments([FileSystemReference(ac.items[0]).path + "/"]);
 
