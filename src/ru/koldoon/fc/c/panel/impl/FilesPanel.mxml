@@ -4,7 +4,10 @@
     xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:core="mx.core.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
 
     implements="ru.koldoon.fc.m.app.IPanel"
-    initialize="onInitialize()" addedToStage="onAddedToStage(event)">
+    initialize="onInitialize()" addedToStage="onAddedToStage(event)"
+    tabEnabled="false" tabChildren="false">
+
+    <!-- Default Tab Parameters are set to false because Panel focus is controlled by "active" property -->
 
     <s:Rect
         id="backgroundRect"
@@ -45,8 +48,7 @@
         left="0" right="0" top="135" bottom="65" minHeight="100" focusAlpha="0"
         verticalScrollPolicy="on" doubleClickEnabled="true"
         skinClass="ru.koldoon.fc.resources.skins.list.ListTransparentSkin"
-        dataProvider="{nodes}" focusIn="onFocusIn()" focusOut="onFocusOut()"
-        doubleClick="nodesList_doubleClickHandler(event)">
+        dataProvider="{nodes}" doubleClick="nodesList_doubleClickHandler(event)">
 
         <s:layout>
             <s:VerticalLayout
@@ -342,53 +344,44 @@
          * This Index is saved and restored when panel looses and gets focus.
          */
         private var proposedSelectedIndex:int = 0;
-        private var active_:Boolean = false;
+        private var _active:Boolean = false;
 
 
         public function get active():Boolean {
-            return active_;
+            return _active;
         }
 
 
         public function set active(val:Boolean):void {
-            if (val == active_) {
+            if (val == _active) {
                 return;
             }
 
-            if (active_) {
+            _active = val;
+
+            if (_active) {
+                tabEnabled = tabChildren = true;
+                nodesList.requireSelection = true;
+                nodesList.setFocus();
+
+                // If selectedIndex is not -1, then the List was selected by mouse.
+                // In this case we should not change the selection.
                 if (nodesList.selectedIndex == -1) {
                     nodesList.selectedIndex = proposedSelectedIndex;
                 }
+                else {
+                    onNodesListSelectionChange(null);
+                }
+
+                nodesList.addEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
             }
             else {
+                nodesList.removeEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
                 proposedSelectedIndex = nodesList.selectedIndex;
+                nodesList.requireSelection = false;
                 nodesList.selectedIndex = -1;
+                tabEnabled = tabChildren = false;
             }
-        }
-
-
-        private function onFocusOut():void {
-            nodesList.removeEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
-
-            proposedSelectedIndex = nodesList.selectedIndex;
-            nodesList.requireSelection = false;
-            nodesList.selectedIndex = -1;
-        }
-
-
-        private function onFocusIn():void {
-            nodesList.requireSelection = true;
-
-            // If selectedIndex is not -1, then the List was selected by mouse.
-            // In this case we should not change the selection.
-            if (nodesList.selectedIndex == -1) {
-                nodesList.selectedIndex = proposedSelectedIndex;
-            }
-            else {
-                onNodesListSelectionChange(null);
-            }
-
-            nodesList.addEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
         }
 
 

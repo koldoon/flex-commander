@@ -7,10 +7,9 @@ package ru.koldoon.fc.m.app.impl.commands {
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
 
-    public class OpenSelectedNodeCommand extends AbstractBindableCommand {
-        public function OpenSelectedNodeCommand() {
-            super();
-            bindingProperties_ = [
+    public class OpenSelectedDirectoryCommand extends AbstractBindableCommand {
+        public function OpenSelectedDirectoryCommand() {
+            bindings = [
                 new BindingProperties("Enter")
             ];
         }
@@ -22,8 +21,14 @@ package ru.koldoon.fc.m.app.impl.commands {
         private var listingPromise:IPromise;
 
 
-        override public function execute(target:String):void {
-            var panel:IPanel = app.getTargetPanel(target);
+        override public function isExecutable():Boolean {
+            var sn:INode = app.getActivePanel().selectedNode;
+            return sn == AbstractNode.PARENT_NODE || sn is IDirectory;
+        }
+
+
+        override public function execute():void {
+            var panel:IPanel = app.getActivePanel();
             var node:INode = panel.selectedNode;
             var dir:IDirectory = node as IDirectory;
 

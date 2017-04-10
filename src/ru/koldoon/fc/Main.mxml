@@ -44,9 +44,9 @@
         <s:dataProvider>
             <s:ArrayCollection>
                 <fx:String>Help</fx:String>
-                <fx:String>Menu</fx:String>
-                <fx:String>View</fx:String>
-                <fx:String>Edit</fx:String>
+                <fx:String>-</fx:String>
+                <fx:String>-</fx:String>
+                <fx:String>-</fx:String>
                 <fx:String>Copy</fx:String>
                 <fx:String>Move</fx:String>
                 <fx:String>MkDir</fx:String>
@@ -69,8 +69,6 @@
 
         import ru.koldoon.fc.m.app.impl.ApplicationImpl;
         import ru.koldoon.fc.m.app.impl.commands.StartupCommand;
-        import ru.koldoon.fc.m.async.ICollectionPromise;
-        import ru.koldoon.fc.m.tree.impl.fs.LocalFileSystemTreeProvider;
 
         private var proposedFocusObject:IFocusManagerComponent;
 
@@ -84,39 +82,23 @@
             if (proposedFocusObject) {
                 proposedFocusObject.setFocus();
             }
-
-            if (stage) {
-                stage.frameRate = 600;
-            }
             mouseEnabled = mouseChildren = true;
         }
 
 
         private function onDeactivate():void {
             proposedFocusObject = focusManager.getFocus();
-            if (stage) {
-                stage.frameRate = 600;
-            }
+            // prevent view from handling mouse moves and drain a battery
             mouseEnabled = mouseChildren = false;
         }
 
 
         private function creationCompleteHandler(event:FlexEvent):void {
             ToolTip.maxWidth = 1300;
+
             app = new ApplicationImpl();
             app.attachView(this);
-            app.context.installCommand(new StartupCommand());
-
-
-            app.leftPanel.directory = new LocalFileSystemTreeProvider().getRootDirectory();
-            app.leftPanel.directory.getListing().onReady(function (ac:ICollectionPromise):void {
-                app.leftPanel.refresh();
-            });
-
-            app.rightPanel.directory = new LocalFileSystemTreeProvider().getRootDirectory();
-            app.rightPanel.directory.getListing().onReady(function (ac:ICollectionPromise):void {
-                app.rightPanel.refresh();
-            });
+            app.getContext().installCommand(new StartupCommand());
         }
 
 

@@ -7,14 +7,27 @@ package ru.koldoon.fc.m.app.impl {
      */
     public class BindingProperties {
 
-        public function BindingProperties(keysCombination:String = null, nodeValue:RegExp = null, executionTarget:String = null) {
+        public function BindingProperties(keysCombination:String = null, nodeValue:RegExp = null) {
             this.keysCombination = keysCombination;
-            this.executionTarget = executionTarget ? executionTarget : this.executionTarget;
             this.nodeValue = nodeValue;
         }
 
 
+        /**
+         * Keyboard combination as <code>getCombinationString()</code> returns
+         */
         public var keysCombination:String;
+
+        /**
+         * Params modifier. This is useful if you want to setup
+         * keyboard binding to the same command but with specific
+         * default params.
+         * Since command params are taken from the underneath operation,
+         * we don't know their count and names exactly, they depend on
+         * concrete operation implementation, but we can modify them by
+         * index in a list.
+         */
+        public var params:Array;
 
         /**
          * When command is executed from keyboard combination,
@@ -29,9 +42,21 @@ package ru.koldoon.fc.m.app.impl {
          * Node Value Matching RegExp validator.
          * When user press Enter on a file,
          * application searches for a appropriate command to execute
-         * in order they are installed in application context
+         * in order they are installed in application getContext
          */
         public var nodeValue:RegExp;
+
+
+        public function setParams(value:Array):BindingProperties {
+            params = value;
+            return this;
+        }
+
+
+        public function setTarget(value:String):BindingProperties {
+            executionTarget = value;
+            return this;
+        }
 
 
         public static function optKeysDown(event:KeyboardEvent):Boolean {

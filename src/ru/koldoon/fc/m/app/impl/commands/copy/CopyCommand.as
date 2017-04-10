@@ -29,13 +29,13 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
     public class CopyCommand extends AbstractBindableCommand {
 
         public function CopyCommand() {
-            bindingProperties_ = [
+            bindings = [
                 new BindingProperties("F5")
             ];
         }
 
 
-        override public function isExecutable(target:String):Boolean {
+        override public function isExecutable():Boolean {
             var sp:IPanel = app.getActivePanel();
             var srcNodes:Array = sp.selection.length > 0 ? sp.selection.getSelectedNodes() : [sp.selectedNode];
 
@@ -48,7 +48,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
         }
 
 
-        override public function execute(target:String):void {
+        override public function execute():void {
             srcPanel = app.getActivePanel();
             dstPanel = (srcPanel == app.leftPanel) ? app.rightPanel : app.leftPanel; // opposite panel
             srcNodes = srcPanel.selection.length > 0 ? srcPanel.selection.getSelectedNodes() : [srcPanel.selectedNode];
@@ -80,7 +80,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
             if (srcNodes.length == 1) {
-                p.nodeName = "\"" + INode(srcNodes[0]).name + "\"";
+                p.nodeName = INode(srcNodes[0]).name;
             }
 
             if (copyOperation is IParametrized) {

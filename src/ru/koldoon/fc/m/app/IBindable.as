@@ -1,4 +1,6 @@
 package ru.koldoon.fc.m.app {
+    import ru.koldoon.fc.m.app.impl.BindingProperties;
+
     /**
      * This Interface may be realised by ICommand or IAsyncCommand objects independently
      * @see ICommand
@@ -30,10 +32,17 @@ package ru.koldoon.fc.m.app {
 
 
         /**
+         * Current binding properties, that triggered bindable instance
+         */
+        function set context(val:BindingProperties):void;
+
+        function get context():BindingProperties;
+
+        /**
          * Command must return it's binding options object when needed.
          * @see BindingProperties
          */
         [ArrayElementType("ru.koldoon.fc.m.app.impl.BindingProperties")]
-        function get bindingProperties():Array;
+        function get bindings():Array;
     }
 }

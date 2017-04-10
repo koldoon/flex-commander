@@ -1,45 +1,57 @@
 package ru.koldoon.fc.m.app.impl.commands {
-    import ru.koldoon.fc.m.app.IApplication;
     import ru.koldoon.fc.m.app.IBindable;
-    import ru.koldoon.fc.m.app.ICommand;
+    import ru.koldoon.fc.m.app.impl.BindingProperties;
 
-    public class AbstractBindableCommand implements ICommand, IBindable {
-        public function init(app:IApplication):Boolean {
-            this.app = app;
-            return true;
-        }
+    public class AbstractBindableCommand extends AbstractCommand implements IBindable {
 
 
-        public function isExecutable(target:String):Boolean {
-            return true;
-        }
-
-
-        public function execute(target:String):void {
-        }
-
-
-        public function dispose():void {
-        }
-
-
+        /**
+         * @inheritDoc
+         */
         public function get id():String {
             return "";
         }
 
 
+        /**
+         * @inheritDoc
+         */
         public function get label():String {
             return "";
         }
 
 
+        /**
+         * @inheritDoc
+         */
         public function get description():String {
             return "";
         }
 
 
-        public function get bindingProperties():Array {
-            return bindingProperties_;
+        /**
+         * @inheritDoc
+         */
+        public function get bindings():Array {
+            return _bindings;
+        }
+
+
+        public function set bindings(val:Array):void {
+            _bindings = val;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function set context(val:BindingProperties):void {
+            _context = val;
+        }
+
+
+        public function get context():BindingProperties {
+            return _context;
         }
 
 
@@ -47,7 +59,7 @@ package ru.koldoon.fc.m.app.impl.commands {
         // Impl
         // -----------------------------------------------------------------------------------
 
-        protected var app:IApplication;
-        protected var bindingProperties_:Array = [];
+        private var _bindings:Array = [];
+        private var _context:BindingProperties;
     }
 }

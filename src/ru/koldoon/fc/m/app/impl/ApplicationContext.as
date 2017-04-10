@@ -33,6 +33,5 @@ package ru.koldoon.fc.m.app.impl {
         private var app:IApplication;
         private var commands:Vector.<ICommand> = new Vector.<ICommand>();
 
-
     }
 }

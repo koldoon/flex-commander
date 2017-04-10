@@ -4,15 +4,14 @@ package ru.koldoon.fc.m.app.impl.commands {
     public class GoToFirstNodeCommand extends AbstractBindableCommand {
 
         public function GoToFirstNodeCommand() {
-            super();
-            bindingProperties_ = [
+            bindings = [
                 new BindingProperties("Left")
             ];
         }
 
 
-        override public function execute(target:String):void {
-            app.getTargetPanel(target).selectedNodeIndex = 0;
+        override public function execute():void {
+            app.getActivePanel().selectedNodeIndex = 0;
         }
 
     }

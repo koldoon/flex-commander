@@ -1,5 +1,7 @@
 package ru.koldoon.fc.m.app.impl {
     import flash.events.KeyboardEvent;
+    import flash.events.MouseEvent;
+    import flash.ui.Keyboard;
 
     import ru.koldoon.fc.Main;
     import ru.koldoon.fc.m.app.IApplication;
@@ -13,15 +15,15 @@ package ru.koldoon.fc.m.app.impl {
 
     public class ApplicationImpl implements IApplication {
         public function ApplicationImpl() {
-            context_ = new ApplicationContext(this);
+            context = new ApplicationContext(this);
         }
 
 
         /**
          * @inheritDoc
          */
-        public function get context():IApplicationContext {
-            return context_;
+        public function getContext():IApplicationContext {
+            return context;
         }
 
 
@@ -58,8 +60,11 @@ package ru.koldoon.fc.m.app.impl {
         }
 
 
+        /**
+         * @inheritDoc
+         */
         public function getActivePanel():IPanel {
-            return leftPanel.selectedNodeIndex != -1 ? leftPanel : rightPanel;
+            return leftPanel.active ? leftPanel : rightPanel;
         }
 
 
@@ -74,16 +79,45 @@ package ru.koldoon.fc.m.app.impl {
         public function attachView(main:Main):void {
             view = main;
             view.leftPanel.addEventListener(KeyboardEvent.KEY_DOWN, onPanelKeyPress);
+            view.leftPanel.addEventListener(MouseEvent.MOUSE_DOWN, onPanelMouseDown);
             view.rightPanel.addEventListener(KeyboardEvent.KEY_DOWN, onPanelKeyPress);
+            view.rightPanel.addEventListener(MouseEvent.MOUSE_DOWN, onPanelMouseDown);
+
+            if (!leftPanel.active && !rightPanel.active) {
+                changeActivePanel(leftPanel);
+            }
         }
 
 
         // -----------------------------------------------------------------------------------
-        // Impl
+        // Internal
         // -----------------------------------------------------------------------------------
 
-        private var context_:ApplicationContext;
+        private var context:ApplicationContext;
         private var view:Main;
+
+
+        private function onPanelMouseDown(event:MouseEvent):void {
+            changeActivePanel(event.currentTarget as IPanel);
+        }
+
+
+        private function changeActivePanel(toPanel:IPanel = null):void {
+            if (!toPanel) {
+                toPanel = !leftPanel.active ? leftPanel : rightPanel;
+            }
+
+            if (!toPanel.active) {
+                if (toPanel == leftPanel) {
+                    leftPanel.active = true;
+                    rightPanel.active = false;
+                }
+                else {
+                    leftPanel.active = false;
+                    rightPanel.active = true;
+                }
+            }
+        }
 
 
         /**
@@ -91,34 +125,42 @@ package ru.koldoon.fc.m.app.impl {
          * @param event
          */
         private function onPanelKeyPress(event:KeyboardEvent):void {
+            if (event.keyCode == Keyboard.TAB) {
+                changeActivePanel();
+                return;
+            }
+
             var combination:String = BindingProperties.detectCombination(event);
             if (isEmpty(combination)) {
                 return;
             }
 
-            for each (var cmd:ICommand in context_.commandsInstalled) {
+            for each (var cmd:ICommand in context.commandsInstalled) {
                 if (!(cmd is IBindable)) {
                     continue;
                 }
 
-                for each (var bp:BindingProperties in IBindable(cmd).bindingProperties) {
+                for each (var bp:BindingProperties in IBindable(cmd).bindings) {
                     if (bp.keysCombination != combination) {
                         continue;
                     }
 
-                    if (bp.nodeValue && cmd.isExecutable(bp.executionTarget)) {
+                    if (bp.nodeValue) {
                         var node:INode = getTargetPanel(bp.executionTarget).selectedNode;
-                        if (node && bp.nodeValue.exec(node.link || node.name)) {
-                            cmd.execute(bp.executionTarget);
-                            return;
+                        if (node && !bp.nodeValue.exec(node.link || node.name)) {
+                            continue;
                         }
                     }
-                    else if (cmd.isExecutable(bp.executionTarget)) {
-                        cmd.execute(bp.executionTarget);
+
+                    IBindable(cmd).context = bp;
+
+                    if (cmd.isExecutable()) {
+                        cmd.execute();
                         return;
                     }
                 }
             }
         }
+
     }
 }

@@ -3,14 +3,13 @@ package ru.koldoon.fc.m.app {
 
     public interface IApplication {
 
-        function get context():IApplicationContext;
-
-
-        function get leftPanel():IPanel;
-        function get rightPanel():IPanel;
+        function getContext():IApplicationContext;
 
         function getTargetPanel(target:String):IPanel;
         function getActivePanel():IPanel;
+
+        function get leftPanel():IPanel;
+        function get rightPanel():IPanel;
 
         /**
          * Application level PopupManager

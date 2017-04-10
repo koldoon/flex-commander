@@ -7,6 +7,8 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
     import ru.koldoon.fc.m.app.impl.BindingProperties;
     import ru.koldoon.fc.m.app.impl.commands.AbstractBindableCommand;
     import ru.koldoon.fc.m.async.IAsyncOperation;
+    import ru.koldoon.fc.m.async.impl.Param;
+    import ru.koldoon.fc.m.async.parametrized.IParam;
     import ru.koldoon.fc.m.async.parametrized.IParametrized;
     import ru.koldoon.fc.m.popups.IPopupDescriptor;
     import ru.koldoon.fc.m.tree.IDirectory;
@@ -21,13 +23,16 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
     public class RemoveCommand extends AbstractBindableCommand {
 
         public function RemoveCommand() {
-            bindingProperties_ = [
-                new BindingProperties("F8")
+            bindings = [
+                new BindingProperties("F8"),
+                new BindingProperties("Bsp"),
+                new BindingProperties("Shift-F8").setParams([new Param("MOVE_TO_TRASH", false)]),
+                new BindingProperties("Shift-Bsp").setParams([new Param("MOVE_TO_TRASH", false)])
             ];
         }
 
 
-        override public function isExecutable(target:String):Boolean {
+        override public function isExecutable():Boolean {
             var sp:IPanel = app.getActivePanel();
             var srcNodes:Array = sp.selection.length > 0 ? sp.selection.getSelectedNodes() : [sp.selectedNode];
 
@@ -40,7 +45,7 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
         }
 
 
-        override public function execute(target:String):void {
+        override public function execute():void {
             srcPanel = app.getActivePanel();
             srcNodes = srcPanel.selection.length > 0 ? srcPanel.selection.getSelectedNodes() : [srcPanel.selectedNode];
             srcDir = srcPanel.directory;
@@ -63,10 +68,16 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
             if (srcNodes.length == 1) {
-                p.nodeName = "\"" + INode(srcNodes[0]).name + "\"";
+                p.nodeName = INode(srcNodes[0]).name;
             }
 
             if (removeOperation is IParametrized) {
+                for each (var bcp:IParam in context.params) {
+                    // set binding context parameters as defaults
+                    IParametrized(removeOperation)
+                        .getParameters()
+                        .param(bcp.name).value = bcp.value;
+                }
                 p.parameters = IParametrized(removeOperation).getParameters().list;
             }
 

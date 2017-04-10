@@ -3,14 +3,13 @@ package ru.koldoon.fc.m.app.impl.commands {
 
     public class ResetPanelSelectionCommand extends AbstractBindableCommand {
         public function ResetPanelSelectionCommand() {
-            super();
-            bindingProperties_ = [
+            bindings = [
                 new BindingProperties("Esc")
             ];
         }
 
-        override public function execute(target:String):void {
-            app.getTargetPanel(target).selection.reset();
+        override public function execute():void {
+            app.getActivePanel().selection.reset();
         }
     }
 }

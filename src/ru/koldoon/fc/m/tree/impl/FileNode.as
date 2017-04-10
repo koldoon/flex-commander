@@ -1,7 +1,6 @@
 package ru.koldoon.fc.m.tree.impl {
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
-    import ru.koldoon.fc.m.tree.impl.fs.FileNodeUtil;
     import ru.koldoon.fc.utils.notEmpty;
 
     /**

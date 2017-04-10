@@ -19,17 +19,14 @@ package ru.koldoon.fc.m.app {
 
         /**
          * Check if command can be executed in current conditions
-         * @param target default ExecutionTarget.ACTIVE_PANEL
-         * @return
          */
-        function isExecutable(target:String):Boolean;
+        function isExecutable():Boolean;
 
 
         /**
          * Execute operation(s)
-         * @param target default ExecutionTarget.ACTIVE_PANEL
          */
-        function execute(target:String):void;
+        function execute():void;
 
 
         /**
