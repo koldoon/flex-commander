@@ -6,7 +6,7 @@ package ru.koldoon.fc.m.tree.impl {
 
     public class AbstractNodesBunchOperation extends AbstractAsyncOperation implements INodesBunchOperation {
 
-        public function get nodes():Array {
+        public function get nodesTotal():Array {
             return _nodes;
         }
 

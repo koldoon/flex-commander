@@ -11,15 +11,17 @@ package ru.koldoon.fc.m.os {
 
     public class CommandLineOperation extends AbstractAsyncOperation {
         private static const LOG_SPACES_TRIM_RXP:RegExp = /\s/g;
-        private var incompleteStdOut:String;
-        private var incompleteStdErr:String;
+
         private var _commandName:String;
         private var _commandArguments:Vector.<String>;
-        private var npsi:NativeProcessStartupInfo;
-        private var proc:NativeProcess;
         private var _shutDownOnStdErr:Boolean = false;
         private var _waitForReturnOnStdOut:Boolean = true;
         private var _waitForReturnOnStdErr:Boolean = false;
+
+        private var incompleteStdOut:String;
+        private var incompleteStdErr:String;
+        private var npsi:NativeProcessStartupInfo;
+        private var proc:NativeProcess;
 
 
         public function command(str:String):CommandLineOperation {

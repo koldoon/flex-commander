@@ -9,7 +9,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         }
 
 
-        public function path(value:String):LocalFileSystemRemoveCommandLineOperation {
+        public function setPath(value:String):LocalFileSystemRemoveCommandLineOperation {
             _path = value;
             return this;
         }

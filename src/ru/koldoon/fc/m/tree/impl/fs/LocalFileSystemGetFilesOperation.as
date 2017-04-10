@@ -16,7 +16,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
         public var files:Array;
 
 
-        public function nodes(n:Array):LocalFileSystemGetFilesOperation {
+        public function setNodes(n:Array):LocalFileSystemGetFilesOperation {
             _nodes = n;
             return this;
         }
@@ -47,7 +47,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
                 if (notEmpty(p.link) && (!head || _followLinks)) {
                     if (p.link.charAt(0) == "/") {
                         // Root directory reference.
-                        // Such references may occur with link nodes present in path
+                        // Such references may occur with link nodesTotal present in path
                         fsPath.unshift(p.link.substr(1));
                         break;
                     }

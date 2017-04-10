@@ -13,6 +13,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.IFilesProvider;
     import ru.koldoon.fc.m.tree.ITreeSelector;
+    import ru.koldoon.fc.m.tree.ITreeTransmitOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
@@ -20,14 +21,14 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.impl.fs.console.LocalFileSystemMkDirCommandLineOperation;
     import ru.koldoon.fc.utils.notEmpty;
 
-    public class LocalFileSystemCopyOperation extends AbstractNodesBunchOperation implements IInteractiveOperation, IParametrized {
+    public class LocalFileSystemCopyOperation extends AbstractNodesBunchOperation implements IInteractiveOperation, IParametrized, ITreeTransmitOperation {
         public static const OVERWRITE_ALL:String = "OVERWRITE_ALL";
         public static const SKIP_EXT_ATTRS:String = "SKIP_EXT_ATTRS";
         public static const SKIP_ALL:String = "SKIP_ALL";
 
 
         public function LocalFileSystemCopyOperation() {
-            parameters.setList([
+            parameters.setup([
                 new Param(SKIP_EXT_ATTRS, true),
                 new Param(OVERWRITE_ALL, false)
             ]);
@@ -36,38 +37,44 @@ package ru.koldoon.fc.m.tree.impl.fs {
         }
 
 
-        public function treeSelector(s:ITreeSelector):LocalFileSystemCopyOperation {
+        public function setSelector(s:ITreeSelector):ITreeTransmitOperation {
             selector = s;
             return this;
         }
 
 
-        public function getParameters():IParameters {
-            return parameters;
+        public function setSource(d:IDirectory):ITreeTransmitOperation {
+            source = d;
+            return this;
         }
 
 
-        public function getInteraction():IInteraction {
-            return interaction;
-        }
-
-
-        public function destination(d:IDirectory):LocalFileSystemCopyOperation {
-            dstDir = d;
+        public function setDestination(d:IDirectory):ITreeTransmitOperation {
+            destination = d;
             filesProvider = d.getTreeProvider() as IFilesProvider;
             return this;
         }
 
 
-        public function source(d:IDirectory):LocalFileSystemCopyOperation {
-            srcDir = d;
-            return this;
+        /**
+         * @inheritDoc
+         */
+        public function getParameters():IParameters {
+            return parameters;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function getInteraction():IInteraction {
+            return interaction;
         }
 
 
         override protected function begin():void {
             filesProvider
-                .getFiles([srcDir, dstDir], false)
+                .getFiles([source, destination], false)
                 .onReady(function (ac:ICollectionPromise):void {
                     sourcePath = ac.items[0];
                     destinationPath = ac.items[1];
@@ -99,8 +106,8 @@ package ru.koldoon.fc.m.tree.impl.fs {
         // -----------------------------------------------------------------------------------
 
         private var selector:ITreeSelector;
-        private var srcDir:IDirectory;
-        private var dstDir:IDirectory;
+        private var source:IDirectory;
+        private var destination:IDirectory;
         private var filesProvider:IFilesProvider;
 
         private var sourcePath:String;
@@ -159,7 +166,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
                 return;
             }
 
-            if (!nodes || nodesProcessed == nodes.length) {
+            if (!nodesTotal || nodesProcessed == nodesTotal.length) {
                 done();
             }
             else {
@@ -202,7 +209,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
 
         private function continueCopy(op:IAsyncOperation):void {
-            progress.setPercent(nodesProcessed / nodes.length * 100, this);
+            progress.setPercent(nodesProcessed / nodesTotal.length * 100, this);
             cmdLineOperation = null;
             _nodesProcessed += 1;
             copyNextFile();

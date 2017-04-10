@@ -8,7 +8,6 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
     import ru.koldoon.fc.m.app.impl.BindingProperties;
     import ru.koldoon.fc.m.app.impl.SelectNodesOperation;
     import ru.koldoon.fc.m.app.impl.commands.*;
-    import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.interactive.IInteraction;
     import ru.koldoon.fc.m.async.interactive.IInteractiveOperation;
     import ru.koldoon.fc.m.async.parametrized.IParametrized;
@@ -18,6 +17,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
     import ru.koldoon.fc.m.tree.INodesBunchOperation;
     import ru.koldoon.fc.m.tree.ITreeEditor;
     import ru.koldoon.fc.m.tree.ITreeProvider;
+    import ru.koldoon.fc.m.tree.ITreeTransmitOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
     import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
@@ -71,7 +71,11 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
                 .recursive()
                 .followLinks(false);
 
-            copyOperation = te.copy(srcDir, dstDir, selector);
+            copyOperation = te.copy()
+                .setSource(srcDir)
+                .setDestination(dstDir)
+                .setSelector(selector);
+
 
             p.nodesCount = srcNodes.length;
             p.targetDir = TreeUtils.getPathString(dstDir);
@@ -91,6 +95,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
             function onPopupClick(e:MouseEvent):void {
                 if (p.cancelButton == e.target) {
                     app.popupManager.remove(pd);
+                    copyOperation.cancel();
                 }
                 else if (p.okButton == e.target) {
                     app.popupManager.remove(pd);
@@ -102,6 +107,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
             function onPopupKeyDown(e:KeyboardEvent):void {
                 if (e.keyCode == Keyboard.ESCAPE) {
                     app.popupManager.remove(pd);
+                    copyOperation.cancel();
                 }
                 else if (e.keyCode == Keyboard.ENTER) {
                     app.popupManager.remove(pd);
@@ -195,7 +201,7 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
                 INodesBunchOperation(copyOperation)
                     .getProgress()
                     .onProgress(function (op:INodesBunchOperation):void {
-                        p.currentNode = TreeUtils.getPathString(op.nodes[op.nodesProcessed]);
+                        p.currentNode = TreeUtils.getPathString(op.nodesTotal[op.nodesProcessed]);
                         p.nodesProcessed = op.nodesProcessed;
                     });
             }
@@ -265,6 +271,6 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
         private var srcNodes:Array;
 
         private var selector:SelectNodesOperation;
-        private var copyOperation:IAsyncOperation;
+        private var copyOperation:ITreeTransmitOperation;
     }
 }

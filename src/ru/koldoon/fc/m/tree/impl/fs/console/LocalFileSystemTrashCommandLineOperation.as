@@ -10,7 +10,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         }
 
 
-        public function path(value:String):LocalFileSystemTrashCommandLineOperation {
+        public function setPath(value:String):LocalFileSystemTrashCommandLineOperation {
             _path = value;
             return this;
         }

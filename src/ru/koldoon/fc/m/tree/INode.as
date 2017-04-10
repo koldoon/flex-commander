@@ -28,8 +28,8 @@ package ru.koldoon.fc.m.tree {
 
 
         /**
-         * Get nodes path from the very root to this node, including
-         * all nested ITreeProvider-s and null-value nodes.
+         * Get nodesTotal path from the very root to this node, including
+         * all nested ITreeProvider-s and null-value nodesTotal.
          * @see INode
          * @return Array of INode
          */
@@ -38,7 +38,7 @@ package ru.koldoon.fc.m.tree {
 
         /**
          * Get superior ITreeProvider. The most methods for working
-         * with nodes implemented there.
+         * with nodesTotal implemented there.
          * @see IFilesProvider
          * @see ITreeEditor
          * @see ITreeProvider
@@ -48,7 +48,7 @@ package ru.koldoon.fc.m.tree {
 
 
         /**
-         * Nodes can be parented by another nodes (as for ZIP files listing f.e.)
+         * Nodes can be parented by another nodesTotal (as for ZIP files listing f.e.)
          * but in the very top there is a directory anyway because only IDirectory
          * can provide files listing;
          * @return

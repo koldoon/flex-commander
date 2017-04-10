@@ -2,6 +2,8 @@ package ru.koldoon.fc.m.async.impl {
 
     import flash.display.Shape;
     import flash.events.Event;
+    import flash.utils.Dictionary;
+    import flash.utils.getTimer;
 
     import mx.logging.ILogger;
     import mx.logging.Log;
@@ -12,10 +14,16 @@ package ru.koldoon.fc.m.async.impl {
     import ru.koldoon.fc.m.async.status.IProcessStatus;
 
     public class AbstractAsyncOperation implements IAsyncOperation {
+
+        /**
+         * Created and not disposed operations references. Can be used in DEBUG purposes.
+         */
+        public static var OPERATIONS:Dictionary = new Dictionary(true);
         protected static var LOG:ILogger;
 
 
         public function AbstractAsyncOperation() {
+            OPERATIONS[this] = getTimer();
             LOG = Log.getLogger("fc." + ClassInfo.forInstance(this).simpleName);
         }
 

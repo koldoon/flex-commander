@@ -40,7 +40,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         private var directory_:IDirectory;
 
 
-        public function directory(p:IDirectory):LocalFileSystemDirectoryListingCommandLineOperation {
+        public function setDirectory(p:IDirectory):LocalFileSystemDirectoryListingCommandLineOperation {
             directory_ = p;
             return this;
         }
@@ -72,7 +72,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
 
 
         /**
-         * Parse stdout lines and create files and directories nodes
+         * Parse stdout lines and create files and directories nodesTotal
          */
         override protected function onLines(lines:Array):void {
             if (notEmpty(lines.length) && lines[0].match(TOTAL_RXP)) {

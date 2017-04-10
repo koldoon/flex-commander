@@ -6,7 +6,7 @@
 
     backgroundColor="#011130" applicationDPI="320"
     activate="onActivate()" deactivate="onDeactivate()"
-    frameRate="600" creationComplete="creationCompleteHandler(event)">
+    frameRate="600" applicationComplete="creationCompleteHandler(event)">
 
     <fx:Declarations>
         <debug:SOSLoggingTarget/>
@@ -68,7 +68,7 @@
         import mx.managers.IFocusManagerComponent;
 
         import ru.koldoon.fc.m.app.impl.ApplicationImpl;
-        import ru.koldoon.fc.m.app.impl.commands.StartupCommand;
+        import ru.koldoon.fc.m.app.impl.commands.startup.StartupCommand;
 
         private var proposedFocusObject:IFocusManagerComponent;
 

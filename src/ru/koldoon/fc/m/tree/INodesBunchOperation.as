@@ -7,11 +7,11 @@ package ru.koldoon.fc.m.tree {
         /**
          * Nodes list to process
          */
-        function get nodes():Array;
+        function get nodesTotal():Array;
 
 
         /**
-         * Processed nodes count
+         * Processed nodesTotal count
          */
         function get nodesProcessed():Number;
 

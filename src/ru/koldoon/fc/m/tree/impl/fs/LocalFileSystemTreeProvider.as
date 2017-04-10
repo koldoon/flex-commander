@@ -7,8 +7,10 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.IFilesProvider;
     import ru.koldoon.fc.m.tree.ITreeEditor;
+    import ru.koldoon.fc.m.tree.ITreeMkDirOperation;
     import ru.koldoon.fc.m.tree.ITreeProvider;
-    import ru.koldoon.fc.m.tree.ITreeSelector;
+    import ru.koldoon.fc.m.tree.ITreeRemoveOperation;
+    import ru.koldoon.fc.m.tree.ITreeTransmitOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
@@ -31,7 +33,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
         public function getListingFor(dir:IDirectory):ICollectionPromise {
             var ac:CollectionPromise = new CollectionPromise();
             var op:IAsyncOperation = new LocalFileSystemDirectoryListingCommandLineOperation()
-                .directory(dir)
+                .setDirectory(dir)
                 .execute();
 
             op.getStatus().onComplete(function (op:LocalFileSystemDirectoryListingCommandLineOperation):void {
@@ -62,7 +64,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
         public function getFiles(nodes:Array, followLinks:Boolean = true):ICollectionPromise {
             var ac:CollectionPromise = new CollectionPromise();
             var op:IAsyncOperation = new LocalFileSystemGetFilesOperation()
-                .nodes(nodes)
+                .setNodes(nodes)
                 .followLinks(followLinks)
                 .execute();
 
@@ -98,7 +100,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
         /**
          * @inheritDoc
          */
-        public function move(source:IDirectory, destination:IDirectory, selector:ITreeSelector):IAsyncOperation {
+        public function move():ITreeTransmitOperation {
             return null;
         }
 
@@ -106,30 +108,24 @@ package ru.koldoon.fc.m.tree.impl.fs {
         /**
          * @inheritDoc
          */
-        public function copy(source:IDirectory, destination:IDirectory, selector:ITreeSelector):IAsyncOperation {
-            return pinAsyncOperation(
-                new LocalFileSystemCopyOperation()
-                    .source(source)
-                    .treeSelector(selector)
-                    .destination(destination));
+        public function copy():ITreeTransmitOperation {
+            return pinAsyncOperation(new LocalFileSystemCopyOperation());
         }
 
 
         /**
          * @inheritDoc
          */
-        public function remove(nodes:Array):IAsyncOperation {
-            return pinAsyncOperation(
-                new LocalFileSystemRemoveOperation()
-                    .setNodes(nodes));
+        public function remove():ITreeRemoveOperation {
+            return pinAsyncOperation(new LocalFileSystemRemoveOperation());
         }
 
 
         /**
          * @inheritDoc
          */
-        public function createDirectory(name:String, parent:IDirectory):IAsyncOperation {
-            return null;
+        public function mkDir():ITreeMkDirOperation {
+            return pinAsyncOperation(new LocalFileSystemMkDirOperation());
         }
 
 
@@ -143,7 +139,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
          * Prevent executable operations being garbage collected
          * before finish.
          */
-        private function pinAsyncOperation(op:IAsyncOperation):IAsyncOperation {
+        private function pinAsyncOperation(op:IAsyncOperation):* {
             operations[op] = true;
             op.getStatus().onFinish(function (op:IAsyncOperation):void {
                 delete operations[op];

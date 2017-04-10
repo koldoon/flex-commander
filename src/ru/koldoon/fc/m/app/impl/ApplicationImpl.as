@@ -1,4 +1,7 @@
 package ru.koldoon.fc.m.app.impl {
+    import flash.desktop.NativeApplication;
+    import flash.display.NativeMenu;
+    import flash.display.NativeWindow;
     import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.ui.Keyboard;
@@ -40,6 +43,23 @@ package ru.koldoon.fc.m.app.impl {
          */
         public function get rightPanel():IPanel {
             return view.rightPanel;
+        }
+
+
+        public function get menu():NativeMenu {
+            var menu:NativeMenu;
+            if (NativeWindow.supportsMenu) {
+                if (!view.stage.nativeWindow.menu) {
+                    view.stage.nativeWindow.menu = new NativeMenu();
+                }
+
+                menu = view.stage.nativeWindow.menu;
+            }
+            else if (NativeApplication.supportsMenu) {
+                menu = NativeApplication.nativeApplication.menu;
+            }
+
+            return menu;
         }
 
 

@@ -136,10 +136,8 @@
 
             if (node == AbstractNode.PARENT_NODE) {
                 nameLabel.text = node.name;
-                iconLabel.text = icon.fa_folder;
-                typeLabel.text = "";
-                sizeLabel.text = "";
-                dateLabel.text = "";
+                iconLabel.visible = iconLabel.text = icon.fa_folder;
+                typeLabel.text = sizeLabel.text = dateLabel.text = "";
             }
             else {
                 nameLabel.text = file.type ? file.name.substr(0, file.name.length - file.type.length - 1) : file.name;
@@ -158,8 +156,7 @@
                     dateLabel.text = F.getInstance().dateOnlyNumbers.format(file.modified);
                 }
                 else {
-                    sizeLabel.text = "";
-                    dateLabel.text = "";
+                    sizeLabel.text = dateLabel.text = "";
                 }
             }
 

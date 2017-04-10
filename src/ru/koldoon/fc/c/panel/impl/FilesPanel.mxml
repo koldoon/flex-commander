@@ -257,8 +257,17 @@
 
 
         public function refresh():void {
+            nodesList.removeEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
+            var selectedIndex:Number = nodesList.selectedIndex;
+
             nodes.source = directory.nodes;
             nodes.refresh();
+
+            nodesList.validateNow();
+            nodesList.setSelectedIndex(selectedIndex);
+            nodesList.ensureIndexIsVisible(selectedIndex);
+
+            nodesList.addEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
         }
 
 
@@ -266,15 +275,15 @@
         // IPanel - selectedNode
         // -----------------------------------------------------------------------------------
 
-        private var selectedNodeChange_:Signal = new Signal();
-        private var selectedNode_:INode;
+        private var _selectedNodeChange:Signal = new Signal();
+        private var _selectedNode:INode;
 
 
         /**
          * @inheritDoc
          */
         public function get selectedNodeChange():Signal {
-            return selectedNodeChange_;
+            return _selectedNodeChange;
         }
 
 
@@ -283,7 +292,7 @@
          */
         [Bindable]
         public function get selectedNode():INode {
-            return selectedNode_;
+            return _selectedNode;
         }
 
 
@@ -291,11 +300,11 @@
          * @inheritDoc
          */
         public function set selectedNode(node:INode):void {
-            if (selectedNode_ == node) {
+            if (_selectedNode == node) {
                 return;
             }
 
-            selectedNode_ = node;
+            _selectedNode = node;
 
             if (nodesList.selectedItem != node) {
                 var index:Number = nodes.getItemIndex(node);

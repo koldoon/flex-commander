@@ -7,17 +7,18 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.async.parametrized.IParametrized;
     import ru.koldoon.fc.m.tree.IFilesProvider;
     import ru.koldoon.fc.m.tree.INode;
+    import ru.koldoon.fc.m.tree.ITreeRemoveOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
     import ru.koldoon.fc.m.tree.impl.fs.console.LocalFileSystemRemoveCommandLineOperation;
     import ru.koldoon.fc.m.tree.impl.fs.console.LocalFileSystemTrashCommandLineOperation;
 
-    public class LocalFileSystemRemoveOperation extends AbstractNodesBunchOperation implements IParametrized {
+    public class LocalFileSystemRemoveOperation extends AbstractNodesBunchOperation implements IParametrized, ITreeRemoveOperation {
         public static const MOVE_TO_TRASH:String = "MOVE_TO_TRASH";
 
 
         public function LocalFileSystemRemoveOperation() {
-            parameters.setList([
+            parameters.setup([
                 new Param(MOVE_TO_TRASH, true)
             ]);
         }
@@ -31,9 +32,12 @@ package ru.koldoon.fc.m.tree.impl.fs {
         }
 
 
-        public function setNodes(value:Array):LocalFileSystemRemoveOperation {
+        /**
+         * @inheritDoc
+         */
+        public function setNodes(value:Array):ITreeRemoveOperation {
             _nodes = value;
-            filesProvider = INode(nodes[0]).getTreeProvider() as IFilesProvider;
+            filesProvider = INode(nodesTotal[0]).getTreeProvider() as IFilesProvider;
             return this;
         }
 
@@ -61,7 +65,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
                 return;
             }
 
-            if (!nodes || nodesProcessed == nodes.length) {
+            if (!nodesTotal || nodesProcessed == nodesTotal.length) {
                 done();
             }
             else {
@@ -69,12 +73,12 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
                 if (parameters.param(MOVE_TO_TRASH).value) {
                     cmdLineOperation = new LocalFileSystemTrashCommandLineOperation()
-                        .path(fsRef.path)
+                        .setPath(fsRef.path)
                         .execute();
                 }
                 else {
                     cmdLineOperation = new LocalFileSystemRemoveCommandLineOperation()
-                        .path(fsRef.path)
+                        .setPath(fsRef.path)
                         .execute();
                 }
 
@@ -92,7 +96,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
 
         private function continueRemove(op:IAsyncOperation):void {
-            progress.setPercent(nodesProcessed / nodes.length * 100, this);
+            progress.setPercent(nodesProcessed / nodesTotal.length * 100, this);
             cmdLineOperation = null;
             _nodesProcessed += 1;
             removeNextFile();
