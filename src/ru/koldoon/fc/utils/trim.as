@@ -1,4 +1,4 @@
-package com.qwickserve.tools {
+package ru.koldoon.fc.utils {
     public function trim(str:String):String {
         if (!str || str.length == 0) {
             return "";

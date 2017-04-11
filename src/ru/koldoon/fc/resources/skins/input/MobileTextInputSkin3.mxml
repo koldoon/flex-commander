@@ -1,12 +1,7 @@
 <?xml version="1.0"?>
 <s:Skin
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
-    xmlns:qs="http://qs.petrosoft.com" xmlns:core="com.qwickserve.components.core.*"
     alpha.disabled="0.5" height="100">
-
-    <fx:Metadata>
-        [HostComponent("com.qwickserve.components.core.MobileTextInput")]
-    </fx:Metadata>
 
     <s:states>
         <s:State name="normal"/>

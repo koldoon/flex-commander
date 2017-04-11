@@ -1,14 +1,9 @@
 <?xml version="1.0"?>
 <s:Skin
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
-    xmlns:c="com.qwickserve.components.core.*" xmlns:qs="http://qs.petrosoft.com"
 
     alpha.disabled="0.5" height="90"
     currentStateChange="currentStateChangeHandler(event)">
-
-    <fx:Metadata>
-        [HostComponent("com.qwickserve.components.core.MobileTextInput")]
-    </fx:Metadata>
 
     <s:states>
         <s:State name="normal"/>
