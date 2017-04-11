@@ -444,6 +444,11 @@
             evt.keyCode = Keyboard.ENTER;
             nodesList.dispatchEvent(evt);
         }
+
+
+        override public function setFocus():void {
+            nodesList.setFocus();
+        }
         ]]></fx:Script>
 
 </s:Group>

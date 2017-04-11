@@ -4,9 +4,8 @@
     xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
     xmlns:debug="ru.koldoon.fc.c.debug.*"
 
-    backgroundColor="#011130" applicationDPI="320"
-    activate="onActivate()" deactivate="onDeactivate()"
-    frameRate="600" applicationComplete="creationCompleteHandler(event)">
+    backgroundColor="#011130" applicationDPI="320" frameRate="600"
+    activate="onActivate()" applicationComplete="creationCompleteHandler(event)">
 
     <fx:Declarations>
         <debug:SOSLoggingTarget/>
@@ -64,13 +63,13 @@
 
     <fx:Script><![CDATA[
         import mx.controls.ToolTip;
+        import mx.core.UIComponent;
         import mx.events.FlexEvent;
-        import mx.managers.IFocusManagerComponent;
 
         import ru.koldoon.fc.m.app.impl.ApplicationImpl;
         import ru.koldoon.fc.m.app.impl.commands.startup.StartupCommand;
 
-        private var proposedFocusObject:IFocusManagerComponent;
+        private var proposedFocusObject:UIComponent;
 
         /**
          * Main Application Model and Context
@@ -78,18 +77,23 @@
         private var app:ApplicationImpl;
 
 
+        /**
+         * Focus manager issues workaround:
+         * Set focused component manually.
+         * Sometime application looses on switch from/to it
+         */
         private function onActivate():void {
-            if (proposedFocusObject) {
-                proposedFocusObject.setFocus();
+            if (!app) {
+                // application is not ready yet
+                return;
             }
-            mouseEnabled = mouseChildren = true;
-        }
 
-
-        private function onDeactivate():void {
-            proposedFocusObject = focusManager.getFocus();
-            // prevent view from handling mouse moves and drain a battery
-            mouseEnabled = mouseChildren = false;
+            if (popupManager.getPopupsVisible().length > 0) {
+                popupManager.setFocus();
+            }
+            else if (app.getActivePanel() is UIComponent) {
+                UIComponent(app.getActivePanel()).setFocus();
+            }
         }
 
 

@@ -65,7 +65,7 @@ package ru.koldoon.fc.m.app.impl.commands.mkdir {
 
 
             function onPopupKeyDown(e:KeyboardEvent):void {
-                if (e.keyCode == Keyboard.ESCAPE) {cancel() }
+                if (e.keyCode == Keyboard.ESCAPE) { cancel() }
                 else if (e.keyCode == Keyboard.ENTER) { ok() }
             }
 

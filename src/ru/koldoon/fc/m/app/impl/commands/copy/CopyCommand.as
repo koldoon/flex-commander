@@ -93,26 +93,25 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
 
 
             function onPopupClick(e:MouseEvent):void {
-                if (p.cancelButton == e.target) {
-                    app.popupManager.remove(pd);
-                    copyOperation.cancel();
-                }
-                else if (p.okButton == e.target) {
-                    app.popupManager.remove(pd);
-                    beginCopy();
-                }
+                if (p.cancelButton == e.target) { cancel() }
+                else if (p.okButton == e.target) { ok() }
             }
 
 
             function onPopupKeyDown(e:KeyboardEvent):void {
-                if (e.keyCode == Keyboard.ESCAPE) {
-                    app.popupManager.remove(pd);
-                    copyOperation.cancel();
-                }
-                else if (e.keyCode == Keyboard.ENTER) {
-                    app.popupManager.remove(pd);
-                    beginCopy();
-                }
+                if (e.keyCode == Keyboard.ESCAPE) { cancel() }
+            }
+
+
+            function ok():void {
+                app.popupManager.remove(pd);
+                beginCopy();
+            }
+
+
+            function cancel():void {
+                app.popupManager.remove(pd);
+                copyOperation.cancel();
             }
         }
 
@@ -155,8 +154,6 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
             function onPopupClick(e:MouseEvent):void {
                 if (p.cancelButton == e.target) {
                     copyOperation.cancel();
-                }
-                else if (p.backgroundButton == e.target) {
                 }
             }
 
@@ -215,8 +212,6 @@ package ru.koldoon.fc.m.app.impl.commands.copy {
                 if (p.cancelButton == e.target) {
                     copyOperation.cancel();
                     app.popupManager.remove(pd);
-                }
-                else if (p.backgroundButton == e.target) {
                 }
             }
 

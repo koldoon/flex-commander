@@ -48,7 +48,7 @@
 
 
     <s:controlBarContent>
-        <s:Button id="backgroundButton" label="Background"/>
+        <!--<s:Button id="backgroundButton" label="Background"/>-->
         <s:Button id="cancelButton" label="Cancel"/>
     </s:controlBarContent>
 

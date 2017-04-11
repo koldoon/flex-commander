@@ -1,12 +1,12 @@
 package ru.koldoon.fc.c.popups.impl {
     import com.greensock.TweenLite;
 
-    import flash.display.InteractiveObject;
+    import flash.display.DisplayObjectContainer;
     import flash.events.Event;
+    import flash.events.FocusEvent;
     import flash.events.MouseEvent;
     import flash.utils.Dictionary;
 
-    import mx.core.IVisualElement;
     import mx.core.UIComponent;
     import mx.events.CloseEvent;
     import mx.graphics.SolidColor;
@@ -63,12 +63,12 @@ package ru.koldoon.fc.c.popups.impl {
         }
 
 
-        public function get shown():Vector.<IPopupDescriptor> {
+        public function getPopupsVisible():Vector.<IPopupDescriptor> {
             return popupsVisible;
         }
 
 
-        public function get queue():Vector.<IPopupDescriptor> {
+        public function getQueue():Vector.<IPopupDescriptor> {
             return displayQueue;
         }
 
@@ -84,8 +84,7 @@ package ru.koldoon.fc.c.popups.impl {
         private var calloutArranger:CalloutArranger;
         private var popupsClicked:Dictionary = new Dictionary(true);
         private var modalPopupsVisible:int = 0;
-        private var lockedChildren:Dictionary = new Dictionary(true);
-        private var lastFocusedObject:InteractiveObject;
+        private var focusedObjectBehind:UIComponent;
 
 
         private function onFogMouseDown(event:MouseEvent):void {
@@ -108,7 +107,7 @@ package ru.koldoon.fc.c.popups.impl {
         private function processQueue(e:Event):void {
             removeEventListener(Event.ENTER_FRAME, processQueue);
             if (displayQueue.length == 0) {
-                releaseEnvironmentAndHideContent();
+                visible = false;
                 return;
             }
 
@@ -125,20 +124,21 @@ package ru.koldoon.fc.c.popups.impl {
 
             // put popup at right z-index
             if (pd.modal_) {
+                if (!modalPopupsVisible) {
+                    // if this is the first modal popup
+                    focusedObjectBehind = focusManager.getFocus() as UIComponent || stage.focus as UIComponent;
+                }
+
                 modalPopupsVisible += 1;
                 if (!containsElement(fogVisualElement)) {
                     addElement(fogVisualElement);
                 }
 
-                if (numElements > 0 && getElementIndex(fogVisualElement) != numElements - 1) {
-                    // move fog to top
-                    setElementIndex(fogVisualElement, numElements - 1);
-                }
-
-                // hide other modal popups
+                // temporary hide other modal popups
                 for each (var vpd:PopupDescriptor in popupsVisible) {
                     if (vpd.modal_ && vpd != pd) {
                         vpd.instance_.visible = false;
+                        vpd.instance_.removeEventListener(FocusEvent.FOCUS_OUT, onModalPopupFocusOut);
                     }
                 }
 
@@ -162,11 +162,16 @@ package ru.koldoon.fc.c.popups.impl {
                 onComplete: performPopupLayoutAfterValidate
             });
 
+            var self:PopupManager = this;
+
+
             function performPopupLayoutAfterValidate():void {
                 if (popupsVisible.indexOf(pd) == -1) {
                     // Popup was removed before shown
                     return;
                 }
+
+                self.visible = true;
 
                 // perform layout
                 alignPopup(pd);
@@ -185,9 +190,10 @@ package ru.koldoon.fc.c.popups.impl {
                 }
 
                 pd.instance_.visible = true;
-                lockEnvironmentAndShowContent();
-                if (pd.instance_ is UIComponent) {
-                    UIComponent(pd.instance_).setFocus();
+
+                if (pd.modal_) {
+                    pd.instance_.setFocus();
+                    pd.instance_.addEventListener(FocusEvent.FOCUS_OUT, onModalPopupFocusOut, false, 0, true);
                 }
 
                 pd.onPopupOpen_.dispatch(pd.instance_);
@@ -195,46 +201,24 @@ package ru.koldoon.fc.c.popups.impl {
         }
 
 
-        private function lockEnvironmentAndShowContent():void {
-            focusEnabled = mouseEnabled = visible = true;
-            if (!modalPopupsVisible) {
+        private function onModalPopupFocusOut(e:FocusEvent):void {
+            if (!e.relatedObject) {
                 return;
             }
 
-            lastFocusedObject = stage.focus || lastFocusedObject;
-            var numChildren:int = parent.numChildren;
-            for (var i:int = 0; i < numChildren; i++) {
-                var child:UIComponent = parent.getChildAt(i) as UIComponent;
-                // Temporary lock all parent children that can receive focus
-                // to provide modal window true modality
-                if (child && child != this && (child.tabEnabled || child.tabChildren || child.focusEnabled)) {
-                    lockedChildren[child] = {
-                        focusEnabled: child.focusEnabled,
-                        tabEnabled:   child.tabEnabled,
-                        tabChildren:  child.tabChildren
-                    };
-                    child.focusEnabled = child.tabEnabled = child.tabChildren = false;
-                }
-            }
-        }
+            var target:UIComponent = UIComponent(e.relatedObject);
+            var popup:UIComponent = UIComponent(e.currentTarget);
+            var obj:DisplayObjectContainer = target.parent;
 
-
-        private function releaseEnvironmentAndHideContent():void {
-            if (modalPopupsVisible) {
-                return;
+            // check if focus was changed inside modal popup only
+            while (obj && obj != popup) {
+                obj = obj.parent;
             }
 
-            if (popupsVisible.length == 0) {
-                focusEnabled = mouseEnabled = visible = false;
+            if (!obj || obj != popup) {
+                target.tabEnabled = target.focusEnabled = false;
+                popup.setFocus();
             }
-
-            for (var child:* in lockedChildren) {
-                child.focusEnabled = lockedChildren[child].focusEnabled;
-                child.tabEnabled = lockedChildren[child].tabEnabled;
-                child.tabChildren = lockedChildren[child].tabChildren;
-            }
-            lockedChildren = new Dictionary(true);
-            stage.focus = lastFocusedObject;
         }
 
 
@@ -286,48 +270,51 @@ package ru.koldoon.fc.c.popups.impl {
         private function removePopupVisible(d:IPopupDescriptor):void {
             var pd:PopupDescriptor = d as PopupDescriptor;
 
-            popupsVisible.splice(popupsVisible.indexOf(pd), 1);
-            if (pd.inQueue_ && popupFromQueueVisible == pd) {
-                popupFromQueueVisible = null;
-            }
-
-            if (pd.modal_) {
-                modalPopupsVisible -= 1;
-
-                var nextPopup:PopupDescriptor;
-                if (displayQueue.length > 0) {
-                    nextPopup = PopupDescriptor(displayQueue[0]);
-                }
-
-                if (containsElement(fogVisualElement)) {
-                    if (!modalPopupsVisible && (!nextPopup || !nextPopup.modal_)) {
-                        removeElement(fogVisualElement);
-                    }
-                    else if (numElements > 1 && getElementIndex(fogVisualElement) != numElements - 2) {
-                        setElementIndex(fogVisualElement, numElements - 2);
-                    }
-                }
-            }
-
-            if (numElements > 0) {
-                var activeElement:IVisualElement = getElementAt(numElements - 1);
-                activeElement.visible = true;
-                if (activeElement is UIComponent) {
-                    UIComponent(activeElement).setFocus();
-                }
-            }
-
+            pd.instance_.removeEventListener(CloseEvent.CLOSE, onPopupSelfClose);
+            pd.instance_.removeEventListener(MouseEvent.MOUSE_DOWN, onPopupMouseDown);
+            pd.instance_.removeEventListener(FocusEvent.FOCUS_OUT, onModalPopupFocusOut);
             pd.instance_.removeEventListener(CloseEvent.CLOSE, onPopupSelfClose);
 
-            if (pd.hideByClickOutside_) {
-                pd.instance_.removeEventListener(MouseEvent.MOUSE_DOWN, onPopupMouseDown);
+            popupsVisible.splice(popupsVisible.indexOf(pd), 1);
+
+            if (pd.inQueue_ && popupFromQueueVisible == pd) {
+                popupFromQueueVisible = null;
             }
 
             if (containsElement(pd.instance_)) {
                 removeElement(pd.instance_);
             }
 
-            pd.instance_.removeEventListener(CloseEvent.CLOSE, onPopupSelfClose);
+            if (pd.modal_) {
+                modalPopupsVisible -= 1;
+            }
+
+            if (containsElement(fogVisualElement)) {
+                if (!modalPopupsVisible || numElements == 1) {
+                    removeElement(fogVisualElement);
+                    if (focusedObjectBehind) {
+                        focusedObjectBehind.setFocus();
+                        focusedObjectBehind = null;
+                    }
+                }
+                else if (getElementIndex(fogVisualElement) != numElements - 2) {
+                    setElementIndex(fogVisualElement, numElements - 2);
+                }
+            }
+
+            // restore the most top of the temporary hidden modal popups (if any)
+            if (numElements > 0) {
+                var topPopup:UIComponent = UIComponent(getElementAt(numElements - 1));
+                if (topPopup != fogVisualElement) {
+                    topPopup.visible = true;
+                    var tpd:PopupDescriptor = getPopupDescriptorFor(topPopup);
+                    if (tpd.modal_) {
+                        topPopup.setFocus();
+                        topPopup.addEventListener(FocusEvent.FOCUS_OUT, onModalPopupFocusOut, false, 0, true);
+                    }
+                }
+            }
+
             pd.onPopupClose_.dispatch(pd.instance_);
             addEventListener(Event.ENTER_FRAME, processQueue);
         }
@@ -377,5 +364,15 @@ package ru.koldoon.fc.c.popups.impl {
             }
         }
 
+
+        override public function setFocus():void {
+            if (numElements == 0) {
+                return;
+            }
+            var popup:UIComponent = getElementAt(numElements - 1) as UIComponent;
+            if (popup) {
+                popup.setFocus();
+            }
+        }
     }
 }

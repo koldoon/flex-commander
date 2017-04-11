@@ -1,7 +1,7 @@
 package ru.koldoon.fc.c.popups.impl {
     import flash.display.DisplayObject;
 
-    import mx.core.IVisualElement;
+    import mx.core.UIComponent;
 
     import org.osflash.signals.Signal;
 
@@ -14,7 +14,7 @@ package ru.koldoon.fc.c.popups.impl {
 
     public class PopupDescriptor implements IPopupDescriptor, ICalloutDescriptor {
 
-        public var instance_:IVisualElement;
+        public var instance_:UIComponent;
         public var verticalAlign_:String = VerticalAlign.MIDDLE;
         public var horizontalAlign_:String = HorizontalAlign.CENTER;
         public var marginTop_:int;
@@ -31,11 +31,10 @@ package ru.koldoon.fc.c.popups.impl {
         public var onPopupOpen_:Signal = new Signal();
         public var onPopupClose_:Signal = new Signal();
 
-
         /**
          * @inheritDoc
          */
-        public function instance(i:IVisualElement):IPopupDescriptor {
+        public function instance(i:UIComponent):IPopupDescriptor {
             instance_ = i;
             return this;
         }

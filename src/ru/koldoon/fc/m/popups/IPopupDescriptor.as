@@ -1,7 +1,7 @@
 package ru.koldoon.fc.m.popups {
     import flash.display.DisplayObject;
 
-    import mx.core.IVisualElement;
+    import mx.core.UIComponent;
 
     import spark.layouts.HorizontalAlign;
     import spark.layouts.VerticalAlign;
@@ -14,7 +14,7 @@ package ru.koldoon.fc.m.popups {
         /**
          * Popup instance to show.
          */
-        function instance(i:IVisualElement):IPopupDescriptor;
+        function instance(i:UIComponent):IPopupDescriptor;
 
 
         /**

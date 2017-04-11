@@ -83,26 +83,25 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
 
 
             function onPopupClick(e:MouseEvent):void {
-                if (p.cancelButton == e.target) {
-                    app.popupManager.remove(pd);
-                    removeOperation.cancel();
-                }
-                else if (p.okButton == e.target) {
-                    app.popupManager.remove(pd);
-                    beginRemove();
-                }
+                if (p.cancelButton == e.target) { cancel() }
+                else if (p.okButton == e.target) { ok() }
             }
 
 
             function onPopupKeyDown(e:KeyboardEvent):void {
-                if (e.keyCode == Keyboard.ESCAPE) {
-                    app.popupManager.remove(pd);
-                    removeOperation.cancel();
-                }
-                else if (e.keyCode == Keyboard.ENTER) {
-                    app.popupManager.remove(pd);
-                    beginRemove();
-                }
+                if (e.keyCode == Keyboard.ESCAPE) { cancel() }
+            }
+
+
+            function ok():void {
+                app.popupManager.remove(pd);
+                beginRemove();
+            }
+
+
+            function cancel():void {
+                app.popupManager.remove(pd);
+                removeOperation.cancel();
             }
         }
 
@@ -146,8 +145,6 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
                 if (p.cancelButton == e.target) {
                     removeOperation.cancel();
                     app.popupManager.remove(pd);
-                }
-                else if (p.backgroundButton == e.target) {
                 }
             }
 

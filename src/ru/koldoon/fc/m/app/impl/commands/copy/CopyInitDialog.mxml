@@ -3,7 +3,7 @@
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
     title="Copy  {nodeName || nodesCount}{nodesCount > 1 ? ' items' : ''}"
-    minWidth="1000" maxWidth="2000">
+    minWidth="1000" maxWidth="2000" defaultButton="{okButton}">
 
     <fx:Declarations>
         <fx:int id="nodesCount"/>
@@ -20,7 +20,7 @@
     </s:layout>
 
 
-    <s:Form styleName="simple">
+    <s:Form id="form" styleName="simple">
 
         <s:FormItem label="From:">
             <s:TextInput text="{srcDir}" width="100%" styleName="bordered" enabled="false"/>
@@ -39,7 +39,7 @@
                 <s:layout>
                     <s:TileLayout
                         requestedColumnCount="2" horizontalGap="40" verticalGap="20"
-                        paddingTop="10" horizontalAlign="left" orientation="rows"/>
+                        horizontalAlign="left" orientation="rows"/>
                 </s:layout>
             </s:DataGroup>
         </s:FormItem>
@@ -52,10 +52,14 @@
         <s:Spacer width="100%"/>
         <s:Button id="cancelButton" label="Cancel"/>
         <s:Button id="queueButton" label="Queue"/>
-        <s:Button id="okButton" label="Copy" styleName="default"/>
+        <s:Button id="okButton" label="Copy" styleName="default" tabIndex="0"/>
     </s:controlBarContent>
 
     <fx:Script><![CDATA[
         import mx.collections.ArrayList;
+
+        override public function setFocus():void {
+            okButton.setFocus();
+        }
         ]]></fx:Script>
 </s:Panel>

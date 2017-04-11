@@ -3,7 +3,7 @@
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
     title="Create Directory"
-    minWidth="1000" maxWidth="2000" focusIn="onFocusIn(event)">
+    minWidth="1000" maxWidth="2000" defaultButton="{okButton}">
 
     <fx:Declarations>
         <fx:Array id="parameters"/>
@@ -37,7 +37,7 @@
                 <s:layout>
                     <s:TileLayout
                         requestedColumnCount="2" horizontalGap="40" verticalGap="20"
-                        paddingTop="10" horizontalAlign="left" orientation="rows"/>
+                        horizontalAlign="left" orientation="rows"/>
                 </s:layout>
             </s:DataGroup>
         </s:FormItem>
@@ -56,14 +56,8 @@
 
         import ru.koldoon.fc.utils.notEmpty;
 
-        private var inited:Boolean;
-
-
-        private function onFocusIn(event:FocusEvent):void {
-            if (!inited) {
-                nameInput.setFocus();
-                inited = true;
-            }
+        override public function setFocus():void {
+            nameInput.setFocus();
         }
         ]]></fx:Script>
 </s:Panel>
