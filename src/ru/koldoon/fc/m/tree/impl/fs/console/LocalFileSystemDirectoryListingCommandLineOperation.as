@@ -58,8 +58,10 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
          * Begin directory listing.
          */
         private function onFilesReferencesReady(ac:ICollectionPromise):void {
+            var fsRef:FileSystemReference = FileSystemReference(ac.items[0]);
+            var path:String = fsRef.path == "/" ? "/" : fsRef.path + "/";
             command("bin/listing.sh");
-            commandArguments([FileSystemReference(ac.items[0]).path + "/"]);
+            commandArguments([path]);
 
             nodes = [];
             if (directory_.getParentDirectory()) {

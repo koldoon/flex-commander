@@ -76,8 +76,9 @@ package ru.koldoon.fc.m.tree.impl.fs {
             filesProvider
                 .getFiles([source, destination], false)
                 .onReady(function (ac:ICollectionPromise):void {
-                    sourcePath = ac.items[0];
-                    destinationPath = ac.items[1];
+                    sourcePath = FileSystemReference(ac.items[0]).path;
+                    destinationPath = FileSystemReference(ac.items[1]).path;
+
                     onPreparingComplete();
                 });
 
@@ -112,6 +113,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
         private var sourcePath:String;
         private var destinationPath:String;
+
         private var filesReferences:Array;
         private var parameters:Parameters = new Parameters();
         private var interaction:Interaction = new Interaction();
@@ -230,9 +232,29 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
 
         private function getFileTargetPath(sourceFilePath:String):String {
-            return destinationPath + sourceFilePath.substr(sourcePath.length);
+            var buf:Array = ["/"];
+            var diff:String = sourceFilePath.substr(sourcePath.length);
+
+            if (destinationPath.length > 0) {
+                if (destinationPath.charAt(0) == "/") {
+                    buf.push(destinationPath.substr(1));
+                }
+                else if (destinationPath.length > 0) {
+                    buf.push(destinationPath);
+                }
+            }
+
+            if (diff.length > 0) {
+                buf.push("/");
+                if (diff.charAt(0) == "/") {
+                    buf.push(diff.substr(1));
+                }
+                else {
+                    buf.push(diff);
+                }
+            }
+
+            return buf.join("");
         }
-
-
     }
 }

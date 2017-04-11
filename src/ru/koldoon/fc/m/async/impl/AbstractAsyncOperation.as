@@ -19,7 +19,7 @@ package ru.koldoon.fc.m.async.impl {
          * Created and not disposed operations references. Can be used in DEBUG purposes.
          */
         public static var OPERATIONS:Dictionary = new Dictionary(true);
-        protected static var LOG:ILogger;
+        protected var LOG:ILogger;
 
 
         public function AbstractAsyncOperation() {
@@ -45,11 +45,14 @@ package ru.koldoon.fc.m.async.impl {
                 return this;
             }
 
+            var self:* = this;
+
             ticker.addEventListener(Event.ENTER_FRAME, function call_execute(e:Event):void {
                 ticker.removeEventListener(Event.ENTER_FRAME, call_execute);
 
                 if (!status.isCanceled) {
-                    status.setProcessing(!status.isInited, this);
+                    LOG.debug("Starting");
+                    status.setProcessing(!status.isInited, self);
                     begin();
                 }
             });
@@ -63,6 +66,7 @@ package ru.koldoon.fc.m.async.impl {
 
 
         public function cancel():void {
+            LOG.warn("Cancelled");
             status.setCanceled(this);
         }
 
@@ -88,11 +92,13 @@ package ru.koldoon.fc.m.async.impl {
 
 
         protected function done():void {
+            LOG.debug("Completed");
             status.setComplete(this);
         }
 
 
         protected function fault():void {
+            LOG.error("Fault: {0}", status.info || "Unknown");
             status.setFault(this);
         }
 

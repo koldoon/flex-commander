@@ -47,7 +47,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
                 if (notEmpty(p.link) && (!head || _followLinks)) {
                     if (p.link.charAt(0) == "/") {
                         // Root directory reference.
-                        // Such references may occur with link nodesTotal present in path
+                        // Such a path is absolute, no further processing is needed
                         fsPath.unshift(p.link.substr(1));
                         break;
                     }
@@ -55,7 +55,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
                         fsPath.unshift(p.link);
                     }
                 }
-                else if (notEmpty(p.name)) {
+                else if (notEmpty(p.name) || head) {
                     fsPath.unshift(p.name);
                 }
 

@@ -39,7 +39,7 @@
                 <s:layout>
                     <s:TileLayout
                         requestedColumnCount="2" horizontalGap="40" verticalGap="20"
-                        paddingTop="20" horizontalAlign="left" orientation="rows"/>
+                        paddingTop="10" horizontalAlign="left" orientation="rows"/>
                 </s:layout>
             </s:DataGroup>
         </s:FormItem>
