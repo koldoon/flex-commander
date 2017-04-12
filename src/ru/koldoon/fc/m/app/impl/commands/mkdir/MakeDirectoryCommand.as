@@ -53,7 +53,7 @@ package ru.koldoon.fc.m.app.impl.commands.mkdir {
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
             if (mkDirOperation is IParametrized) {
-                IParametrized(mkDirOperation).getParameters().setup(context.params);
+                IParametrized(mkDirOperation).getParameters().setup(context.parameters.list);
                 p.parameters = IParametrized(mkDirOperation).getParameters().list;
             }
 

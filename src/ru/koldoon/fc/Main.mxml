@@ -91,8 +91,8 @@
             if (popupManager.getPopupsVisible().length > 0) {
                 popupManager.setFocus();
             }
-            else if (app.getActivePanel() is UIComponent) {
-                UIComponent(app.getActivePanel()).setFocus();
+            else {
+                (app.getActivePanel() as UIComponent).setFocus();
             }
         }
 

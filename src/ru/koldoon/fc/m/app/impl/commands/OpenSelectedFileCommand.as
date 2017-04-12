@@ -2,6 +2,7 @@ package ru.koldoon.fc.m.app.impl.commands {
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
     import ru.koldoon.fc.m.async.impl.CollectionPromise;
+    import ru.koldoon.fc.m.async.impl.Param;
     import ru.koldoon.fc.m.os.CommandLineOperation;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.IFilesProvider;
@@ -12,7 +13,7 @@ package ru.koldoon.fc.m.app.impl.commands {
     public class OpenSelectedFileCommand extends AbstractBindableCommand {
         public function OpenSelectedFileCommand() {
             bindings = [
-                new BindingProperties("Cmd-O"),
+                new BindingProperties("Cmd-O").setParams([new Param(FORCE_OPEN, true)]),
                 new BindingProperties("Enter")
             ];
 
@@ -20,12 +21,14 @@ package ru.koldoon.fc.m.app.impl.commands {
         }
 
 
+        private static const FORCE_OPEN:String = "FORCE_OPEN";
         private static const APP_RXP:RegExp = /^.+\.app$/;
 
 
         override public function isExecutable():Boolean {
             var sn:INode = app.getActivePanel().selectedNode;
-            return sn != AbstractNode.PARENT_NODE && !(sn is IDirectory);
+            var forceOpen:Boolean = context.parameters.param(FORCE_OPEN).value;
+            return sn != AbstractNode.PARENT_NODE && (!(sn is IDirectory) || forceOpen);
         }
 
 

@@ -72,7 +72,7 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
             }
 
             if (removeOperation is IParametrized) {
-                for each (var bcp:IParam in context.params) {
+                for each (var bcp:IParam in context.parameters.list) {
                     // set binding context parameters as defaults
                     IParametrized(removeOperation)
                         .getParameters()

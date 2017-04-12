@@ -2,6 +2,9 @@ package ru.koldoon.fc.m.app.impl {
     import flash.events.KeyboardEvent;
     import flash.ui.Keyboard;
 
+    import ru.koldoon.fc.m.async.impl.Parameters;
+    import ru.koldoon.fc.m.async.parametrized.IParameters;
+
     /**
      * This options will be checked on keys combination or node Enter press.
      */
@@ -10,6 +13,25 @@ package ru.koldoon.fc.m.app.impl {
         public function BindingProperties(keysCombination:String = null, nodeValue:RegExp = null) {
             this.keysCombination = keysCombination;
             this.nodeValue = nodeValue;
+            this.parameters = new Parameters();
+        }
+
+
+        /**
+         * Params modifier. This is useful if you want to setup
+         * keyboard binding to the same command but with specific
+         * default params.
+         * Since command params are taken from the underneath operation,
+         * we don't know their count and names exactly, they depend on
+         * concrete operation implementation, but anyway we can modify them
+         * on assumption
+         */
+        public var parameters:IParameters;
+
+
+        public function setParams(params:Array):BindingProperties {
+            parameters.setup(params);
+            return this;
         }
 
 
@@ -18,16 +40,6 @@ package ru.koldoon.fc.m.app.impl {
          */
         public var keysCombination:String;
 
-        /**
-         * Params modifier. This is useful if you want to setup
-         * keyboard binding to the same command but with specific
-         * default params.
-         * Since command params are taken from the underneath operation,
-         * we don't know their count and names exactly, they depend on
-         * concrete operation implementation, but we can modify them by
-         * index in a list.
-         */
-        public var params:Array;
 
         /**
          * When command is executed from keyboard combination,
@@ -45,12 +57,6 @@ package ru.koldoon.fc.m.app.impl {
          * in order they are installed in application getContext
          */
         public var nodeValue:RegExp;
-
-
-        public function setParams(value:Array):BindingProperties {
-            params = value;
-            return this;
-        }
 
 
         public function setTarget(value:String):BindingProperties {

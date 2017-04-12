@@ -14,7 +14,10 @@ package ru.koldoon.fc.m.app.impl.commands.startup {
 
             var operationsMenu:NativeMenuItem = app.menu.addItem(new NativeMenuItem("Operations"));
             operationsMenu.submenu = new NativeMenu();
-            operationsMenu.submenu.addItem(new NativeMenuItem("Example"));
+
+            var example:NativeMenuItem = new NativeMenuItem("Example");
+            example.keyEquivalent = "e";
+            operationsMenu.submenu.addItem(example);
 
             // leave command and menu handlers in memory
             return true;

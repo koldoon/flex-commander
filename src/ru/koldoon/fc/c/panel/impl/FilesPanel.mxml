@@ -258,16 +258,21 @@
 
         public function refresh():void {
             nodesList.removeEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
+
             var selectedIndex:Number = nodesList.selectedIndex;
+            if (selectedIndex == -1 && active) {
+                selectedIndex = 0;
+            }
 
             nodes.source = directory.nodes;
             nodes.refresh();
 
             nodesList.validateNow();
+            nodesList.addEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
             nodesList.setSelectedIndex(selectedIndex);
             nodesList.ensureIndexIsVisible(selectedIndex);
 
-            nodesList.addEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
+            onNodesListSelectionChange();
         }
 
 
@@ -336,7 +341,7 @@
         }
 
 
-        private function onNodesListSelectionChange(event:Event):void {
+        private function onNodesListSelectionChange(event:Event = null):void {
             selectedNode = nodesList.selectedItem;
         }
 
@@ -352,7 +357,7 @@
         /**
          * This Index is saved and restored when panel looses and gets focus.
          */
-        private var proposedSelectedIndex:int = 0;
+        private var proposedSelectedIndex:Number = 0;
         private var _active:Boolean = false;
 
 
@@ -373,16 +378,16 @@
                 nodesList.requireSelection = true;
                 nodesList.setFocus();
 
+                nodesList.addEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
+
                 // If selectedIndex is not -1, then the List was selected by mouse.
-                // In this case we should not change the selection.
+                // In this case we should not change the selection but execute change handler manually
                 if (nodesList.selectedIndex == -1) {
                     nodesList.selectedIndex = proposedSelectedIndex;
                 }
                 else {
-                    onNodesListSelectionChange(null);
+                    onNodesListSelectionChange();
                 }
-
-                nodesList.addEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
             }
             else {
                 nodesList.removeEventListener(FlexEvent.VALUE_COMMIT, onNodesListSelectionChange);
