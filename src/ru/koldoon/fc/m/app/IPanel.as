@@ -28,14 +28,14 @@ package ru.koldoon.fc.m.app {
 
 
         /**
-         * Manage Panel selection
+         * Manage Panel multiple selection.
          */
         function get selection():IPanelSelection;
 
 
         /**
-         * Node under user caret. If null - no caret is present,
-         * means that this Panel is a Target.
+         * Node under user caret, single selected node.
+         * If null - no caret is present, means that this Panel is a Target.
          * Setting selected node will cause list to scroll to it
          * if it's not currently visible
          */
@@ -70,6 +70,12 @@ package ru.koldoon.fc.m.app {
         function set enabled(val:Boolean):void;
 
 
+        /**
+         * Indicates active panel, where user can act with a keyboard
+         * and which is often acts as a target for operations.
+         * Global app logic prevents several panel to be activated the same time,
+         * so if one panel is active, others are always not.
+         */
         function get active():Boolean;
 
 

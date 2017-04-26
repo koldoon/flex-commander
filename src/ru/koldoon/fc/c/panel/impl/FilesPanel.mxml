@@ -95,7 +95,7 @@
         <s:Label
             id="pathLabel"
             left="20" right="20" verticalCenter="2" styleName="h5 center white"
-            text="{TreeUtils.getPathString(directory)}" maxDisplayedLines="1" showTruncationTip="true"/>
+            text="{directory.getPath() || '/'}" maxDisplayedLines="1" showTruncationTip="true"/>
     </s:Group>
 
 
@@ -112,7 +112,6 @@
         import ru.koldoon.fc.m.tree.IDirectory;
         import ru.koldoon.fc.m.tree.INode;
         import ru.koldoon.fc.m.tree.impl.AbstractNode;
-        import ru.koldoon.fc.m.tree.impl.TreeUtils;
 
         import spark.collections.Sort;
 
@@ -404,7 +403,7 @@
                 return 'Items Selected: ' + selLength;
             }
             else if (selectedItem) {
-                return selectedItem.info
+                return selectedItem.getInfo();
             }
             return "-";
         }

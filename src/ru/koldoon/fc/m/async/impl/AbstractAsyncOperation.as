@@ -28,8 +28,8 @@ package ru.koldoon.fc.m.async.impl {
         }
 
 
-        public function getStatus():IProcessStatus {
-            return status;
+        public function get status():IProcessStatus {
+            return _status;
         }
 
 
@@ -45,14 +45,14 @@ package ru.koldoon.fc.m.async.impl {
                 return this;
             }
 
-            var self:* = this;
+            var self:AbstractAsyncOperation = this;
 
             ticker.addEventListener(Event.ENTER_FRAME, function call_execute(e:Event):void {
                 ticker.removeEventListener(Event.ENTER_FRAME, call_execute);
 
-                if (!status.isCanceled) {
+                if (!_status.isCanceled) {
                     LOG.debug("Starting");
-                    status.setProcessing(!status.isInited, self);
+                    _status.setProcessing(!_status.isInited, self);
                     begin();
                 }
             });
@@ -67,7 +67,7 @@ package ru.koldoon.fc.m.async.impl {
 
         public function cancel():void {
             LOG.warn("Cancelled");
-            status.setCanceled(this);
+            _status.setCanceled(this);
         }
 
 
@@ -76,7 +76,7 @@ package ru.koldoon.fc.m.async.impl {
         // -----------------------------------------------------------------------------------
 
         protected static var ticker:Shape = new Shape();
-        protected var status:ProcessStatus = new ProcessStatus();
+        protected var _status:ProcessStatus = new ProcessStatus();
 
 
         /**
@@ -86,20 +86,22 @@ package ru.koldoon.fc.m.async.impl {
             ticker.addEventListener(Event.ENTER_FRAME, callDone);
             function callDone(e:Event):void {
                 ticker.removeEventListener(Event.ENTER_FRAME, callDone);
-                done();
+                if (!_status.isCanceled && !_status.isFault && !_status.isComplete) {
+                    done();
+                }
             }
         }
 
 
         protected function done():void {
             LOG.debug("Completed");
-            status.setComplete(this);
+            _status.setComplete(this);
         }
 
 
         protected function fault():void {
             LOG.error("Fault: {0}", status.info || "Unknown");
-            status.setFault(this);
+            _status.setFault(this);
         }
 
     }

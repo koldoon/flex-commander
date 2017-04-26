@@ -3,22 +3,25 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
     import flash.events.MouseEvent;
     import flash.ui.Keyboard;
 
+    import ru.koldoon.fc.c.ErrorDialog;
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
     import ru.koldoon.fc.m.app.impl.commands.AbstractBindableCommand;
+    import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.impl.Param;
     import ru.koldoon.fc.m.async.parametrized.IParam;
     import ru.koldoon.fc.m.async.parametrized.IParametrized;
     import ru.koldoon.fc.m.popups.IPopupDescriptor;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
-    import ru.koldoon.fc.m.tree.INodesBunchOperation;
+    import ru.koldoon.fc.m.tree.INodesBatchOperation;
     import ru.koldoon.fc.m.tree.ITreeEditor;
     import ru.koldoon.fc.m.tree.ITreeProvider;
     import ru.koldoon.fc.m.tree.ITreeRemoveOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
     import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
     import ru.koldoon.fc.m.tree.impl.TreeUtils;
+    import ru.koldoon.fc.m.tree.impl.fs.OperationError;
 
     public class RemoveCommand extends AbstractBindableCommand {
 
@@ -112,11 +115,19 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
 
             removeOperation
                 .execute()
-                .getStatus()
+                .status
+                .onFault(function (op:IAsyncOperation):void {
+                    var accessErr:OperationError = op.status.info as OperationError;
+                    if (accessErr) {
+                        var p:ErrorDialog = new ErrorDialog();
+                        p.message = "Access denied:\n" + accessErr.info;
+                        app.popupManager.add().instance(p);
+                    }
+                })
                 .onFinish(function (op:AbstractNodesBunchOperation):void {
-                    srcPanel.directory
-                        .getListing()
-                        .onReady(function (data:Object):void {
+                    srcPanel.directory.refresh()
+                        .status
+                        .onComplete(function (data:Object):void {
                             app.popupManager.remove(pd);
                             srcPanel.selection.reset();
                             srcPanel.refresh();
@@ -127,17 +138,13 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
-            if (removeOperation is INodesBunchOperation) {
-                INodesBunchOperation(removeOperation)
-                    .getProgress()
-                    .onProgress(function (op:INodesBunchOperation):void {
-                        p.currentNode = TreeUtils.getPathString(op.nodesTotal[op.nodesProcessed]);
-                        p.nodesProcessed = op.nodesProcessed;
+            if (removeOperation is INodesBatchOperation) {
+                INodesBatchOperation(removeOperation)
+                    .progress
+                    .onProgress(function (op:INodesBatchOperation):void {
+                        p.currentNode = TreeUtils.getPathString(op.nodesQueue[op.processingNodeIndex]);
+                        p.nodesProcessed = op.processingNodeIndex;
                     });
-            }
-            else {
-                p.currentNode = "Not available";
-                p.nodesProcessed = NaN;
             }
 
 

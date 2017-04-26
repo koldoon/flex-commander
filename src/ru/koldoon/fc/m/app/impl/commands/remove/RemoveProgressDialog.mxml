@@ -45,4 +45,10 @@
         <s:Button id="cancelButton" label="Cancel"/>
     </s:controlBarContent>
 
+
+    <fx:Script><![CDATA[
+        override public function setFocus():void {
+            cancelButton.setFocus();
+        }
+        ]]></fx:Script>
 </s:Panel>

@@ -8,7 +8,6 @@ package ru.koldoon.fc.c.popups.impl {
     import ru.koldoon.fc.m.popups.ICalloutDescriptor;
     import ru.koldoon.fc.m.popups.IPopupDescriptor;
 
-    import spark.components.CalloutPosition;
     import spark.layouts.HorizontalAlign;
     import spark.layouts.VerticalAlign;
 
@@ -22,14 +21,14 @@ package ru.koldoon.fc.c.popups.impl {
         public var marginLeft_:int;
         public var marginRight_:int;
         public var modal_:Boolean = true;
-        public var inQueue_:Boolean = true;
         public var hideAfter_:int;
         public var hideByClickOutside_:Boolean;
+        public var keepPositionOnResize_:Boolean = true;
         public var anchor:DisplayObject;
-        public var verticalPosition_:String;
-        public var horizontalPosition_:String;
+        public var position_:Array;
         public var onPopupOpen_:Signal = new Signal();
         public var onPopupClose_:Signal = new Signal();
+
 
         /**
          * @inheritDoc
@@ -105,19 +104,6 @@ package ru.koldoon.fc.c.popups.impl {
 
 
         /**
-         * By default modal flag is true because normally it is not a good idea
-         * to pop up several windows at the same time.
-         * @inheritDoc
-         * @param val
-         * @return
-         */
-        public function inQueue(val:Boolean = true):IPopupDescriptor {
-            inQueue_ = val;
-            return this;
-        }
-
-
-        /**
          * @inheritDoc
          */
         public function modal(val:Boolean = true):IPopupDescriptor {
@@ -147,6 +133,15 @@ package ru.koldoon.fc.c.popups.impl {
         /**
          * @inheritDoc
          */
+        public function keepPositionOnResize(val:Boolean = true):IPopupDescriptor {
+            keepPositionOnResize_ = val;
+            return this;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
         public function calloutTo(anchor:DisplayObject):ICalloutDescriptor {
             this.anchor = anchor;
             return this;
@@ -156,8 +151,8 @@ package ru.koldoon.fc.c.popups.impl {
         /**
          * @inheritDoc
          */
-        public function verticalPosition(p:String = CalloutPosition.AUTO):ICalloutDescriptor {
-            verticalPosition_ = p;
+        public function position(priorities:Array):ICalloutDescriptor {
+            position_ = priorities;
             return this;
         }
 
@@ -165,8 +160,8 @@ package ru.koldoon.fc.c.popups.impl {
         /**
          * @inheritDoc
          */
-        public function horizontalPosition(p:String = CalloutPosition.AUTO):ICalloutDescriptor {
-            horizontalPosition_ = p;
+        public function onPopupOpen(handler:Function):ICalloutDescriptor {
+            onPopupOpen_.add(handler);
             return this;
         }
 
@@ -174,13 +169,8 @@ package ru.koldoon.fc.c.popups.impl {
         /**
          * @inheritDoc
          */
-        public function onPopupOpen(handler:Function, unset:Boolean):ICalloutDescriptor {
-            if (unset) {
-                onPopupOpen_.remove(handler);
-            }
-            else {
-                onPopupOpen_.add(handler);
-            }
+        public function onPopupClose(handler:Function):ICalloutDescriptor {
+            onPopupClose_.add(handler);
             return this;
         }
 
@@ -188,14 +178,9 @@ package ru.koldoon.fc.c.popups.impl {
         /**
          * @inheritDoc
          */
-        public function onPopupClose(handler:Function, unset:Boolean):ICalloutDescriptor {
-            if (unset) {
-                onPopupClose_.remove(handler);
-            }
-            else {
-                onPopupClose_.add(handler);
-            }
-            return this;
+        public function removeEventHandler(handler:Function):void {
+            onPopupClose_.remove(handler);
+            onPopupOpen_.remove(handler);
         }
     }
 }

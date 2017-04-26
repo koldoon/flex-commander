@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.tree.impl.fs.console {
+package ru.koldoon.fc.m.tree.impl.fs.cl {
     import mx.utils.StringUtil;
 
     import ru.koldoon.fc.m.async.impl.Interaction;
@@ -9,7 +9,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
     import ru.koldoon.fc.m.async.interactive.IInteractiveOperation;
     import ru.koldoon.fc.m.os.CommandLineOperation;
 
-    public class LocalFileSystemCopyCommandLineOperation extends CommandLineOperation implements IInteractiveOperation {
+    public class LFS_CopyCLO extends CommandLineOperation implements IInteractiveOperation {
         /**
          * Group 1: File Path to overwrite
          */
@@ -17,7 +17,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         private static const NOT_OVERWRITTEN_RXP:RegExp = /not overwritten/;
 
 
-        public function LocalFileSystemCopyCommandLineOperation() {
+        public function LFS_CopyCLO() {
             super();
 
             interaction = new Interaction();
@@ -27,15 +27,20 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         }
 
 
-        public function sourceFilePath(p:String):LocalFileSystemCopyCommandLineOperation {
+        public function sourceFilePath(p:String):LFS_CopyCLO {
             _sourceFilePath = p;
             return this;
         }
 
 
-        public function targetFilePath(p:String):LocalFileSystemCopyCommandLineOperation {
+        public function targetFilePath(p:String):LFS_CopyCLO {
             _targetFilePath = p;
             return this;
+        }
+
+
+        public function getInteraction():IInteraction {
+            return interaction;
         }
 
 
@@ -53,7 +58,6 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
             else if (_overwriteExisting) {
                 args.push("-f");
             }
-
 
             args.push(_sourceFilePath);
             args.push(_targetFilePath);
@@ -89,26 +93,18 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         }
 
 
-        public function overwriteExisting(value:Boolean):LocalFileSystemCopyCommandLineOperation {
+        public function overwriteExisting(value:Boolean):LFS_CopyCLO {
             _overwriteExisting = value;
             return this;
         }
 
 
-        public function skipExisting(value:Boolean):LocalFileSystemCopyCommandLineOperation {
+        /**
+         * Skip has higher priority over overwrite due to safity
+         */
+        public function skipExisting(value:Boolean):LFS_CopyCLO {
             _skipExisting = value;
             return this;
-        }
-
-
-        public function skipExtAttrs(value:Boolean):LocalFileSystemCopyCommandLineOperation {
-            _skipExtAttrs = value;
-            return this;
-        }
-
-
-        public function getInteraction():IInteraction {
-            return interaction;
         }
 
 
@@ -119,7 +115,6 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
 
         private var _overwriteExisting:Boolean;
         private var _skipExisting:Boolean;
-        private var _skipExtAttrs:Boolean;
 
     }
 }

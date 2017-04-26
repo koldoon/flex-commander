@@ -9,7 +9,7 @@ package ru.koldoon.fc.m.async {
         /**
          * Operation Status
          */
-        function getStatus():IProcessStatus;
+        function get status():IProcessStatus;
 
 
         /**

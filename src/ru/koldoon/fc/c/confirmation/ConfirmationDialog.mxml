@@ -34,10 +34,21 @@
 
     <fx:Script><![CDATA[
         import mx.collections.ArrayList;
+        import mx.core.UIComponent;
 
         import ru.koldoon.fc.m.async.interactive.IInteractionMessage;
 
         [Bindable]
         public var message:IInteractionMessage;
+
+
+        override public function setFocus():void {
+            if (buttonsDataGroup && buttonsDataGroup.numElements > 0) {
+                var uiComponent:UIComponent = buttonsDataGroup.getElementAt(0) as UIComponent;
+                if (uiComponent) {
+                    uiComponent.setFocus();
+                }
+            }
+        }
         ]]></fx:Script>
 </s:Panel>

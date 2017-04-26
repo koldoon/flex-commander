@@ -6,10 +6,9 @@ package ru.koldoon.fc.m.tree.impl {
      * Includes full filesystem path and basic properties.
      */
     public class FileSystemReference {
-        public function FileSystemReference(path:String, node:INode, size:int = 0) {
+        public function FileSystemReference(path:String, node:INode) {
             _path = path;
             _node = node;
-            _size = size;
         }
 
 
@@ -30,14 +29,6 @@ package ru.koldoon.fc.m.tree.impl {
         }
 
 
-        /**
-         * File size in bytes if available
-         */
-        public function get size():int {
-            return _size;
-        }
-
-
         public function toString():String {
             return _path;
         }
@@ -45,7 +36,5 @@ package ru.koldoon.fc.m.tree.impl {
 
         private var _path:String;
         private var _node:INode;
-        private var _size:int;
-
     }
 }

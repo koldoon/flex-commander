@@ -9,7 +9,7 @@ package ru.koldoon.fc.m.tree.impl {
                 return "";
             }
 
-            var path:Array = node.getPath();
+            var path:Array = node.getNodesPath();
             var fsPath:Array = [];
 
             for each (var n:INode in path) {

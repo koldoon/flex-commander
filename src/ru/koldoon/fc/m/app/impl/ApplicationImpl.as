@@ -91,6 +91,14 @@ package ru.koldoon.fc.m.app.impl {
         /**
          * @inheritDoc
          */
+        public function getPassivePanel():IPanel {
+            return leftPanel.active ? rightPanel : leftPanel;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
         public function get popupManager():IPopupManager {
             return view.popupManager;
         }
@@ -103,6 +111,7 @@ package ru.koldoon.fc.m.app.impl {
             view.rightPanel.addEventListener(KeyboardEvent.KEY_DOWN, onPanelKeyPress);
             view.rightPanel.addEventListener(MouseEvent.MOUSE_DOWN, onPanelMouseDown);
 
+            // one of the panels are always active
             if (!leftPanel.active && !rightPanel.active) {
                 changeActivePanel(leftPanel);
             }
@@ -167,7 +176,7 @@ package ru.koldoon.fc.m.app.impl {
 
                     if (bp.nodeValue) {
                         var node:INode = getTargetPanel(bp.executionTarget).selectedNode;
-                        if (node && !bp.nodeValue.exec(node.link || node.name)) {
+                        if (node && !bp.nodeValue.exec(node.name)) {
                             continue;
                         }
                     }

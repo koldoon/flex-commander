@@ -7,12 +7,11 @@ package ru.koldoon.fc.m.tree.impl {
      * Abstract Realization of INode interface.
      */
     public class AbstractNode implements INode {
-        public static const PARENT_NODE:AbstractNode = new AbstractNode(null, "..");
+        public static const PARENT_NODE:AbstractNode = new AbstractNode("..");
 
 
-        public function AbstractNode(parent:INode, name:String = null, link:String = null) {
+        public function AbstractNode(name:String = null, parent:INode = null) {
             _parent = parent;
-            _link = link;
             _name = name;
         }
 
@@ -28,15 +27,29 @@ package ru.koldoon.fc.m.tree.impl {
         /**
          * @inheritDoc
          */
-        public function get link():String {
-            return _link;
+        public function get name():String {
+            return _name;
+        }
+
+
+        /**
+         * Size in bytes. There is also setter for size, because it can be set
+         * later, for Directories for example
+         */
+        public function get size():Number {
+            return _size;
+        }
+
+
+        public function set size(v:Number):void {
+            _size = v;
         }
 
 
         /**
          * @inheritDoc
          */
-        public function get name():String {
+        public function getInfo():String {
             return _name;
         }
 
@@ -44,16 +57,7 @@ package ru.koldoon.fc.m.tree.impl {
         /**
          * @inheritDoc
          */
-        public function get info():String {
-            // default implementation
-            return _link;
-        }
-
-
-        /**
-         * @inheritDoc
-         */
-        public function getPath():Array {
+        public function getNodesPath():Array {
             var n:INode = this;
             var path:Array = [n];
             while (n.parent) {
@@ -64,11 +68,16 @@ package ru.koldoon.fc.m.tree.impl {
         }
 
 
+        public function getPath():String {
+            return getNodesPath().join("/");
+        }
+
+
         /**
          * @inheritDoc
          */
         public function getTreeProvider():ITreeProvider {
-            var p:INode = parent;
+            var p:INode = this;
             while (p.parent && !(p is ITreeProvider)) {
                 p = p.parent;
             }
@@ -89,12 +98,12 @@ package ru.koldoon.fc.m.tree.impl {
 
 
         public function toString():String {
-            return name || link;
+            return name;
         }
 
 
         protected var _parent:INode;
-        protected var _link:String;
         protected var _name:String;
+        protected var _size:Number;
     }
 }

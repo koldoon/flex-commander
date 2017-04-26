@@ -20,7 +20,6 @@ package ru.koldoon.fc.m.popups {
         /**
          * This property has no effect when using calloutTo option
          * @param val see spark.layouts.VerticalAlign
-         * @return
          */
         function verticalAlign(val:String = VerticalAlign.MIDDLE):IPopupDescriptor;
 
@@ -28,7 +27,6 @@ package ru.koldoon.fc.m.popups {
         /**
          * This property has no effect when using calloutTo option
          * @param val see spark.layouts.HorizontalAlign
-         * @return
          */
         function horizontalAlign(val:String = HorizontalAlign.CENTER):IPopupDescriptor;
 
@@ -49,28 +47,14 @@ package ru.koldoon.fc.m.popups {
 
 
         /**
-         * Wait until all previous popups are closed. Recommended behaviour
-         * for the most of cases.
-         * @default true
-         * @param val
-         * @return
-         */
-        function inQueue(val:Boolean = true):IPopupDescriptor;
-
-
-        /**
          * Adds "Fog" behind the popup over the application so user
          * can not click and change focus anywhere except the popup.
-         * @param val
-         * @return
          */
         function modal(val:Boolean = true):IPopupDescriptor;
 
 
         /**
          * Automatically hide popup after given number of seconds
-         * @param seconds
-         * @return
          */
         function hideAfter(seconds:int = 0):IPopupDescriptor;
 
@@ -79,16 +63,18 @@ package ru.koldoon.fc.m.popups {
          * Hide popup by clicking outside. If <code>false</code> then
          * it will be possible to hide popup by PopupManager.remove() method only,
          * or by <code>hideAfter()</code> option.
-         * @param val
-         * @return
          */
         function hideByClickOutside(val:Boolean = true):IPopupDescriptor;
 
 
         /**
+         * When popup resized, reposition it again according to setup
+         */
+        function keepPositionOnResize(val:Boolean = true):IPopupDescriptor;
+
+
+        /**
          * Align popup near some display object.
-         * @param target
-         * @return
          */
         function calloutTo(target:DisplayObject):ICalloutDescriptor;
 
@@ -97,16 +83,21 @@ package ru.koldoon.fc.m.popups {
          * Since popups can be scheduled within the queue, this handler
          * will be executed exactly after popup will be shown
          * @param handler function(popupInstance:*):void
-         * @param unset
          */
-        function onPopupOpen(handler:Function, unset:Boolean):ICalloutDescriptor;
+        function onPopupOpen(handler:Function):ICalloutDescriptor;
 
 
         /**
          * Executed when popup is hided
          * @param handler function(popupInstance:*):void
-         * @param unset
          */
-        function onPopupClose(handler:Function, unset:Boolean):ICalloutDescriptor;
+        function onPopupClose(handler:Function):ICalloutDescriptor;
+
+
+        /**
+         * Conventional method remove any handlers
+         * @param handler
+         */
+        function removeEventHandler(handler:Function):void;
     }
 }

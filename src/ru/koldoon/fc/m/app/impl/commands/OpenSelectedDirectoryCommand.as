@@ -1,8 +1,7 @@
 package ru.koldoon.fc.m.app.impl.commands {
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
-    import ru.koldoon.fc.m.async.IPromise;
-    import ru.koldoon.fc.m.async.impl.CollectionPromise;
+    import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
@@ -18,7 +17,7 @@ package ru.koldoon.fc.m.app.impl.commands {
         /**
          * Last operation token.
          */
-        private var listingPromise:IPromise;
+        private var listing:IAsyncOperation;
 
 
         override public function isExecutable():Boolean {
@@ -32,15 +31,15 @@ package ru.koldoon.fc.m.app.impl.commands {
             var node:INode = panel.selectedNode;
             var dir:IDirectory = node as IDirectory;
 
-            if (listingPromise) {
-                listingPromise.reject();
+            if (listing) {
+                listing.cancel();
             }
 
             if (dir) {
-                listingPromise = dir
-                    .getListing()
-                    .onReady(function (op:CollectionPromise):void {
-                        listingPromise = null;
+                listing = dir.refresh();
+                listing.status
+                    .onComplete(function (op:IAsyncOperation):void {
+                        listing = null;
                         panel.selection.reset();
                         panel.directory = dir;
                         panel.selectedNodeIndex = 0;

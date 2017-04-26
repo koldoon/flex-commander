@@ -6,20 +6,26 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.async.impl.CollectionPromise;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.IFilesProvider;
+    import ru.koldoon.fc.m.tree.ILink;
     import ru.koldoon.fc.m.tree.ITreeEditor;
     import ru.koldoon.fc.m.tree.ITreeMkDirOperation;
     import ru.koldoon.fc.m.tree.ITreeProvider;
     import ru.koldoon.fc.m.tree.ITreeRemoveOperation;
-    import ru.koldoon.fc.m.tree.ITreeTransmitOperation;
+    import ru.koldoon.fc.m.tree.ITreeTransferOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
-    import ru.koldoon.fc.m.tree.impl.fs.console.LocalFileSystemDirectoryListingCommandLineOperation;
+    import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_ListingCLO;
+    import ru.koldoon.fc.m.tree.impl.fs.op.LFS_CopyOperation;
+    import ru.koldoon.fc.m.tree.impl.fs.op.LFS_GetFilesOperation;
+    import ru.koldoon.fc.m.tree.impl.fs.op.LFS_MakeDirOperation;
+    import ru.koldoon.fc.m.tree.impl.fs.op.LFS_MoveOperation;
+    import ru.koldoon.fc.m.tree.impl.fs.op.LFS_RemoveOperation;
 
-    public class LocalFileSystemTreeProvider extends AbstractNode implements ITreeProvider, IFilesProvider, ITreeEditor {
+    public class LocalFileSystemTreeProvider extends DirectoryNode implements ITreeProvider, IFilesProvider, ITreeEditor {
 
         public function LocalFileSystemTreeProvider() {
-            super(null, "");
+            super("");
         }
 
 
@@ -30,27 +36,27 @@ package ru.koldoon.fc.m.tree.impl.fs {
         /**
          * @inheritDoc
          */
-        public function getListingFor(dir:IDirectory):ICollectionPromise {
-            var ac:CollectionPromise = new CollectionPromise();
-            var op:IAsyncOperation = new LocalFileSystemDirectoryListingCommandLineOperation()
-                .setDirectory(dir)
-                .execute();
-
-            op.getStatus().onComplete(function (op:LocalFileSystemDirectoryListingCommandLineOperation):void {
-                ac.applyResult(op.nodes);
+        public function getDirectoryListing(dir:IDirectory):IAsyncOperation {
+            var self:* = this;
+            var op:IAsyncOperation = new LFS_ListingCLO().node(dir);
+            op.status.onComplete(function (op:LFS_ListingCLO):void {
+                DirectoryNode(dir).nodes = op.nodes;
+                if (dir != self) {
+                    DirectoryNode(dir).nodes.unshift(AbstractNode.PARENT_NODE);
+                }
             });
 
-            ac.onReject(function ():void {
-                op.cancel();
-            });
+            return pinAsyncOperation(op.execute());
+        }
 
-            pinAsyncOperation(op);
-            return ac;
+
+        public function resolveLink(lnk:ILink):IAsyncOperation {
+            return null;
         }
 
 
         public function getRootDirectory():IDirectory {
-            return new DirectoryNode(this, "");
+            return this;
         }
 
 
@@ -63,12 +69,12 @@ package ru.koldoon.fc.m.tree.impl.fs {
          */
         public function getFiles(nodes:Array, followLinks:Boolean = true):ICollectionPromise {
             var ac:CollectionPromise = new CollectionPromise();
-            var op:IAsyncOperation = new LocalFileSystemGetFilesOperation()
+            var op:IAsyncOperation = new LFS_GetFilesOperation()
                 .setNodes(nodes)
                 .followLinks(followLinks)
                 .execute();
 
-            op.getStatus().onComplete(function (op:LocalFileSystemGetFilesOperation):void {
+            op.status.onComplete(function (op:LFS_GetFilesOperation):void {
                 ac.applyResult(op.files);
             });
 
@@ -100,16 +106,16 @@ package ru.koldoon.fc.m.tree.impl.fs {
         /**
          * @inheritDoc
          */
-        public function move():ITreeTransmitOperation {
-            return null;
+        public function move():ITreeTransferOperation {
+            return pinAsyncOperation(new LFS_MoveOperation());
         }
 
 
         /**
          * @inheritDoc
          */
-        public function copy():ITreeTransmitOperation {
-            return pinAsyncOperation(new LocalFileSystemCopyOperation());
+        public function copy():ITreeTransferOperation {
+            return pinAsyncOperation(new LFS_CopyOperation());
         }
 
 
@@ -117,7 +123,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
          * @inheritDoc
          */
         public function remove():ITreeRemoveOperation {
-            return pinAsyncOperation(new LocalFileSystemRemoveOperation());
+            return pinAsyncOperation(new LFS_RemoveOperation());
         }
 
 
@@ -125,7 +131,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
          * @inheritDoc
          */
         public function mkDir():ITreeMkDirOperation {
-            return pinAsyncOperation(new LocalFileSystemMkDirOperation());
+            return pinAsyncOperation(new LFS_MakeDirOperation());
         }
 
 
@@ -141,7 +147,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
          */
         private function pinAsyncOperation(op:IAsyncOperation):* {
             operations[op] = true;
-            op.getStatus().onFinish(function (op:IAsyncOperation):void {
+            op.status.onFinish(function (op:IAsyncOperation):void {
                 delete operations[op];
             });
 

@@ -29,7 +29,7 @@ package ru.koldoon.fc.m.app.impl {
         /**
          * @inheritDoc
          */
-        public function getProgress():IProgress {
+        public function progress():IProgress {
             return progress;
         }
 
@@ -149,7 +149,7 @@ package ru.koldoon.fc.m.app.impl {
 
         private function getListingFor(dir:IDirectory):void {
             var acn:IPromise = _treeProvider
-                .getListingFor(dir)
+                .getDirectoryListing(dir)
                 .onReady(onDirectoryListingReady);
 
             listings[acn] = true;

@@ -5,27 +5,26 @@ package ru.koldoon.fc.m.tree {
      * Describes the minimum parameters that must have a typical
      * Copy or Move Tree Operation.
      */
-    public interface ITreeTransmitOperation extends IAsyncOperation {
+    public interface ITreeTransferOperation extends IAsyncOperation {
 
         /**
          * Dot style setter.
          * Nodes source directory to calculate copy subtree root
          */
-        function setSource(d:IDirectory):ITreeTransmitOperation;
+        function setSource(d:IDirectory):ITreeTransferOperation;
 
 
         /**
          * Dot style setter.
          * Nodes subtree target directory.
          */
-        function setDestination(d:IDirectory):ITreeTransmitOperation;
+        function setDestination(d:IDirectory):ITreeTransferOperation;
 
 
         /**
-         * Dot style setter.
-         * Nodes subtree selector is used to get actual list of nodesTotal
-         * to process.
+         * List of Nodes to transfer
          */
-        function setSelector(s:ITreeSelector):ITreeTransmitOperation;
+        function setSourceNodes(list:Array):ITreeTransferOperation;
+
     }
 }

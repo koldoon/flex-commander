@@ -17,6 +17,7 @@ package ru.koldoon.fc.m.app.impl.commands {
                 new BindingProperties("Enter")
             ];
 
+            // Add this to enable auto open APP-s on Enter
             // new BindingProperties("Enter", APP_RXP)
         }
 

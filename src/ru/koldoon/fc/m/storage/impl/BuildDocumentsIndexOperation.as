@@ -16,7 +16,7 @@ package ru.koldoon.fc.m.storage.impl {
         }
 
 
-        private var progress:Progress = new Progress()
+        private var _progress:Progress = new Progress();
         private var docsIndex:DocumentsIndex;
         private var location:File;
         private var files:Array;
@@ -25,8 +25,8 @@ package ru.koldoon.fc.m.storage.impl {
         private var TICKER:Shape = new Shape();
 
 
-        public function getProgress():IProgress {
-            return progress;
+        public function get progress():IProgress {
+            return _progress;
         }
 
 
@@ -79,7 +79,7 @@ package ru.koldoon.fc.m.storage.impl {
                 processingItemIndex += 1;
             }
 
-            progress.setPercent(processingItemIndex / filesCount * 100, this);
+            _progress.setPercent(processingItemIndex / filesCount * 100, this);
 
             if (processingItemIndex >= filesCount - 1) {
                 files = null;

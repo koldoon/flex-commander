@@ -36,7 +36,7 @@ package ru.koldoon.fc.m.storage.impl {
 
             pushDiskOperation(function ():IAsyncOperation {
                 var op:IAsyncOperation = new LoadObjectOperation(location).name("__COLLECTION_INDEX");
-                op.getStatus().onComplete(initCollectionDescriptor);
+                op.status().onComplete(initCollectionDescriptor);
                 return op;
 
             }, true);
@@ -57,7 +57,7 @@ package ru.koldoon.fc.m.storage.impl {
                 }
                 else {
                     var op:IAsyncOperation = new LoadObjectOperation(location).name(name);
-                    op.getStatus().onComplete(function (op:LoadObjectOperation):void {
+                    op.status().onComplete(function (op:LoadObjectOperation):void {
                         documentsCache[name] = op.value;
                         val.applyResult(op.value);
                     });
@@ -76,7 +76,7 @@ package ru.koldoon.fc.m.storage.impl {
                 return new SaveObjectOperation(location)
                     .object(name, value)
                     .onStart(function (op:SaveObjectOperation):void {
-                        if (!op.getStatus().isUpdating) {
+                        if (!op.status().isUpdating) {
                             docsIndex.files.unshift(name);
                         }
                     })
@@ -247,7 +247,7 @@ package ru.koldoon.fc.m.storage.impl {
             if (currentAsyncOperation) {
                 currentAsyncOperation
                     .execute()
-                    .getStatus()
+                    .status()
                     .onComplete(function (op:IAsyncOperation):void {
                         currentAsyncOperation = null;
                         TICKER.addEventListener(Event.ENTER_FRAME, processNextDiskOperationsQueue);

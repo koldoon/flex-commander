@@ -1,23 +1,23 @@
-package ru.koldoon.fc.m.tree.impl.fs {
+package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.ICollectionPromise;
     import ru.koldoon.fc.m.async.impl.Param;
     import ru.koldoon.fc.m.async.impl.Parameters;
     import ru.koldoon.fc.m.async.parametrized.IParameters;
     import ru.koldoon.fc.m.async.parametrized.IParametrized;
-    import ru.koldoon.fc.m.tree.IFilesProvider;
+    import ru.koldoon.fc.m.async.progress.IProgressReporter;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.ITreeRemoveOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
-    import ru.koldoon.fc.m.tree.impl.FileSystemReference;
-    import ru.koldoon.fc.m.tree.impl.fs.console.LocalFileSystemRemoveCommandLineOperation;
-    import ru.koldoon.fc.m.tree.impl.fs.console.LocalFileSystemTrashCommandLineOperation;
+    import ru.koldoon.fc.m.tree.impl.FileNodeUtil;
+    import ru.koldoon.fc.m.tree.impl.ReferenceNode;
+    import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_RemoveCLO;
+    import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_TrashCLO;
 
-    public class LocalFileSystemRemoveOperation extends AbstractNodesBunchOperation implements IParametrized, ITreeRemoveOperation {
+    public class LFS_RemoveOperation extends AbstractNodesBunchOperation implements IParametrized, ITreeRemoveOperation, IProgressReporter {
         public static const MOVE_TO_TRASH:String = "MOVE_TO_TRASH";
 
 
-        public function LocalFileSystemRemoveOperation() {
+        public function LFS_RemoveOperation() {
             parameters.setup([
                 new Param(MOVE_TO_TRASH, true)
             ]);
@@ -36,25 +36,25 @@ package ru.koldoon.fc.m.tree.impl.fs {
          * @inheritDoc
          */
         public function setNodes(value:Array):ITreeRemoveOperation {
-            _nodes = value;
-            filesProvider = INode(nodesTotal[0]).getTreeProvider() as IFilesProvider;
+            _sourceNodes = value;
             return this;
         }
 
 
         override protected function begin():void {
-            filesProvider
-                .getFiles(_nodes, false)
-                .onReady(function (ac:ICollectionPromise):void {
-                    filesReferences = ac.items;
-                    _nodesProcessed = 0;
-                    removeNextFile();
-                });
+            _nodesQueue = [];
+            _processingNodeIndex = 0;
+
+            // collect file system references
+            for each (var n:INode in _sourceNodes) {
+                _nodesQueue.push(new ReferenceNode(n.name, null, FileNodeUtil.getFileSystemPath(n)));
+            }
+            removeNextFile();
         }
 
 
         // -----------------------------------------------------------------------------------
-        // Copy CMD
+        // Remove CMD
         // -----------------------------------------------------------------------------------
 
         private var cmdLineOperation:IAsyncOperation;
@@ -65,25 +65,25 @@ package ru.koldoon.fc.m.tree.impl.fs {
                 return;
             }
 
-            if (!nodesTotal || nodesProcessed == nodesTotal.length) {
+            if (!nodesQueue || _processingNodeIndex == nodesQueue.length) {
                 done();
             }
             else {
-                var fsRef:FileSystemReference = filesReferences[nodesProcessed];
+                var fsRef:ReferenceNode = _nodesQueue[_processingNodeIndex];
 
                 if (parameters.param(MOVE_TO_TRASH).value) {
-                    cmdLineOperation = new LocalFileSystemTrashCommandLineOperation()
-                        .setPath(fsRef.path)
+                    cmdLineOperation = new LFS_TrashCLO()
+                        .setPath(fsRef.reference)
                         .execute();
                 }
                 else {
-                    cmdLineOperation = new LocalFileSystemRemoveCommandLineOperation()
-                        .setPath(fsRef.path)
+                    cmdLineOperation = new LFS_RemoveCLO()
+                        .setPath(fsRef.reference)
                         .execute();
                 }
 
                 cmdLineOperation
-                    .getStatus()
+                    .status
                     .onComplete(continueRemove)
                     .onFault(onCmdLineOperationFault);
             }
@@ -91,20 +91,20 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
 
         private function onCmdLineOperationFault(op:IAsyncOperation):void {
+            status.info = op.status.info;
             fault();
         }
 
 
         private function continueRemove(op:IAsyncOperation):void {
-            progress.setPercent(nodesProcessed / nodesTotal.length * 100, this);
+            _progress.setPercent(processingNodeIndex / nodesQueue.length * 100, this);
+            _processingNodeIndex += 1;
             cmdLineOperation = null;
-            _nodesProcessed += 1;
             removeNextFile();
         }
 
 
         private var parameters:Parameters = new Parameters();
-        private var filesProvider:IFilesProvider;
-        private var filesReferences:Array;
+        private var _sourceNodes:Array;
     }
 }

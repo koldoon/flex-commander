@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<s:Panel
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
+    title="Progress" minWidth="1000" maxWidth="1800">
+
+    <s:layout>
+        <s:VerticalLayout
+            padding="20" paddingLeft="40" paddingRight="40"
+            gap="20" horizontalAlign="justify"/>
+    </s:layout>
+
+    <s:Form styleName="simple">
+
+        <s:FormItem label="" width="100%" includeInLayout="{message}">
+            <s:Label text="{message}" styleName="blue0" maxDisplayedLines="1" width="100%"/>
+        </s:FormItem>
+
+        <s:FormItem label="From:">
+            <s:Label text="{source}" styleName="blue0" maxDisplayedLines="1" width="100%"/>
+        </s:FormItem>
+
+        <s:FormItem label="To:">
+            <s:Label text="{target}" styleName="blue0" maxDisplayedLines="1" width="100%"/>
+        </s:FormItem>
+
+        <s:FormItem
+            label="Item:" width="100%"
+            visible="{currentItem}" includeInLayout="{currentItem}">
+
+            <s:Label text="{currentItem}" styleName="blue0" maxDisplayedLines="1" width="100%"/>
+        </s:FormItem>
+
+        <s:FormItem
+            label="Item Progress:"
+            visible="{!isNaN(currentItemPercentCompleted)}" includeInLayout="{!isNaN(currentItemPercentCompleted)}">
+
+            <s:Label text="{currentItemPercentCompleted.toFixed(2)}%" styleName="blue0"/>
+        </s:FormItem>
+
+        <s:FormItem
+            label="Items Processed:"
+            visible="{!isNaN(processingItemIndex)}" includeInLayout="{!isNaN(processingItemIndex)}">
+
+            <s:Label text="{processingItemIndex} / {itemsTotal}" styleName="blue0"/>
+        </s:FormItem>
+
+        <s:FormItem
+            label="Total Progress:"
+            visible="{!isNaN(percentCompleted)}" includeInLayout="{!isNaN(percentCompleted)}">
+
+            <s:Label text="{percentCompleted.toFixed(2)}%" styleName="blue0"/>
+        </s:FormItem>
+
+    </s:Form>
+
+
+    <s:controlBarContent>
+        <s:Button id="cancelButton" label="Cancel"/>
+    </s:controlBarContent>
+
+
+    <fx:Script><![CDATA[
+        /**
+         * Source dir path
+         */
+        [Bindable]
+        public var source:String;
+
+        /**
+         * Target dir path
+         */
+        [Bindable]
+        public var target:String;
+
+        /**
+         * Operation status message.
+         */
+        [Bindable]
+        public var message:String;
+
+        /**
+         * Currently processing item
+         */
+        [Bindable]
+        public var currentItem:String;
+
+        /**
+         * Percent completeness of currently processing item
+         */
+        [Bindable]
+        public var currentItemPercentCompleted:Number;
+
+        /**
+         * Total Items count (if available)
+         */
+        [Bindable]
+        public var itemsTotal:Number;
+
+        /**
+         * Items completed  count (if available)
+         */
+        [Bindable]
+        public var processingItemIndex:Number;
+
+        /**
+         * Percent completed (if available)
+         */
+        [Bindable]
+        public var percentCompleted:Number;
+
+
+        override public function setFocus():void {
+            cancelButton.setFocus();
+        }
+        ]]></fx:Script>
+</s:Panel>

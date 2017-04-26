@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.tree.impl.fs {
+package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.ICollectionPromise;
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
@@ -6,9 +6,9 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.IFilesProvider;
     import ru.koldoon.fc.m.tree.ITreeMkDirOperation;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
-    import ru.koldoon.fc.m.tree.impl.fs.console.LocalFileSystemMkDirCommandLineOperation;
+    import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_MakeDirCLO;
 
-    public class LocalFileSystemMkDirOperation extends AbstractAsyncOperation implements ITreeMkDirOperation {
+    public class LFS_MakeDirOperation extends AbstractAsyncOperation implements ITreeMkDirOperation {
 
         public function setParent(d:IDirectory):ITreeMkDirOperation {
             parent = d;
@@ -28,17 +28,17 @@ package ru.koldoon.fc.m.tree.impl.fs {
                 .onReady(function (cp:ICollectionPromise):void {
                     var fsRef:FileSystemReference = cp.items[0];
 
-                    cmdLineOperation = new LocalFileSystemMkDirCommandLineOperation()
+                    cmdLineOperation = new LFS_MakeDirCLO()
                         .path([fsRef.path, name].join("/"))
                         .execute();
 
                     cmdLineOperation
-                        .getStatus()
+                        .status
                         .onFinish(function (op:IAsyncOperation):void {
                             done();
                         })
                         .onFault(function (op:IAsyncOperation):void {
-                            status.info = op.getStatus().info;
+                            status.info = op.status.info;
                             fault();
                         });
                 });

@@ -2,15 +2,19 @@ package ru.koldoon.fc.m.tree {
     import ru.koldoon.fc.m.async.IAsyncOperation;
 
     /**
-     * This interface is provided the way to get nodesTotal
-     * list in some parametrized way. Used as async nodesTotal
+     * This interface provides the way to get flat nodes
+     * list in some (parametrized) way. Used as async nodes
      * provider for such operations like "copy", "move", etc.
      *
      * Selector was introduced because of complexity of params of
-     * nodesTotal selection for different ITreeProvider-s
+     * nodes selection for different ITreeProvider-s
      */
     public interface ITreeSelector extends IAsyncOperation {
 
+        /**
+         * Result List of INodes (IDirectories as well)
+         */
+        [ArrayElementType("ru.koldoon.fc.m.tree.INode")]
         function get nodes():Array;
 
     }

@@ -7,7 +7,6 @@ package ru.koldoon.fc.m.app.impl.commands.mkdir {
     import ru.koldoon.fc.m.app.impl.BindingProperties;
     import ru.koldoon.fc.m.app.impl.commands.AbstractBindableCommand;
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.ICollectionPromise;
     import ru.koldoon.fc.m.async.parametrized.IParametrized;
     import ru.koldoon.fc.m.popups.IPopupDescriptor;
     import ru.koldoon.fc.m.tree.IDirectory;
@@ -53,8 +52,9 @@ package ru.koldoon.fc.m.app.impl.commands.mkdir {
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
             if (mkDirOperation is IParametrized) {
-                IParametrized(mkDirOperation).getParameters().setup(context.parameters.list);
-                p.parameters = IParametrized(mkDirOperation).getParameters().list;
+                var parametrized:IParametrized = IParametrized(mkDirOperation);
+                parametrized.getParameters().setup(context.parameters.list);
+                p.parameters = parametrized.getParameters().list;
             }
 
 
@@ -88,30 +88,40 @@ package ru.koldoon.fc.m.app.impl.commands.mkdir {
         private function beginCreate():void {
             mkDirOperation
                 .execute()
-                .getStatus()
+                .status
+                .onComplete(refreshPanels);
+        }
+
+
+        private function refreshPanels(op:IAsyncOperation):void {
+            panel.directory.refresh()
+                .status
                 .onComplete(function (op:IAsyncOperation):void {
-                    panel.directory
-                        .getListing()
-                        .onReady(function (pr:ICollectionPromise):void {
-                            panel.selection.reset();
-                            panel.refresh();
+                    panel.selection.reset();
+                    panel.refresh();
 
-                            // Navigate to created node
-                            var dir:INode;
-                            pr.items.some(function (n:INode, i:int, arr:Array):Boolean {
-                                if (n.name == newDirName) {
-                                    dir = n;
-                                    return true;
-                                }
-                                else {
-                                    return false;
-                                }
-                            });
+                    // Navigate to created node
+                    var dir:INode;
+                    panel.directory.nodes.some(function (n:INode, i:int, arr:Array):Boolean {
+                        if (n.name == newDirName) {
+                            dir = n;
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    });
 
-                            if (dir) {
-                                panel.selectedNode = dir;
-                            }
-                        });
+                    if (dir) {
+                        panel.selectedNode = dir;
+                    }
+                });
+
+            // in case if both panels shows the same dir
+            app.getPassivePanel().directory.refresh()
+                .status
+                .onComplete(function (op:IAsyncOperation):void {
+                    app.getPassivePanel().refresh();
                 });
         }
 

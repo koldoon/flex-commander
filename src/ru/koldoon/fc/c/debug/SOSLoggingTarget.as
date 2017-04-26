@@ -70,12 +70,11 @@ package ru.koldoon.fc.c.debug {
 
 
         private function onIOError(e:IOErrorEvent):void {
-            trace("XMLSocket IOError");
         }
 
 
         private function onSecurityError(e:SecurityErrorEvent):void {
-            trace("XMLSocket SecurityError");
+            trace("SOSLoggingTarget: XMLSocket SecurityError");
         }
 
 

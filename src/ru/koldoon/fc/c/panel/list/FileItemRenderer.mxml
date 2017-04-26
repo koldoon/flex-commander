@@ -99,6 +99,7 @@
         import ru.koldoon.fc.m.tree.impl.AbstractNode;
         import ru.koldoon.fc.m.tree.impl.DirectoryNode;
         import ru.koldoon.fc.m.tree.impl.FileNode;
+        import ru.koldoon.fc.m.tree.impl.LinkNode;
         import ru.koldoon.fc.resources.styles.icon;
         import ru.koldoon.fc.resources.styles.palette;
         import ru.koldoon.fc.utils.F;
@@ -129,6 +130,7 @@
             var node:INode = value as INode;
             var file:FileNode = data as FileNode;
             var dir:DirectoryNode = data as DirectoryNode;
+            var link:LinkNode = data as LinkNode;
 
             if (!node) {
                 return;
@@ -140,12 +142,12 @@
                 typeLabel.text = sizeLabel.text = dateLabel.text = "";
             }
             else {
-                nameLabel.text = file.type ? file.name.substr(0, file.name.length - file.type.length - 1) : file.name;
-                typeLabel.text = dir ? "" : file.type;
+                nameLabel.text = file.extension ? file.name.substr(0, file.name.length - file.extension.length - 1) : file.name;
+                typeLabel.text = dir ? "" : file.extension;
 
                 // icon.fa_circle_o is used for measurement purpose
                 iconLabel.text =
-                    file && file.link ? icon.fa_link :
+                    link ? icon.fa_link :
                     dir ? icon.fa_folder :
                     file && file.executable ? icon.fa_asterisk : icon.fa_circle_o;
 

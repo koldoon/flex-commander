@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.tree.impl.fs.console {
+package ru.koldoon.fc.m.tree.impl.fs.cl {
     import ru.koldoon.fc.m.async.ICollectionPromise;
     import ru.koldoon.fc.m.os.CommandLineOperation;
     import ru.koldoon.fc.m.tree.IDirectory;
@@ -7,9 +7,21 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileNode;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
+    import ru.koldoon.fc.m.tree.impl.LinkNode;
     import ru.koldoon.fc.utils.notEmpty;
 
-    public class LocalFileSystemDirectoryListingCommandLineOperation extends CommandLineOperation {
+    public class LFS_GFindCLO extends CommandLineOperation {
+
+        // Command example:
+        // find -H /Users/koldoon/tmp/linktodir -type d -print -exec ls -lHT {} \;
+
+        // Errors:
+        // ls: certs: Permission denied
+        // find: /Users/koldoon/tmp/linktodir/cups/certs: Permission denied
+
+        // Output:
+
+
         /**
          * Detects "total" string in ls listing (usually on the first place)
          */
@@ -40,7 +52,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         private var directory_:IDirectory;
 
 
-        public function setDirectory(p:IDirectory):LocalFileSystemDirectoryListingCommandLineOperation {
+        public function setDirectory(p:IDirectory):LFS_GFindCLO {
             directory_ = p;
             return this;
         }
@@ -74,7 +86,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
 
 
         /**
-         * Parse stdout lines and create files and directories nodesTotal
+         * Parse stdout lines and create files and directories nodes
          */
         override protected function onLines(lines:Array):void {
             if (notEmpty(lines.length) && lines[0].match(TOTAL_RXP)) {
@@ -90,11 +102,14 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
                 var f:FileNode;
                 var isLink:Boolean = file[1] == "l";
 
-                if (file[2] == "d") {
-                    f = new DirectoryNode(directory_, file[6], isLink ? file[7] : null);
+                if (isLink) {
+                    f = new LinkNode(file[6], directory_, file[7]);
+                }
+                else if (file[2] == "d") {
+                    f = new DirectoryNode(file[6], directory_);
                 }
                 else {
-                    f = new FileNode(directory_, file[6], isLink ? file[7] : null);
+                    f = new FileNode(file[6], directory_);
                 }
 
                 f.executable = file[2] != "d" && file[3].indexOf("x") != -1;

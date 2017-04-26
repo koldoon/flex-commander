@@ -24,7 +24,7 @@ package ru.koldoon.fc.m.tree {
         /**
          * Put Files in particular directory in a tree provider.
          * Source files must not be modified during this operation.
-         * To move, delete or copy nodesTotal use ITreeEditor interface within TreeProvider.
+         * To move, delete or copy nodes use ITreeEditor interface within TreeProvider.
          */
         function putFiles(files:FileSystemReference, toDir:IDirectory):IAsyncOperation;
 

@@ -8,7 +8,7 @@ package ru.koldoon.fc.m.async.progress {
         /**
          * IProgress object, that represents current processing completeness
          */
-        function getProgress():IProgress;
+        function get progress():IProgress;
 
     }
 }

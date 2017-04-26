@@ -8,10 +8,10 @@
     </fx:Metadata>
 
     <s:states>
-        <s:State name="normal" />
-        <s:State name="disabled" />
-        <s:State name="normalWithControlBar" stateGroups="withControls" />
-        <s:State name="disabledWithControlBar" stateGroups="withControls" />
+        <s:State name="normal"/>
+        <s:State name="disabled"/>
+        <s:State name="normalWithControlBar" stateGroups="withControls"/>
+        <s:State name="disabledWithControlBar" stateGroups="withControls"/>
     </s:states>
 
 
@@ -47,18 +47,34 @@
                 </s:Rect>
             </s:Group>
 
-            <s:Rect left="0" right="0" top="0" bottom="0" mask="{titlebarMask}">
-                <s:fill>
-                    <s:SolidColor color="{palette.sea}"/>
-                </s:fill>
-            </s:Rect>
+            <s:Group left="0" right="0" top="0" bottom="0" mask="{titlebarMask}">
+                <s:Rect left="0" right="0" top="0" bottom="0">
+                    <s:fill>
+                        <s:SolidColor color="{palette.sea}"/>
+                    </s:fill>
+                </s:Rect>
+                <s:Rect left="0" right="0" top="0" bottom="0">
+                    <s:fill>
+                        <s:LinearGradient angle="-90">
+                            <s:entries>
+                                <s:GradientEntry color="black" alpha="0.2"/>
+                                <s:GradientEntry color="black" alpha="0"/>
+                            </s:entries>
+                        </s:LinearGradient>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke
+                            color="black" alpha="0.04" weight="2" joints="round" caps="round"/>
+                    </s:stroke>
+                </s:Rect>
+            </s:Group>
 
             <s:Label
                 id="titleDisplay"
                 left="20" right="20" top="20" bottom="18" styleName="white bold left h5"/>
 
             <s:Group
-                id="moveArea" left="0" right="0" top="0" bottom="0" />
+                id="moveArea" left="0" right="0" top="0" bottom="0"/>
         </s:Group>
 
         <s:Group

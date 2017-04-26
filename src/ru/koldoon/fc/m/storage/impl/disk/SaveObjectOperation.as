@@ -26,7 +26,7 @@ package ru.koldoon.fc.m.storage.impl.disk {
         private var format:String = SerializationFormat.AMF;
 
 
-        public function getProgress():IProgress {
+        public function progress():IProgress {
             return progress;
         }
 

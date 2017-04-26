@@ -17,11 +17,20 @@ package ru.koldoon.fc.m.os {
         private var _shutDownOnStdErr:Boolean = false;
         private var _waitForReturnOnStdOut:Boolean = true;
         private var _waitForReturnOnStdErr:Boolean = false;
+        private var _exitCode:Number;
 
         private var incompleteStdOut:String;
         private var incompleteStdErr:String;
         private var npsi:NativeProcessStartupInfo;
         private var proc:NativeProcess;
+
+
+        /**
+         * Command exit code. Available when operation is completed.
+         */
+        public function get exitCode():Number {
+            return _exitCode;
+        }
 
 
         public function command(str:String):CommandLineOperation {
@@ -32,10 +41,7 @@ package ru.koldoon.fc.m.os {
 
         public function commandArguments(a:Array):CommandLineOperation {
             // Array API a little bit more compact
-            var args:Vector.<String> = new Vector.<String>();
-            for (var i:int = 0; i < a.length; i++) {
-                args.push(a[i]);
-            }
+            var args:Vector.<String> = Vector.<String>(a);
             _commandArguments = args;
             return this;
         }
@@ -43,6 +49,14 @@ package ru.koldoon.fc.m.os {
 
         override public function cancel():void {
             super.cancel();
+            close();
+        }
+
+
+        /**
+         * Terminates process with SIG_TERM.
+         */
+        public function close():void {
             incompleteStdOut = null;
             if (proc) {
                 proc.exit(true);
@@ -164,6 +178,8 @@ package ru.koldoon.fc.m.os {
                 onLines(incompleteStdOut.split("\n"));
                 incompleteStdOut = null;
             }
+
+            _exitCode = event.exitCode;
             done();
         }
 

@@ -1,7 +1,7 @@
-package ru.koldoon.fc.m.tree.impl.fs.console {
+package ru.koldoon.fc.m.tree.impl.fs.cl {
     import ru.koldoon.fc.m.os.CommandLineOperation;
 
-    public class LocalFileSystemMkDirCommandLineOperation extends CommandLineOperation {
+    public class LFS_MakeDirCLO extends CommandLineOperation {
 
         private static const DIR_EXISTS_ERR_RXP:RegExp = /File exists/;
 
@@ -22,7 +22,7 @@ package ru.koldoon.fc.m.tree.impl.fs.console {
         }
 
 
-        public function path(value:String):LocalFileSystemMkDirCommandLineOperation {
+        public function path(value:String):LFS_MakeDirCLO {
             _path = value;
             return this;
         }

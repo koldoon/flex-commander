@@ -5,18 +5,61 @@ package ru.koldoon.fc.m.app {
 
     public interface IApplication {
 
-        function getContext():IApplicationContext;
-        function getTargetPanel(target:String):IPanel;
-        function getActivePanel():IPanel;
-
+        /**
+         * Get Left panel instance
+         */
         function get leftPanel():IPanel;
-        function get rightPanel():IPanel;
-        function get menu():NativeMenu;
+
 
         /**
-         * Application level PopupManager
+         * Get Right panel instance
+         */
+        function get rightPanel():IPanel;
+
+
+        /**
+         * Get NativeMenu configuration instance
+         */
+        function get menu():NativeMenu;
+
+
+        /**
+         * Get Application level PopupManager
          * @see IPanel
          */
         function get popupManager():IPopupManager;
+
+
+        /**
+         * Context holds app configuration, user preferences, installed commands, etc.
+         */
+        function getContext():IApplicationContext;
+
+
+        /**
+         * "Target" - is a binding execution target for commands. When user presses
+         * a particular combination, that combination can be binded to a specified panel,
+         * not the active only.
+         * @see ExecutionTarget
+         */
+        function getTargetPanel(target:String):IPanel;
+
+
+        /**
+         * Get panel that currently has a focus.
+         * Usually its and operation SOURCE.
+         */
+        function getActivePanel():IPanel;
+
+
+        /**
+         * Helper to get passive panel instance. Although you can get it
+         * by yourself with <code>getActivePanel()</code> and check if it's
+         * left or right panel, this method is more convenient.
+         * Usually it is used to get operation TARGET
+         */
+        function getPassivePanel():IPanel
+
+
     }
 }

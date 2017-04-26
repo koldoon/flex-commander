@@ -1,11 +1,10 @@
 package ru.koldoon.fc.m.tree.impl {
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
-    import ru.koldoon.fc.utils.notEmpty;
 
     /**
      * Common implementation of Node representing File in different
-     * FileSystem-s and Archives
+     * FileSystem-s
      */
     public class FileNode extends AbstractNode {
 
@@ -13,31 +12,45 @@ package ru.koldoon.fc.m.tree.impl {
          * Group 1: File Name
          * Group 2: File Extension
          */
-        public static const FILE_TYPE_RXP:RegExp = /^([^\/*?|]+)\.([^\/*?|\s]{1,12})$/;
+        public static const FILE_EXTENSION_RXP:RegExp = /^([^\/*?|]+)\.([^\/*?|\s]{1,12})$/;
 
 
-        public function FileNode(parent:INode, name:String, link:String = null) {
-            super(parent, name, link);
+        public function FileNode(name:String, parent:INode) {
+            super(name, parent);
 
             if (!(this is IDirectory)) {
-                var t:Object = FILE_TYPE_RXP.exec(name);
+                var t:Object = FILE_EXTENSION_RXP.exec(name);
                 if (t) {
-                    type = t[2];
+                    extension = t[2];
                 }
             }
         }
 
 
+        /**
+         * File attributes in "ls" style
+         */
         public var attributes:String;
-        public var size:Number;
+
+        /**
+         * Modified date
+         */
         public var modified:Date;
+
+        /**
+         * Executable flag
+         */
         public var executable:Boolean;
-        public var type:String;
 
+        /**
+         * Typical file extension: file name part after the last "dot"
+         */
+        public var extension:String;
 
-        override public function get info():String {
-            return notEmpty(link) ? '-> ' + link : name;
-        }
+        /**
+         * Node type. Standard types are described by FileType class
+         */
+        public var fileType:int;
 
 
         public function getFormattedSize():String {
