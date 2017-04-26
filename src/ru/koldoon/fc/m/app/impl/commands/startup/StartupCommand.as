@@ -7,6 +7,7 @@ package ru.koldoon.fc.m.app.impl.commands.startup {
     import ru.koldoon.fc.m.app.impl.commands.transfer.impl.CopyCommand;
     import ru.koldoon.fc.m.app.impl.commands.transfer.impl.MoveCommand;
     import ru.koldoon.fc.m.async.IAsyncOperation;
+    import ru.koldoon.fc.m.os.CommandLineOperation;
     import ru.koldoon.fc.m.tree.impl.fs.LocalFileSystemTreeProvider;
 
     public class StartupCommand extends AbstractCommand {
@@ -29,21 +30,27 @@ package ru.koldoon.fc.m.app.impl.commands.startup {
             app.leftPanel.directory = new LocalFileSystemTreeProvider().getRootDirectory();
             app.rightPanel.directory = new LocalFileSystemTreeProvider().getRootDirectory();
 
-            app.leftPanel
-                .directory.refresh()
+            new CommandLineOperation()
+                .command("bin/init.sh")
+                .execute()
                 .status
-                .onComplete(function (op:IAsyncOperation):void {
-                    app.leftPanel.refresh();
+                .onFinish(function (data:Object):void {
+
+                    app.leftPanel
+                        .directory.refresh()
+                        .status
+                        .onComplete(function (op:IAsyncOperation):void {
+                            app.leftPanel.refresh();
+                        });
+
+                    app.rightPanel
+                        .directory.refresh()
+                        .status
+                        .onComplete(function (op:IAsyncOperation):void {
+                            app.rightPanel.refresh();
+                        });
+
                 });
-
-
-            app.rightPanel
-                .directory.refresh()
-                .status
-                .onComplete(function (op:IAsyncOperation):void {
-                    app.rightPanel.refresh();
-                });
-
 
 //            new LFS_ListingCLO()
 //                .path("/Users/koldoon/tmp/0")
