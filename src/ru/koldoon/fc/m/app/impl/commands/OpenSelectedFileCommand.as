@@ -46,7 +46,7 @@ package ru.koldoon.fc.m.app.impl.commands {
                 .onReady(function (cp:CollectionPromise):void {
                     var ref:FileSystemReference = cp.items[0];
                     new CommandLineOperation()
-                        .command("bin/open.sh")
+                        .command("bin/open")
                         .commandArguments([ref.path])
                         .execute();
                 });

@@ -92,7 +92,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
             }
 
             command("bin/ls");
-            var args:Array = ["-lT"];
+            var args:Array = ["-lTA"];
             if (_followLinks) {
                 args.push("-H");
             }
@@ -109,9 +109,9 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
         /**
          * Holder for current dir based on "ls" output header
          */
-        private var _currentDir:String;
+        private var currentDir:String;
 
-        private var pathIsDirectory:Boolean;
+        private var sourcePathIsDirectory:Boolean;
 
 
         override protected function onLines(lines:Array):void {
@@ -125,19 +125,20 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
 
                 var dir:Object = DIR_RXP.exec(l);
                 if (dir) {
-                    _currentDir = dir[1];
+                    currentDir = dir[1];
                     continue;
                 }
 
-                if (pathIsDirectory) {
-                    // nothing to check any more
+                if (!_createReferences || sourcePathIsDirectory) {
+                    // nothing to check any more.
+                    // total before directory can appear for a root dir only
                     continue;
                 }
 
                 var total:Object = TOTAL_RXP.exec(l);
                 if (total) {
-                    pathIsDirectory = true;
-                    _currentDir = _path;
+                    sourcePathIsDirectory = true;
+                    currentDir = _path;
                 }
             }
         }
@@ -161,8 +162,8 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
                 // create flat structure nodes:
                 // if given source node was a single file, then ls in its output
                 // prints the whole path and we don't need to concatenate is with root dir
-                var ref:String = pathIsDirectory ? [_currentDir, fname].join("/") : fname;
-                var name:String = pathIsDirectory ? fname : fname.split("/").pop();
+                var ref:String = sourcePathIsDirectory ? [currentDir, fname].join("/") : fname;
+                var name:String = sourcePathIsDirectory ? fname : fname.split("/").pop();
                 node = new ReferenceNode(name, _node, ref);
             }
             else {

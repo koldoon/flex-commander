@@ -19,6 +19,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.tree.INodeProgressReporter;
     import ru.koldoon.fc.m.tree.ITreeTransferOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
+    import ru.koldoon.fc.m.tree.impl.FileNode;
     import ru.koldoon.fc.m.tree.impl.FileNodeUtil;
     import ru.koldoon.fc.m.tree.impl.FileType;
     import ru.koldoon.fc.m.tree.impl.ReferenceNode;
@@ -28,7 +29,8 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.utils.isEmpty;
     import ru.koldoon.fc.utils.notEmpty;
 
-    public class LFS_CopyOperation extends AbstractNodesBunchOperation implements IInteractiveOperation, IParametrized, ITreeTransferOperation, IProgressReporter, INodeProgressReporter {
+    public class LFS_CopyOperation extends AbstractNodesBunchOperation
+    implements IInteractiveOperation, IParametrized, ITreeTransferOperation, IProgressReporter, INodeProgressReporter {
 
         public static const OVERWRITE_EXISTING_FILES:String = "OVERWRITE_EXISTING_FILES";
         public static const SKIP_EXISTING_FILES:String = "SKIP_EXISTING_FILES";
@@ -132,6 +134,16 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         private function getNextListing():void {
             var n:INode = sourceNodes[listingIndex];
 
+            if (n is IDirectory) {
+                // manually create and add root directory reference nodes, because they wont be
+                // included in listings
+                var referenceNode:ReferenceNode = new ReferenceNode(n.name, n.parent, FileNodeUtil.getFileSystemPath(n));
+                referenceNode.fileType = FileType.DIRECTORY;
+                referenceNode.attributes = FileNode(n).attributes;
+                referenceNode.modified = FileNode(n).modified;
+                _nodesQueue.push(referenceNode);
+            }
+
             listingOp = new LFS_ListingCLO()
                 .node(n)
                 .followLinkNodes(false)
@@ -210,6 +222,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
             cmdLineOperationObserver.pause();
 
             if (!nodesQueue || processingNodeIndex == nodesQueue.length) {
+                dispose();
                 done();
             }
             else {
@@ -224,7 +237,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                     cmdLineOperation
                         .status
                         .onComplete(continueCopy)
-                        .onFault(onCmdLineOperationFault);
+                        .onFault(onMkDirLineOperationFault);
                 }
                 else {
                     cmdLineOperation = new LFS_CopyCLO()
@@ -236,8 +249,8 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
                     cmdLineOperation
                         .status
-                        .onComplete(continueCopy)
-                        .onFault(onCmdLineOperationFault);
+                        .onFault(onCopyCmdLineOperationFault)
+                        .onFinish(continueCopy);
 
                     cmdLineOperationObserver.play(0);
 
@@ -250,9 +263,15 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         }
 
 
-        private function onCmdLineOperationFault(op:IAsyncOperation):void {
+        private function onMkDirLineOperationFault(op:IAsyncOperation):void {
             status.info = op.status.info;
+            dispose();
             fault();
+        }
+
+
+        private function onCopyCmdLineOperationFault(op:IAsyncOperation):void {
+
         }
 
 
@@ -302,6 +321,12 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
 
         override public function cancel():void {
+            dispose();
+            super.cancel();
+        }
+
+
+        function dispose():void {
             if (cmdLineOperation) {
                 cmdLineOperation.cancel();
             }
@@ -311,9 +336,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
             if (cmdLineOperationObserver) {
                 cmdLineOperationObserver.kill();
             }
-            super.cancel();
         }
-
 
     }
 }

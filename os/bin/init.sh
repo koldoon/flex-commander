@@ -9,3 +9,4 @@ ln -s /usr/bin/du du
 ln -s /bin/ls ls
 ln -s /usr/bin/rsync rsync
 ln -s /bin/test test
+ln -s /usr/bin/open open
