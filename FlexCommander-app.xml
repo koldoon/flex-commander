@@ -12,13 +12,13 @@
 
     <!-- A universally unique application identifier. Must be unique across all AIR applications.
          Using a reverse DNS-style name as the id is recommended. (Eg. com.example.ExampleApplication.) Required. -->
-    <id>ru.koldoon.FlexCommander</id>
+    <id>ru.koldoon.FlexNavigator</id>
 
     <!-- Used as the filename for the application. Required. -->
-    <filename>Flex Commander</filename>
+    <filename>Flex Navigator</filename>
 
     <!-- The name that is displayed in the AIR application installer. May have multiple values for each language. See samples or xsd schema file. Optional. -->
-    <name>Flex Commander</name>
+    <name>Flex Navigator</name>
 
     <!-- A string value of the format <0-999>.<0-999>.<0-999> that represents application version which can be used to check for application upgrade.
          Values can also be 1-part or 2-part. It is not necessary to have a 3-part value.
@@ -51,7 +51,7 @@
         <content>SWF file name is set automatically at compile time</content>
 
         <!-- The title of the main window. Optional. -->
-        <title>Flex Commander</title>
+        <title>Flex Navigator</title>
 
         <!-- The type of system chrome to use (either "standard" or "none"). Optional. Default standard. -->
         <!--<systemChrome></systemChrome>-->
@@ -84,7 +84,7 @@
         <!--<y></y>-->
 
         <!-- The window's minimum size, specified as a width/height pair in pixels, such as "400 200". Optional. -->
-        <!--<minSize></minSize>-->
+        <minSize>900 600</minSize>
 
         <!-- The window's initial maximum size, specified as a width/height pair in pixels, such as "1600 1200". Optional. -->
         <!--<maxSize></maxSize>-->
@@ -108,7 +108,7 @@
         <!--<softKeyboardBehavior>none</softKeyboardBehavior>-->
 
         <!-- Display Resolution for the app (either "standard" or "high"). Optional, OSX-only. Default "standard" -->
-         <requestedDisplayResolution>high</requestedDisplayResolution>
+        <requestedDisplayResolution>high</requestedDisplayResolution>
     </initialWindow>
 
     <!-- We recommend omitting the supportedProfiles element, which in turn permits your application to be deployed to all devices supported by AIR.
