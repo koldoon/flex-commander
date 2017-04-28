@@ -13,7 +13,6 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.async.parametrized.IParameters;
     import ru.koldoon.fc.m.async.parametrized.IParametrized;
     import ru.koldoon.fc.m.async.progress.IProgress;
-    import ru.koldoon.fc.m.async.progress.IProgressReporter;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.INodeProgressReporter;
@@ -30,7 +29,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.utils.notEmpty;
 
     public class LFS_CopyOperation extends AbstractNodesBunchOperation
-    implements IInteractiveOperation, IParametrized, ITreeTransferOperation, IProgressReporter, INodeProgressReporter {
+    implements IInteractiveOperation, IParametrized, ITreeTransferOperation, INodeProgressReporter {
 
         public static const OVERWRITE_EXISTING_FILES:String = "OVERWRITE_EXISTING_FILES";
         public static const SKIP_EXISTING_FILES:String = "SKIP_EXISTING_FILES";
@@ -88,6 +87,13 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         }
 
 
+        /**
+         * @inheritDoc
+         */
+        public function get processingNodeProgress():IProgress {
+            return _processingNodeProgress;
+        }
+
         override protected function begin():void {
             sourcePath = FileNodeUtil.getFileSystemPath(source);
             destinationPath = FileNodeUtil.getFileSystemPath(destination);
@@ -95,6 +101,12 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
             _nodesQueue = [];
             listingIndex = 0;
             getNextListing();
+        }
+
+
+        override public function cancel():void {
+            dispose();
+            super.cancel();
         }
 
 
@@ -116,19 +128,12 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         private var listingIndex:Number;
 
         private var _processingNodeProgress:Progress = new Progress();
-
-        /**
-         * @inheritDoc
-         */
-        public function get processingNodeProgress():IProgress {
-            return _processingNodeProgress;
-        }
-
-
         /**
          * Watch out for long copying processes.
          */
         private var cmdLineOperationObserver:TweenMax;
+
+
 
 
         private function getNextListing():void {
@@ -229,7 +234,6 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                 var refNode:ReferenceNode = nodesQueue[processingNodeIndex];
 
                 if (refNode.fileType == FileType.DIRECTORY) {
-
                     cmdLineOperation = new LFS_MakeDirCLO()
                         .path(FileNodeUtil.getTargetPath(sourcePath, refNode.reference, destinationPath))
                         .execute();
@@ -320,13 +324,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         }
 
 
-        override public function cancel():void {
-            dispose();
-            super.cancel();
-        }
-
-
-        function dispose():void {
+        private function dispose():void {
             if (cmdLineOperation) {
                 cmdLineOperation.cancel();
             }

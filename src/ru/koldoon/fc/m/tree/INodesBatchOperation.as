@@ -8,6 +8,8 @@ package ru.koldoon.fc.m.tree {
      *
      * If you need a currently processing node progress, check for
      * INodeProgressReporter interface
+     *
+     * IProgressReporter interface is used to notify about <code>processingNodeIndex</code> changes
      */
     public interface INodesBatchOperation extends IAsyncOperation, IProgressReporter {
 
