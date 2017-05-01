@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <s:Panel
-    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" xmlns:c="ru.koldoon.fc.c.*"
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
     title="Progress" width="1600">
 
@@ -31,12 +31,6 @@
             <s:Label text="{currentItem}" styleName="blue0" maxDisplayedLines="1" width="100%"/>
         </s:FormItem>
 
-        <s:FormItem
-            label="Item Progress:"
-            visible="{!isNaN(currentItemPercentCompleted)}" includeInLayout="{!isNaN(currentItemPercentCompleted)}">
-
-            <s:Label text="{currentItemPercentCompleted.toFixed(2)}%" styleName="blue0"/>
-        </s:FormItem>
 
         <s:FormItem
             label="Items Processed:"
@@ -46,10 +40,30 @@
         </s:FormItem>
 
         <s:FormItem
+            label="Item Progress:"
+            visible="{!isNaN(currentItemPercentCompleted)}" includeInLayout="{!isNaN(currentItemPercentCompleted)}">
+
+            <s:layout>
+                <s:BasicLayout/>
+            </s:layout>
+
+            <c:ProgressBar
+                left="0" right="0" verticalCenter="0" percentValue="{currentItemPercentCompleted}"/>
+
+            <!--<s:Label text="{currentItemPercentCompleted.toFixed(2)}%" styleName="blue0"/>-->
+        </s:FormItem>
+
+        <s:FormItem
             label="Total Progress:"
             visible="{!isNaN(percentCompleted)}" includeInLayout="{!isNaN(percentCompleted)}">
 
-            <s:Label text="{percentCompleted.toFixed(2)}%" styleName="blue0"/>
+            <s:layout>
+                <s:BasicLayout/>
+            </s:layout>
+
+            <c:ProgressBar
+                left="0" right="0" verticalCenter="0" percentValue="{percentCompleted}"/>
+            <!--<s:Label text="{percentCompleted.toFixed(2)}%" styleName="blue0"/>-->
         </s:FormItem>
 
     </s:Form>

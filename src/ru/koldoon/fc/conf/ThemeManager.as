@@ -9,31 +9,29 @@ package ru.koldoon.fc.conf {
         }
 
 
-        [Embed(source="SampleTheme.json", mimeType="application/octet-stream")]
-        private static const SampleTheme:Class;
-        private static var Instance:ThemeManager;
+//        [Embed(source="SampleTheme.json", mimeType="application/octet-stream")]
+//        private static const SampleTheme:Class
+
+        private static var _instance:ThemeManager;
 
         public static function getInstance():ThemeManager {
-            if (!Instance) {
-                Instance = new ThemeManager();
+            if (!_instance) {
+                _instance = new ThemeManager();
             }
-            return Instance;
+            return _instance;
         }
 
-        private var _theme:ThemeVO;
+
+        private var _theme:Theme;
 
         [Bindable(event="change")]
-        public function get theme():ThemeVO {
+        public function get theme():Theme {
             return _theme;
         }
 
-        public function applyTheme(theme:ThemeVO):void {
-            _theme = theme;
-            dispatchEvent(new Event(Event.CHANGE));
-        }
 
-        public function resetTheme():void {
-            _theme = null;
+        public function setTheme(theme:Theme):void {
+            _theme = theme;
             dispatchEvent(new Event(Event.CHANGE));
         }
 

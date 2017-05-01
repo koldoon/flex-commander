@@ -26,6 +26,7 @@ package ru.koldoon.fc.c.popups.impl {
             clipAndEnableScrolling = true;
             calloutArranger = new CalloutArranger(this);
             addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            addEventListener(Event.RESIZE, onResize);
         }
 
 
@@ -101,6 +102,16 @@ package ru.koldoon.fc.c.popups.impl {
 
         private function onAddedToStage(event:Event):void {
             stage.addEventListener(MouseEvent.MOUSE_DOWN, onStageMouseDown);
+        }
+
+
+        private function onResize(event:Event):void {
+            for each (var pd:PopupDescriptor in popupsVisible) {
+                if (pd.keepPositionOnResize_) {
+                    alignPopup(pd);
+                    alignCallout(pd);
+                }
+            }
         }
 
 

@@ -298,6 +298,10 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                 .status
                 .onComplete(function (op:LFS_StatCLO):void {
                     var dstNode:INode = op.getNode();
+                    if (!dstNode) {
+                        return;
+                    }
+
                     var nodeRatioTotalPercent:Number = 100 / nodesQueue.length;
                     var nodeRatioCurrent:Number = dstNode.size / srcNode.size;
 

@@ -2,13 +2,15 @@
 <s:Application
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
+    xmlns:debug="ru.koldoon.fc.c.debug.*"
 
     backgroundColor="#011130" applicationDPI="320" frameRate="1000"
     activate="onActivate()" applicationComplete="creationCompleteHandler(event)">
 
     <fx:Declarations>
-        <!--<debug:SOSLoggingTarget/>-->
+        <debug:SOSLoggingTarget/>
     </fx:Declarations>
+
 
     <fx:Style source="/ru/koldoon/fc/resources/styles/typo.css"/>
     <fx:Style source="/ru/koldoon/fc/resources/styles/text-styles.css"/>
@@ -59,6 +61,46 @@
     <impl2:PopupManager
         id="popupManager"
         left="0" right="0" top="0" bottom="0"/>
+
+
+    <!--<s:Group width="30%">-->
+        <!--<s:Rect left="0" right="0" top="0" bottom="0">-->
+            <!--<s:fill>-->
+                <!--<s:SolidColor color="#011130" alpha="1"/>-->
+            <!--</s:fill>-->
+        <!--</s:Rect>-->
+
+        <!--<s:VGroup left="100" right="100" top="100" bottom="100">-->
+        <!--<c:ProgressBar-->
+        <!--id="progressBar" width="100%"-->
+        <!--percentValue="0"/>-->
+
+        <!--<s:Button label="start" click="{TweenLite.to(progressBar, 10, {percentValue: 100})}"/>-->
+        <!--</s:VGroup>-->
+        <!--<s:Form styleName="simple" left="100" right="100" top="100" bottom="100">-->
+
+            <!--<s:FormItem label="Sample:">-->
+                <!--<s:TextInput prompt="Sample Form Input" width="100%"/>-->
+            <!--</s:FormItem>-->
+
+            <!--<s:FormItem label="Sample:">-->
+                <!--<s:Label text="Sample Form Value" styleName="blue0"/>-->
+            <!--</s:FormItem>-->
+
+            <!--<s:FormItem-->
+                <!--label="Total Progress:">-->
+
+                <!--<s:layout>-->
+                    <!--<s:VerticalLayout verticalAlign="middle"/>-->
+                <!--</s:layout>-->
+
+                <!--<c:ProgressBar-->
+                    <!--width="100%" verticalCenter="0" percentValue="60"/>-->
+                <!--<s:Label text="{percentCompleted.toFixed(2)}%" styleName="blue0"/>-->
+            <!--</s:FormItem>-->
+
+        <!--</s:Form>-->
+    <!--</s:Group>-->
 
     <fx:Script><![CDATA[
         import mx.controls.ToolTip;

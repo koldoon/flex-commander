@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<s:Group
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    height="30" minWidth="150">
+
+    <s:Rect
+        id="track"
+        left="0" right="0" top="0" bottom="0"
+        radiusX="15" radiusY="15">
+
+        <s:stroke>
+            <s:SolidColorStroke color="{palette.blue0}" weight="2"/>
+        </s:stroke>
+    </s:Rect>
+
+    <s:Group
+        id="thumb"
+        left="0" top="0" bottom="0" width="{percentValue / 100 * width}">
+
+        <s:Rect
+            left="4" right="4" top="4" bottom="4"
+            radiusX="12" radiusY="12">
+
+            <s:fill>
+                <s:SolidColor color="{palette.blue0}"/>
+            </s:fill>
+        </s:Rect>
+    </s:Group>
+
+    <fx:Script><![CDATA[
+        import ru.koldoon.fc.resources.styles.palette;
+
+        /**
+         * Progress value
+         */
+        [Bindable]
+        public var percentValue:Number = 0;
+
+
+        override public function get baselinePosition():Number {
+            return 24;
+        }
+        ]]></fx:Script>
+</s:Group>

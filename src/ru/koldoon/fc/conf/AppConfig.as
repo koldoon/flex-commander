@@ -1,6 +1,8 @@
 package ru.koldoon.fc.conf {
     import flash.filesystem.File;
 
+    import mx.logging.Log;
+
     import org.osflash.vanilla.update;
 
     import ru.koldoon.fc.m.storage.impl.sync.FS;
@@ -13,6 +15,7 @@ package ru.koldoon.fc.conf {
         public function AppConfig() {
             f = File.userDirectory.resolvePath(".flexnavigator/settings.json");
             update(this, JSON.parse(FS.getInstance().readString(f) || "{}"));
+            Log.getLogger("fc.AppConfig").debug("Settings dir: " + f.nativePath);
         }
 
 
