@@ -30,11 +30,27 @@
     <fx:Script><![CDATA[
         import ru.koldoon.fc.resources.styles.palette;
 
+        private var _percentValue:Number = 0;
+
+
+        public function get percentValue():Number {
+            return _percentValue;
+        }
+
+
         /**
          * Progress value
          */
         [Bindable]
-        public var percentValue:Number = 0;
+        public function set percentValue(value:Number):void {
+            _percentValue = value;
+            if (_percentValue > 100) {
+                _percentValue = 100;
+            }
+            if (_percentValue < 0) {
+                _percentValue = 0;
+            }
+        }
 
 
         override public function get baselinePosition():Number {

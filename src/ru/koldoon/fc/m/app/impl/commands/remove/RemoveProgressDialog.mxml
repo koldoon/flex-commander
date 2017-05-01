@@ -1,33 +1,28 @@
 <?xml version="1.0"?>
 <s:Panel
-    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" xmlns:c="ru.koldoon.fc.c.*"
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
-    title="Removing  {nodesTotal} {nodesTotal > 1 ? 'items' : 'item'}" width="1400">
+    title="Removing  {nodesTotal} {nodesTotal > 1 ? 'items' : 'item'}" width="1200">
 
-    <s:layout>
-        <s:VerticalLayout
-            padding="20" paddingLeft="40" paddingRight="40"
-            gap="20" horizontalAlign="justify"/>
-    </s:layout>
 
-    <s:Form styleName="simple">
-
-        <s:FormItem label="Item:" width="100%">
-            <s:Label
-                text="{currentItem}"
-                styleName="blue0" maxDisplayedLines="1" width="100%"/>
-        </s:FormItem>
+    <s:Form
+        styleName="simple"
+        left="40" right="40" top="20" bottom="20">
 
         <s:FormItem label="From:">
-            <s:Label
-                text="{srcDir}"
-                styleName="blue0" maxDisplayedLines="1" width="100%"/>
+            <s:Label text="{srcDir}" styleName="blue0" maxDisplayedLines="1" width="100%"/>
+        </s:FormItem>
+
+        <s:FormItem label="Item:" width="100%">
+            <s:Label text="{currentItem}" styleName="blue0" maxDisplayedLines="1" width="100%"/>
+        </s:FormItem>
+
+        <s:FormItem label="Items:">
+            <s:Label text="{nodesProcessed} / {nodesTotal}" styleName="blue0"/>
         </s:FormItem>
 
         <s:FormItem label="Progress:">
-            <s:Label
-                text="{nodesProcessed} / {nodesTotal}  {Number(nodesProcessed / nodesTotal * 100).toFixed(2)}%"
-                styleName="blue0"/>
+            <c:ProgressBar percentValue="{nodesProcessed / nodesTotal * 100}" width="100%"/>
         </s:FormItem>
 
     </s:Form>

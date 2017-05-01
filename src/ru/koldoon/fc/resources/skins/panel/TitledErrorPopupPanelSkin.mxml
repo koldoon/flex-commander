@@ -71,7 +71,7 @@
 
             <s:Label
                 id="titleDisplay"
-                left="20" right="20" top="20" bottom="18" styleName="white bold left h5"/>
+                left="20" right="20" top="25" bottom="25" styleName="white bold left h5"/>
 
             <s:Group
                 id="moveArea" left="0" right="0" top="0" bottom="0"/>

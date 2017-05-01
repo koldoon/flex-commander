@@ -25,7 +25,7 @@
         </s:FormItem>
 
         <s:FormItem
-            label="Item:" width="100%"
+            label="Item:"
             visible="{currentItem}" includeInLayout="{currentItem}">
 
             <s:Label text="{currentItem}" styleName="blue0" maxDisplayedLines="1" width="100%"/>
@@ -34,14 +34,16 @@
 
         <s:FormItem
             label="Items Processed:"
-            visible="{!isNaN(processingItemIndex)}" includeInLayout="{!isNaN(processingItemIndex)}">
+            visible="{!isNaN(processingItemIndex)}"
+            includeInLayout="{!isNaN(processingItemIndex)}">
 
             <s:Label text="{processingItemIndex} / {itemsTotal}" styleName="blue0"/>
         </s:FormItem>
 
         <s:FormItem
             label="Item Progress:"
-            visible="{!isNaN(currentItemPercentCompleted)}" includeInLayout="{!isNaN(currentItemPercentCompleted)}">
+            visible="{!isNaN(currentItemPercentCompleted)}"
+            includeInLayout="{!isNaN(currentItemPercentCompleted)}">
 
             <s:layout>
                 <s:BasicLayout/>
@@ -49,13 +51,12 @@
 
             <c:ProgressBar
                 left="0" right="0" verticalCenter="0" percentValue="{currentItemPercentCompleted}"/>
-
-            <!--<s:Label text="{currentItemPercentCompleted.toFixed(2)}%" styleName="blue0"/>-->
         </s:FormItem>
 
         <s:FormItem
-            label="Total Progress:"
-            visible="{!isNaN(percentCompleted)}" includeInLayout="{!isNaN(percentCompleted)}">
+            label="Overall Progress:"
+            visible="{!isNaN(percentCompleted)}"
+            includeInLayout="{!isNaN(percentCompleted)}">
 
             <s:layout>
                 <s:BasicLayout/>
@@ -63,7 +64,6 @@
 
             <c:ProgressBar
                 left="0" right="0" verticalCenter="0" percentValue="{percentCompleted}"/>
-            <!--<s:Label text="{percentCompleted.toFixed(2)}%" styleName="blue0"/>-->
         </s:FormItem>
 
     </s:Form>

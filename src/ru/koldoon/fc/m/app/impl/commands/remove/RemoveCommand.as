@@ -113,6 +113,8 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
             var p:RemoveProgressDialog = new RemoveProgressDialog();
             var pd:IPopupDescriptor = app.popupManager.add().instance(p).modal(true);
 
+            p.srcDir = srcDir.getPathString();
+
             removeOperation
                 .execute()
                 .status
@@ -142,8 +144,9 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
                 INodesBatchOperation(removeOperation)
                     .progress
                     .onProgress(function (op:INodesBatchOperation):void {
-                        p.currentItem = TreeUtils.getPathString(op.nodesQueue[op.processingNodeIndex]);
-                        p.nodesProcessed = op.processingNodeIndex;
+                        p.currentItem = INode(op.nodesQueue[op.processingNodeIndex]).name;
+                        p.nodesTotal = op.nodesQueue.length;
+                        p.nodesProcessed = op.processingNodeIndex + 1;
                     });
             }
 

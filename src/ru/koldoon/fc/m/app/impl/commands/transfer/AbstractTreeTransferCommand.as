@@ -172,6 +172,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
                     });
             }
 
+            p.title = operationName || "Progress";
             p.source = TreeUtils.getPathString(source.directory);
             p.target = TreeUtils.getPathString(app.getPassivePanel().directory);
 
