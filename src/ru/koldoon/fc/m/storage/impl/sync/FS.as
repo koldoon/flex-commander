@@ -22,7 +22,7 @@ package ru.koldoon.fc.m.storage.impl.sync {
          * @param file
          * @param value
          */
-        public function saveBytes(file:File, value:ByteArray):void {
+        public function writeBytes(file:File, value:ByteArray):void {
             try {
                 if (file.exists) {
                     file.deleteFile();
@@ -48,9 +48,8 @@ package ru.koldoon.fc.m.storage.impl.sync {
         /**
          * Load raw bytes from file
          * @param file
-         * @return
          */
-        public function loadBytes(file:File):ByteArray {
+        public function readBytes(file:File):ByteArray {
             try {
                 if (file.isDirectory || !file.exists) {
                     return null;
@@ -74,5 +73,29 @@ package ru.koldoon.fc.m.storage.impl.sync {
 
             return null;
         }
+
+
+        /**
+         * Load string from external file
+         * @param file
+         */
+        public function readString(file:File):String {
+            var ba:ByteArray = readBytes(file);
+            if (ba) {
+                return ba.readUTFBytes(ba.bytesAvailable);
+            }
+            return null;
+        }
+
+        /**
+         * Write string to external file
+         * @param file
+         */
+        public function writeString(file:File, str:String):void {
+            var ba:ByteArray = new ByteArray();
+            ba.writeUTFBytes(str);
+            writeBytes(file, ba);
+        }
+
     }
 }

@@ -142,7 +142,7 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
                 INodesBatchOperation(removeOperation)
                     .progress
                     .onProgress(function (op:INodesBatchOperation):void {
-                        p.currentNode = TreeUtils.getPathString(op.nodesQueue[op.processingNodeIndex]);
+                        p.currentItem = TreeUtils.getPathString(op.nodesQueue[op.processingNodeIndex]);
                         p.nodesProcessed = op.processingNodeIndex;
                     });
             }

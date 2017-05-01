@@ -133,7 +133,7 @@ package ru.koldoon.fc.m.os {
             }
 
             if (lines.length > 0) {
-                LOG.error("Std Error Lines ({0}), the first is: \"{1}\"", lines.length, lines[0].replace(LOG_SPACES_TRIM_RXP, " "));
+                LOG.warn("Std Error Lines ({0}), the first is: \"{1}\"", lines.length, lines[0].replace(LOG_SPACES_TRIM_RXP, " "));
                 onErrorLines(lines);
             }
 

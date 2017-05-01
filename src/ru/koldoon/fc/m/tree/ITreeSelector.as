@@ -13,9 +13,9 @@ package ru.koldoon.fc.m.tree {
 
         /**
          * Result List of INodes (IDirectories as well)
+         * @see INode
          */
-        [ArrayElementType("ru.koldoon.fc.m.tree.INode")]
-        function get nodes():Array;
+        function getNodes():Array;
 
     }
 }

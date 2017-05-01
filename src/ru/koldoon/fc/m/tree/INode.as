@@ -34,7 +34,7 @@ package ru.koldoon.fc.m.tree {
         /**
          * Path string representation
          */
-        function getPath():String;
+        function getPathString():String;
 
 
         /**
@@ -43,7 +43,7 @@ package ru.koldoon.fc.m.tree {
          * @see INode
          * @return Array of INode
          */
-        function getNodesPath():Array;
+        function getPath():Array;
 
 
         /**
@@ -52,7 +52,6 @@ package ru.koldoon.fc.m.tree {
          * @see IFilesProvider
          * @see ITreeEditor
          * @see ITreeProvider
-         * @return
          */
         function getTreeProvider():ITreeProvider;
 
@@ -61,7 +60,6 @@ package ru.koldoon.fc.m.tree {
          * Nodes can be parented by another nodes (as for ZIP files listing f.e.)
          * but in the very top there is a directory anyway because only IDirectory
          * can provide files listing;
-         * @return
          */
         function getParentDirectory():IDirectory;
     }

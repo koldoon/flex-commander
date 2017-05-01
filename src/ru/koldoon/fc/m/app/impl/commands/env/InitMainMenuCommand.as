@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.app.impl.commands.startup {
+package ru.koldoon.fc.m.app.impl.commands.env {
     import flash.display.NativeMenu;
     import flash.display.NativeMenuItem;
     import flash.events.Event;

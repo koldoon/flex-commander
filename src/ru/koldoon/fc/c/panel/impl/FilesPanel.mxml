@@ -5,7 +5,7 @@
 
     implements="ru.koldoon.fc.m.app.IPanel"
     initialize="onInitialize()" addedToStage="onAddedToStage(event)"
-    tabEnabled="false" tabChildren="false">
+    tabEnabled="false" tabChildren="false" disabledAlpha="1">
 
     <!-- Default Tab Parameters are set to false because Panel focus is controlled by "active" property -->
 
@@ -28,18 +28,19 @@
         verticalAlign="baseline">
 
         <impl:ColumnHeader
-            id="nameColumnHeader" text="Name" sortField="label"
-            left="85" right="485" top="70" width="100%"
+            id="nameColumnHeader" text="Name" sortField="label" width="100%"
             click="changeSort(event)" sort="desc"/>
 
         <impl:ColumnHeader
-            id="sizeColumnHeader" text="Size" sortField="size"
-            width="160" right="295" top="70"
+            id="extColumnHeader" text="Ext" sortField="extension"
             click="changeSort(event)"/>
 
         <impl:ColumnHeader
-            id="modifiedColumnHeader" text="Modified" sortField="modified"
-            width="220" right="45" top="70"
+            id="sizeColumnHeader" text="Size" sortField="size" width="160"
+            click="changeSort(event)"/>
+
+        <impl:ColumnHeader
+            id="modifiedColumnHeader" text="Modified" sortField="modified" width="220"
             click="changeSort(event)"/>
     </s:HGroup>
 
@@ -95,7 +96,7 @@
         <s:Label
             id="pathLabel"
             left="20" right="20" verticalCenter="2" styleName="h5 center white"
-            text="{directory.getPath() || '/'}" maxDisplayedLines="1" showTruncationTip="true"/>
+            text="{directory.getPathString() || '/'}" maxDisplayedLines="1" showTruncationTip="true"/>
     </s:Group>
 
 
@@ -176,7 +177,7 @@
 
         private function changeSort(event:MouseEvent):void {
             var header:ColumnHeader = ColumnHeader(event.currentTarget);
-            var headers:Array = [nameColumnHeader, sizeColumnHeader, modifiedColumnHeader];
+            var headers:Array = [nameColumnHeader, extColumnHeader, sizeColumnHeader, modifiedColumnHeader];
 
             header.setNextSortingDirection();
             for each (var h:ColumnHeader in headers) {
@@ -410,13 +411,24 @@
 
 
         /**
-         * Used to emulate key press on mouse double click
+         * Used to emulate options key press on mouse double click
+         * as if it was SomeCommandKey-Enter combination.
          */
         private var lastKeyPressEvent:KeyboardEvent;
 
 
         private function nodesList_keyDownHandler(event:KeyboardEvent):void {
             if (BindingProperties.optKeysDown(event)) {
+                // disable cursor navigation if any option key was pressed
+                // ... just in case ;) there is no functionality so far
+                // that would be able to use such a behaviour
+                event.preventDefault();
+            }
+
+            if (!enabled && event.keyCode != Keyboard.ESCAPE) {
+                // disabled state affects mouse events only, but we want
+                // to disable navigation as well. except ESC key - it's a special magic
+                // to allow commands abort their process
                 event.preventDefault();
             }
         }
@@ -433,7 +445,7 @@
 
 
         /**
-         * Emulate ENTER key press.
+         * Emulate ENTER key combination press.
          * @param event
          */
         private function nodesList_doubleClickHandler(event:MouseEvent):void {

@@ -3,7 +3,6 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileNode;
-    import ru.koldoon.fc.m.tree.impl.FileNodeUtil;
     import ru.koldoon.fc.m.tree.impl.FileType;
     import ru.koldoon.fc.m.tree.impl.LinkNode;
     import ru.koldoon.fc.m.tree.impl.ReferenceNode;
@@ -75,7 +74,10 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
          * Nodes created
          */
         [ArrayElementType("ru.koldoon.fc.m.tree.INode")]
-        public var nodes:Array = [];
+        public function getNodes():Array {
+            return _nodes;
+        }
+
 
         /**
          * Total size of all regular file nodes in Bytes
@@ -87,17 +89,16 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
 
 
         override protected function begin():void {
-            if (_node) {
-                _path = FileNodeUtil.getFileSystemPath(_node);
-            }
-
             command("bin/ls");
-            var args:Array = ["-lTA"];
+            var args:Array = ["-lT"];
             if (_followLinks) {
                 args.push("-H");
             }
             if (_recursive) {
                 args.push("-R");
+            }
+            if (_includeHiddenFiles) {
+                args.push("-A");
             }
             args.push(_path);
             commandArguments(args);
@@ -119,7 +120,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
 
                 var ls:Object = LS_RXP.exec(l);
                 if (ls) {
-                    nodes.push(createNode(ls));
+                    _nodes.push(createNode(ls));
                     continue;
                 }
 
@@ -129,7 +130,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
                     continue;
                 }
 
-                if (!_createReferences || sourcePathIsDirectory) {
+                if (!_createReferenceNodes || sourcePathIsDirectory) {
                     // nothing to check any more.
                     // total before directory can appear for a root dir only
                     continue;
@@ -158,7 +159,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
             var link:String = ls[11];
             var node:FileNode;
 
-            if (_createReferences) {
+            if (_createReferenceNodes) {
                 // create flat structure nodes:
                 // if given source node was a single file, then ls in its output
                 // prints the whole path and we don't need to concatenate is with root dir
@@ -198,6 +199,12 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
         }
 
 
+        // -----------------------------------------------------------------------------------
+        // Options
+        // -----------------------------------------------------------------------------------
+
+
+
         /**
          * Path to get listing of
          */
@@ -208,9 +215,9 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
 
 
         /**
-         * Node to get listing of
+         * Parent node to set in created sub-nodes
          */
-        public function node(n:INode):LFS_ListingCLO {
+        public function parentNode(n:INode):LFS_ListingCLO {
             _node = n;
             return this;
         }
@@ -239,16 +246,28 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
          * Create flat nodes references (ReferenceNode) isntead of normal file and directory nodes.
          * This is useful in search and select operations.
          */
-        public function createFlatReferences(val:Boolean = false):LFS_ListingCLO {
-            _createReferences = val;
+        public function createReferenceNodes(val:Boolean = false):LFS_ListingCLO {
+            _createReferenceNodes = val;
             return this;
         }
 
 
-        private var _createReferences:Boolean = false;
+        /**
+         * Include or not hidden files in listing. Default is true
+         */
+        public function includeHiddenFiles(value:Boolean = true):LFS_ListingCLO {
+            _includeHiddenFiles = value;
+            return this;
+        }
+
+
+        private var _includeHiddenFiles:Boolean = true;
+        private var _createReferenceNodes:Boolean = false;
         private var _followLinks:Boolean = true;
         private var _node:INode;
         private var _path:String;
         private var _recursive:Boolean;
+        private var _nodes:Array = [];
+
     }
 }

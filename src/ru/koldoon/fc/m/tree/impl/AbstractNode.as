@@ -57,7 +57,7 @@ package ru.koldoon.fc.m.tree.impl {
         /**
          * @inheritDoc
          */
-        public function getNodesPath():Array {
+        public function getPath():Array {
             var n:INode = this;
             var path:Array = [n];
             while (n.parent) {
@@ -68,8 +68,8 @@ package ru.koldoon.fc.m.tree.impl {
         }
 
 
-        public function getPath():String {
-            return getNodesPath().join("/");
+        public function getPathString():String {
+            return getPath().join("/");
         }
 
 

@@ -11,9 +11,11 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.ITreeMkDirOperation;
     import ru.koldoon.fc.m.tree.ITreeProvider;
     import ru.koldoon.fc.m.tree.ITreeRemoveOperation;
+    import ru.koldoon.fc.m.tree.ITreeResolvePathOperation;
     import ru.koldoon.fc.m.tree.ITreeTransferOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
+    import ru.koldoon.fc.m.tree.impl.FileNodeUtil;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_ListingCLO;
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_CopyOperation;
@@ -21,6 +23,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_MakeDirOperation;
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_MoveOperation;
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_RemoveOperation;
+    import ru.koldoon.fc.m.tree.impl.fs.op.LFS_ResolvePathOperation;
 
     public class LocalFileSystemTreeProvider extends DirectoryNode implements ITreeProvider, IFilesProvider, ITreeEditor {
 
@@ -38,9 +41,13 @@ package ru.koldoon.fc.m.tree.impl.fs {
          */
         public function getDirectoryListing(dir:IDirectory):IAsyncOperation {
             var self:* = this;
-            var op:IAsyncOperation = new LFS_ListingCLO().node(dir);
+            var op:IAsyncOperation = new LFS_ListingCLO()
+                .parentNode(dir)
+                .path(FileNodeUtil.getFileSystemPath(dir))
+                .includeHiddenFiles(false);
+
             op.status.onComplete(function (op:LFS_ListingCLO):void {
-                DirectoryNode(dir).nodes = op.nodes;
+                DirectoryNode(dir).nodes = op.getNodes();
                 if (dir != self) {
                     DirectoryNode(dir).nodes.unshift(AbstractNode.PARENT_NODE);
                 }
@@ -57,6 +64,13 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
         public function getRootDirectory():IDirectory {
             return this;
+        }
+
+
+        public function resolvePathString(path:String):ITreeResolvePathOperation {
+            return pinAsyncOperation(new LFS_ResolvePathOperation()
+                .setPath(path)
+                .setTreeProvider(this));
         }
 
 

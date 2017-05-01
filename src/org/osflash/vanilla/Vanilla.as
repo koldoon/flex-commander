@@ -5,6 +5,17 @@ package org.osflash.vanilla {
     import mx.collections.ArrayCollection;
     import mx.collections.ArrayList;
 
+    import org.as3commons.lang.ClassUtils;
+    import org.as3commons.lang.ObjectUtils;
+    import org.as3commons.reflect.Accessor;
+    import org.as3commons.reflect.Field;
+    import org.as3commons.reflect.Metadata;
+    import org.as3commons.reflect.MetadataArgument;
+    import org.as3commons.reflect.Method;
+    import org.as3commons.reflect.Parameter;
+    import org.as3commons.reflect.Type;
+    import org.as3commons.reflect.Variable;
+
     public class Vanilla {
         private static const METADATA_TAG:String = "Marshall";
         private static const METADATA_FIELD_KEY:String = "field";

@@ -4,13 +4,6 @@
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
     title="Removing  {nodesTotal} {nodesTotal > 1 ? 'items' : 'item'}" width="1400">
 
-    <fx:Declarations>
-        <fx:int id="nodesTotal"/>
-        <fx:int id="nodesProcessed"/>
-        <fx:String id="currentNode"/>
-        <fx:String id="srcDir"/>
-    </fx:Declarations>
-
     <s:layout>
         <s:VerticalLayout
             padding="20" paddingLeft="40" paddingRight="40"
@@ -21,7 +14,7 @@
 
         <s:FormItem label="Item:" width="100%">
             <s:Label
-                text="{currentNode}"
+                text="{currentItem}"
                 styleName="blue0" maxDisplayedLines="1" width="100%"/>
         </s:FormItem>
 
@@ -45,8 +38,21 @@
         <s:Button id="cancelButton" label="Cancel"/>
     </s:controlBarContent>
 
-
     <fx:Script><![CDATA[
+
+        [Bindable]
+        public var nodesTotal:Number = 0;
+
+        [Bindable]
+        public var nodesProcessed:Number = 0;
+
+        [Bindable]
+        public var currentItem:String;
+
+        [Bindable]
+        public var srcDir:String;
+
+
         override public function setFocus():void {
             cancelButton.setFocus();
         }

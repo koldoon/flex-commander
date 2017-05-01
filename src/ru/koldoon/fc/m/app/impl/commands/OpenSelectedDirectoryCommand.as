@@ -5,6 +5,7 @@ package ru.koldoon.fc.m.app.impl.commands {
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
+    import ru.koldoon.fc.utils.notEmpty;
 
     public class OpenSelectedDirectoryCommand extends AbstractBindableCommand {
         public function OpenSelectedDirectoryCommand() {
@@ -17,7 +18,7 @@ package ru.koldoon.fc.m.app.impl.commands {
         /**
          * Last operation token.
          */
-        private var listing:IAsyncOperation;
+        private var listingOperation:IAsyncOperation;
 
 
         override public function isExecutable():Boolean {
@@ -29,31 +30,58 @@ package ru.koldoon.fc.m.app.impl.commands {
         override public function execute():void {
             var panel:IPanel = app.getActivePanel();
             var node:INode = panel.selectedNode;
-            var dir:IDirectory = node as IDirectory;
+            var dirToOpen:IDirectory = node as IDirectory;
 
-            if (listing) {
-                listing.cancel();
+            if (listingOperation && listingOperation.status.isProcessing) {
+                listingOperation.cancel();
             }
 
-            if (dir) {
-                listing = dir.refresh();
-                listing.status
-                    .onComplete(function (op:IAsyncOperation):void {
-                        listing = null;
-                        panel.selection.reset();
-                        panel.directory = dir;
-                        panel.selectedNodeIndex = 0;
-                    });
-
+            if (dirToOpen) {
                 panel.setStatusText("Loading...");
+
+                listingOperation = dirToOpen.refresh();
+                listingOperation.status
+                    .onStart(function (data:Object):void {
+                        panel.enabled = false;
+                    })
+                    .onComplete(function (op:IAsyncOperation):void {
+                        panel.selection.reset();
+                        panel.directory = dirToOpen;
+                        panel.selectedNodeIndex = 0;
+                    })
+                    .onFinish(function (op:IAsyncOperation):void {
+                        panel.enabled = true;
+                    });
             }
             else if (node == AbstractNode.PARENT_NODE) {
                 var currentDir:IDirectory = panel.directory;
                 var parentDir:IDirectory = currentDir.getParentDirectory();
-                if (parentDir) {
+
+                if (!parentDir) {
+                    return;
+                }
+
+                if (notEmpty(parentDir.nodes)) {
                     panel.directory = parentDir;
                     panel.selectedNode = currentDir;
                 }
+
+                listingOperation = parentDir.refresh();
+                listingOperation.status
+                    .onComplete(function (op:IAsyncOperation):void {
+                        panel.directory = parentDir;
+                        panel.selection.reset();
+                        panel.refresh();
+
+                        var selectedNode:INode;
+                        for each (var node:INode in parentDir.nodes) {
+                            if (node.name == currentDir.name) {
+                                selectedNode = node;
+                                break
+                            }
+                        }
+                        panel.selectedNode = node;
+                    });
             }
         }
     }

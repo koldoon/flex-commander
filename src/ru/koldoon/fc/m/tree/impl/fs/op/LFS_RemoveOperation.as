@@ -13,7 +13,9 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_RemoveCLO;
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_TrashCLO;
 
-    public class LFS_RemoveOperation extends AbstractNodesBunchOperation implements IParametrized, ITreeRemoveOperation, IProgressReporter {
+    public class LFS_RemoveOperation extends AbstractNodesBunchOperation
+        implements IParametrized, ITreeRemoveOperation, IProgressReporter {
+
         public static const MOVE_TO_TRASH:String = "MOVE_TO_TRASH";
 
 

@@ -25,11 +25,11 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_CopyCLO;
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_ListingCLO;
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_MakeDirCLO;
-    import ru.koldoon.fc.utils.isEmpty;
+    import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_StatCLO;
     import ru.koldoon.fc.utils.notEmpty;
 
     public class LFS_CopyOperation extends AbstractNodesBunchOperation
-    implements IInteractiveOperation, IParametrized, ITreeTransferOperation, INodeProgressReporter {
+        implements IInteractiveOperation, IParametrized, ITreeTransferOperation, INodeProgressReporter {
 
         public static const OVERWRITE_EXISTING_FILES:String = "OVERWRITE_EXISTING_FILES";
         public static const SKIP_EXISTING_FILES:String = "SKIP_EXISTING_FILES";
@@ -150,10 +150,11 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
             }
 
             listingOp = new LFS_ListingCLO()
-                .node(n)
+                .parentNode(n)
+                .path(FileNodeUtil.getFileSystemPath(n))
                 .followLinkNodes(false)
                 .recursive(true)
-                .createFlatReferences(true)
+                .createReferenceNodes(true)
                 .execute();
 
             listingOp
@@ -167,7 +168,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                 return;
             }
 
-            _nodesQueue = _nodesQueue.concat(op.nodes);
+            _nodesQueue = _nodesQueue.concat(op.getNodes());
             listingIndex += 1;
 
             if (listingIndex == sourceNodes.length || sourceNodes.length == 0) {
@@ -212,16 +213,16 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         // Copy CMD
         // -----------------------------------------------------------------------------------
 
-        private var cmdLineOperation:IAsyncOperation;
+        private var copyCmdLineOperation:IAsyncOperation;
 
 
         private function copyNextFile():void {
-            if (cmdLineOperation || status.isCanceled) {
+            if (copyCmdLineOperation || status.isCanceled) {
                 return;
             }
 
-            if (statusCmdLineOperation) {
-                statusCmdLineOperation.cancel();
+            if (statCmdLineOperation) {
+                statCmdLineOperation.cancel();
             }
 
             cmdLineOperationObserver.pause();
@@ -234,24 +235,24 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                 var refNode:ReferenceNode = nodesQueue[processingNodeIndex];
 
                 if (refNode.fileType == FileType.DIRECTORY) {
-                    cmdLineOperation = new LFS_MakeDirCLO()
+                    copyCmdLineOperation = new LFS_MakeDirCLO()
                         .path(FileNodeUtil.getTargetPath(sourcePath, refNode.reference, destinationPath))
                         .execute();
 
-                    cmdLineOperation
+                    copyCmdLineOperation
                         .status
                         .onComplete(continueCopy)
                         .onFault(onMkDirLineOperationFault);
                 }
                 else {
-                    cmdLineOperation = new LFS_CopyCLO()
+                    copyCmdLineOperation = new LFS_CopyCLO()
                         .sourceFilePath(refNode.reference)
                         .targetFilePath(FileNodeUtil.getTargetPath(sourcePath, refNode.reference, destinationPath))
                         .overwriteExisting(parameters.param(OVERWRITE_EXISTING_FILES).value)
                         .skipExisting(parameters.param(SKIP_EXISTING_FILES).value)
                         .execute();
 
-                    cmdLineOperation
+                    copyCmdLineOperation
                         .status
                         .onFault(onCopyCmdLineOperationFault)
                         .onFinish(continueCopy);
@@ -260,7 +261,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
                     // Traverse remote interaction to ours
                     interaction
-                        .listenTo(IInteractiveOperation(cmdLineOperation).getInteraction())
+                        .listenTo(IInteractiveOperation(copyCmdLineOperation).getInteraction())
                         .onMessage(cmdLineOperationObserver.pause);
                 }
             }
@@ -279,7 +280,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         }
 
 
-        private var statusCmdLineOperation:IAsyncOperation;
+        private var statCmdLineOperation:IAsyncOperation;
 
 
         private function updateNodeProgress():void {
@@ -288,20 +289,15 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
             cmdLineOperationObserver.pause();
 
-            statusCmdLineOperation = new LFS_ListingCLO()
+            statCmdLineOperation = new LFS_StatCLO()
                 .path(FileNodeUtil.getTargetPath(sourcePath, srcNode.reference, destinationPath))
-                .followLinkNodes(false)
-                .recursive(false)
-                .createFlatReferences(true)
+                .createReferenceNode(true)
                 .execute();
 
-            statusCmdLineOperation
+            statCmdLineOperation
                 .status
-                .onComplete(function (op:LFS_ListingCLO):void {
-                    if (isEmpty(op.nodes)) {
-                        return;
-                    }
-                    var dstNode:ReferenceNode = op.nodes[0] as ReferenceNode;
+                .onComplete(function (op:LFS_StatCLO):void {
+                    var dstNode:INode = op.getNode();
                     var nodeRatioTotalPercent:Number = 100 / nodesQueue.length;
                     var nodeRatioCurrent:Number = dstNode.size / srcNode.size;
 
@@ -318,15 +314,15 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
             _processingNodeProgress.setPercent(100, this);
             _progress.setPercent((processingNodeIndex + 1) / nodesQueue.length * 100, this);
             _processingNodeIndex += 1;
-            cmdLineOperation = null;
-            statusCmdLineOperation = null;
+            copyCmdLineOperation = null;
+            statCmdLineOperation = null;
             copyNextFile();
         }
 
 
         private function dispose():void {
-            if (cmdLineOperation) {
-                cmdLineOperation.cancel();
+            if (copyCmdLineOperation) {
+                copyCmdLineOperation.cancel();
             }
             if (listingOp) {
                 listingOp.cancel();

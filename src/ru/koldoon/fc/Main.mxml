@@ -2,13 +2,12 @@
 <s:Application
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
-    xmlns:debug="ru.koldoon.fc.c.debug.*"
 
-    backgroundColor="#011130" applicationDPI="320" frameRate="600"
+    backgroundColor="#011130" applicationDPI="320" frameRate="1000"
     activate="onActivate()" applicationComplete="creationCompleteHandler(event)">
 
     <fx:Declarations>
-        <debug:SOSLoggingTarget/>
+        <!--<debug:SOSLoggingTarget/>-->
     </fx:Declarations>
 
     <fx:Style source="/ru/koldoon/fc/resources/styles/typo.css"/>
@@ -67,7 +66,7 @@
         import mx.events.FlexEvent;
 
         import ru.koldoon.fc.m.app.impl.ApplicationImpl;
-        import ru.koldoon.fc.m.app.impl.commands.startup.StartupCommand;
+        import ru.koldoon.fc.m.app.impl.commands.env.StartupCommand;
 
         private var proposedFocusObject:UIComponent;
 

@@ -45,7 +45,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
 
             // the same directories could be different objects, so we use String representation
             // to actual comparing
-            if (app.leftPanel.directory.getNodesPath().join("/") == app.rightPanel.directory.getNodesPath().join("/")) {
+            if (app.leftPanel.directory.getPath().join("/") == app.rightPanel.directory.getPath().join("/")) {
                 // commonly it makes no sense to copy/move to the same dir
                 return false;
             }
@@ -65,7 +65,6 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
 
             showInitDialog();
         }
-
 
         private function showInitDialog():void {
             var p:TransferInitDialog = new TransferInitDialog();

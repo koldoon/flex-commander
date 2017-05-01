@@ -2,6 +2,7 @@ package ru.koldoon.fc.m.app.impl {
     import flash.desktop.NativeApplication;
     import flash.display.NativeMenu;
     import flash.display.NativeWindow;
+    import flash.events.Event;
     import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.ui.Keyboard;
@@ -115,6 +116,8 @@ package ru.koldoon.fc.m.app.impl {
             if (!leftPanel.active && !rightPanel.active) {
                 changeActivePanel(leftPanel);
             }
+
+            view.stage.nativeWindow.addEventListener(Event.CLOSING, onApplicationClosing);
         }
 
 
@@ -191,5 +194,11 @@ package ru.koldoon.fc.m.app.impl {
             }
         }
 
+
+        private function onApplicationClosing(event:Event):void {
+            for each (var cmd:ICommand in context.commandsInstalled) {
+                cmd.dispose();
+            }
+        }
     }
 }

@@ -74,7 +74,7 @@
             styleName.selected="h5 left white fixed"/>
 
         <s:Label
-            id="typeLabel"
+            id="extLabel"
             maxDisplayedLines="1" paddingRight="10"
             styleName="h5 right blue0 fixed"
             styleName.selected="h5 right white fixed"/>
@@ -137,13 +137,19 @@
             }
 
             if (node == AbstractNode.PARENT_NODE) {
-                nameLabel.text = node.name;
+                var name:String = node.name || "";
+                if (name.length > 100) {
+                    nameLabel.text = name.substr(0, 97) + "...";
+                }
+                else {
+                    nameLabel.text = name;
+                }
                 iconLabel.visible = iconLabel.text = icon.fa_folder;
-                typeLabel.text = sizeLabel.text = dateLabel.text = "";
+                extLabel.text = sizeLabel.text = dateLabel.text = "";
             }
             else {
                 nameLabel.text = file.extension ? file.name.substr(0, file.name.length - file.extension.length - 1) : file.name;
-                typeLabel.text = dir ? "" : file.extension;
+                extLabel.text = dir ? "" : file.extension;
 
                 // icon.fa_circle_o is used for measurement purpose
                 iconLabel.text =
