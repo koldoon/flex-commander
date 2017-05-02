@@ -1,6 +1,5 @@
 package ru.koldoon.fc.m.tree.impl {
     import ru.koldoon.fc.m.tree.INode;
-    import ru.koldoon.fc.m.tree.ITreeProvider;
     import ru.koldoon.fc.utils.F;
 
     public class FileNodeUtil {
@@ -34,37 +33,52 @@ package ru.koldoon.fc.m.tree.impl {
          * @param resolveLinks "all" | "path" | "none"
          */
         public static function getFileSystemPath(node:INode, resolveLinks:String = "path"):String {
-            var p:INode = node;
             var fsPath:Array = [];
-            var head:Boolean = true;
+            var nodesPath:Array = node.getPath();
 
-            while (p && !(p is ITreeProvider)) {
-                if (head && resolveLinks == "path" || resolveLinks == "none") {
-                    fsPath.unshift(p.name);
+            // example with link nodes in middle
+            // "/users/koldoon/tmp/linktodir(/etc)/etc(private/etc)/etc/*.*"
+
+            var pn:INode = null;
+
+            for each (var n:INode in nodesPath) {
+                if (pn is LinkNode) {
+                    // squash link nodes.
+                    // all next nodes will be the top link targets
+                    fsPath.pop();
                 }
-                else {
-                    if (p is LinkNode && LinkNode(p).reference.charAt(0) == "/") {
-                        // Root directory reference.
-                        // Such a path is absolute, no further processing is needed
-                        fsPath.unshift(LinkNode(p).reference.substr(1));
-                        break;
-                    }
-                    else if (p is LinkNode) {
-                        fsPath.unshift(LinkNode(p).reference);
+
+                if (n is LinkNode) {
+                    var ref:String = LinkNode(n).reference;
+                    var parts:Array = ref.split("/");
+
+                    if (parts[0] == "") {
+                        fsPath = parts.slice(1);
                     }
                     else {
-                        fsPath.unshift(p.name);
+                        if (parts[0] == "..") {
+                            parts.shift();
+                            fsPath.pop();
+                        }
+                        else if (parts[0] == ".") {
+                            parts.shift();
+                        }
+                        fsPath = fsPath.concat(parts);
                     }
                 }
-
-                head = false;
-                p = p.parent;
+                else {
+                    fsPath.push(n.name);
+                }
+                pn = n;
             }
 
-            // Add root "/"
-            fsPath.unshift("");
 
-            return fsPath.length > 1 ? fsPath.join("/") : "/";
+            if (fsPath.length > 0 && fsPath[0] != "") {
+                // Add root "/"
+                fsPath.unshift("");
+            }
+
+            return fsPath.length >= 2 ? fsPath.join("/") : "/";
         }
 
 

@@ -14,7 +14,7 @@ package ru.koldoon.fc.m.app.impl.commands.mkdir {
     import ru.koldoon.fc.m.tree.ITreeEditor;
     import ru.koldoon.fc.m.tree.ITreeMkDirOperation;
     import ru.koldoon.fc.m.tree.ITreeProvider;
-    import ru.koldoon.fc.m.tree.impl.TreeUtils;
+    import ru.koldoon.fc.m.tree.impl.FileNodeUtil;
 
     public class MakeDirectoryCommand extends AbstractBindableCommand {
 
@@ -46,7 +46,7 @@ package ru.koldoon.fc.m.app.impl.commands.mkdir {
                 .setParent(dir)
                 .setName(NEW_DIR_NAME);
 
-            p.dir = TreeUtils.getPathString(dir);
+            p.dir = FileNodeUtil.getFileSystemPath(dir);
             p.name = NEW_DIR_NAME;
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);

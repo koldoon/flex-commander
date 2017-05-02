@@ -2,11 +2,11 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
     import ru.koldoon.fc.m.tree.INode;
+    import ru.koldoon.fc.m.tree.ITreeGetNodeOperation;
     import ru.koldoon.fc.m.tree.ITreeProvider;
-    import ru.koldoon.fc.m.tree.ITreeResolvePathOperation;
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_StatCLO;
 
-    public class LFS_ResolvePathOperation extends AbstractAsyncOperation implements ITreeResolvePathOperation {
+    public class LFS_ResolvePathOperation extends AbstractAsyncOperation implements ITreeGetNodeOperation {
 
         /**
          * @inheritDoc
@@ -18,8 +18,6 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
         /**
          * Path string to resolve
-         * @param value
-         * @return
          */
         public function setPath(value:String):LFS_ResolvePathOperation {
             _path = value;
@@ -28,6 +26,9 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         }
 
 
+        /**
+         * TreeProvider instance to use as a root source
+         */
         public function setTreeProvider(tp:ITreeProvider):LFS_ResolvePathOperation {
             _treeProvider = tp;
             return this;

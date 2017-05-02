@@ -53,6 +53,11 @@ package ru.koldoon.fc.m.tree.impl {
         public var fileType:int;
 
 
+        override public function getPathString():String {
+            return FileNodeUtil.getFileSystemPath(this);
+        }
+
+
         public function getFormattedSize():String {
             return FileNodeUtil.getFormattedSize(size);
         }

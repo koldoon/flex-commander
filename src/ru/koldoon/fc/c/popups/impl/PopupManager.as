@@ -1,6 +1,7 @@
 package ru.koldoon.fc.c.popups.impl {
     import com.greensock.TweenLite;
 
+    import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
     import flash.events.FocusEvent;
@@ -192,7 +193,7 @@ package ru.koldoon.fc.c.popups.impl {
 
                 if (pd.hideAfter_) {
                     TweenLite.to(this, pd.hideAfter_, {
-                        onComplete: function ():void { remove(pd); }
+                        onComplete: function ():void { remove(pd) }
                     });
                 }
 
@@ -220,9 +221,9 @@ package ru.koldoon.fc.c.popups.impl {
                 return;
             }
 
-            var target:UIComponent = UIComponent(e.relatedObject);
+            var target:UIComponent = e.relatedObject as UIComponent;
             var popup:UIComponent = UIComponent(e.currentTarget);
-            var obj:DisplayObjectContainer = target.parent;
+            var obj:DisplayObjectContainer = DisplayObject(e.relatedObject).parent;
 
             // check if focus was changed inside modal popup only
             while (obj && obj != popup) {
@@ -230,7 +231,9 @@ package ru.koldoon.fc.c.popups.impl {
             }
 
             if (!obj || obj != popup) {
-                target.tabEnabled = target.focusEnabled = false;
+                if (target) {
+                    target.tabEnabled = target.focusEnabled = false;
+                }
                 popup.setFocus();
             }
         }

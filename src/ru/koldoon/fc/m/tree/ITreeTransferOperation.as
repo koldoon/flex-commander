@@ -3,7 +3,8 @@ package ru.koldoon.fc.m.tree {
 
     /**
      * Describes the minimum parameters that must have a typical
-     * Copy or Move Tree Operation.
+     * Copy or Move Tree Operation or
+     * any other operations between panels.
      */
     public interface ITreeTransferOperation extends IAsyncOperation {
 

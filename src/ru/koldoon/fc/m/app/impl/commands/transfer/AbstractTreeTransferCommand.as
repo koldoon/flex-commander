@@ -17,7 +17,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
     import ru.koldoon.fc.m.tree.INodesBatchOperation;
     import ru.koldoon.fc.m.tree.ITreeTransferOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
-    import ru.koldoon.fc.m.tree.impl.TreeUtils;
+    import ru.koldoon.fc.m.tree.impl.FileNodeUtil;
 
     import spark.components.Button;
 
@@ -74,8 +74,8 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
             p.operationName = operationName;
-            p.source = TreeUtils.getPathString(panel.directory);
-            p.target = TreeUtils.getPathString(app.getPassivePanel().directory);
+            p.source = FileNodeUtil.getFileSystemPath(panel.directory);
+            p.target = FileNodeUtil.getFileSystemPath(app.getPassivePanel().directory);
 
             if (nodes.length == 1) {
                 p.itemName = INode(nodes[0]).name;
@@ -171,8 +171,8 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
             }
 
             p.title = operationName || "Progress";
-            p.source = TreeUtils.getPathString(source.directory);
-            p.target = TreeUtils.getPathString(app.getPassivePanel().directory);
+            p.source = FileNodeUtil.getFileSystemPath(source.directory);
+            p.target = FileNodeUtil.getFileSystemPath(app.getPassivePanel().directory);
 
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);

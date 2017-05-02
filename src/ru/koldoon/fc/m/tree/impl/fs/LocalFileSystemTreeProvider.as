@@ -8,10 +8,10 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.IFilesProvider;
     import ru.koldoon.fc.m.tree.ILink;
     import ru.koldoon.fc.m.tree.ITreeEditor;
+    import ru.koldoon.fc.m.tree.ITreeGetNodeOperation;
     import ru.koldoon.fc.m.tree.ITreeMkDirOperation;
     import ru.koldoon.fc.m.tree.ITreeProvider;
     import ru.koldoon.fc.m.tree.ITreeRemoveOperation;
-    import ru.koldoon.fc.m.tree.ITreeResolvePathOperation;
     import ru.koldoon.fc.m.tree.ITreeTransferOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
@@ -23,6 +23,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_MakeDirOperation;
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_MoveOperation;
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_RemoveOperation;
+    import ru.koldoon.fc.m.tree.impl.fs.op.LFS_ResolveLinkOperation;
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_ResolvePathOperation;
 
     public class LocalFileSystemTreeProvider extends DirectoryNode implements ITreeProvider, IFilesProvider, ITreeEditor {
@@ -58,7 +59,8 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
 
         public function resolveLink(lnk:ILink):IAsyncOperation {
-            return null;
+            return pinAsyncOperation(new LFS_ResolveLinkOperation()
+                .setLink(lnk));
         }
 
 
@@ -67,7 +69,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
         }
 
 
-        public function resolvePathString(path:String):ITreeResolvePathOperation {
+        public function resolvePathString(path:String):ITreeGetNodeOperation {
             return pinAsyncOperation(new LFS_ResolvePathOperation()
                 .setPath(path)
                 .setTreeProvider(this));

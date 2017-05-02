@@ -20,7 +20,7 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
     import ru.koldoon.fc.m.tree.ITreeRemoveOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
     import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
-    import ru.koldoon.fc.m.tree.impl.TreeUtils;
+    import ru.koldoon.fc.m.tree.impl.FileNodeUtil;
     import ru.koldoon.fc.m.tree.impl.fs.OperationError;
 
     public class RemoveCommand extends AbstractBindableCommand {
@@ -66,7 +66,7 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
             removeOperation = te.remove().setNodes(srcNodes);
 
             p.nodesCount = srcNodes.length;
-            p.srcDir = TreeUtils.getPathString(srcDir);
+            p.srcDir = FileNodeUtil.getFileSystemPath(srcDir);
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 

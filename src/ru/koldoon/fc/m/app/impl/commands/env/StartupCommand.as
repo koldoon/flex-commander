@@ -30,8 +30,7 @@ package ru.koldoon.fc.m.app.impl.commands.env {
             context.installCommand(new GoToFirstNodeCommand());
             context.installCommand(new SelectNodeCommand());
             context.installCommand(new ResetPanelSelectionCommand());
-            context.installCommand(new OpenSelectedFileCommand());
-            context.installCommand(new OpenSelectedDirectoryCommand());
+            context.installCommand(new OpenSelectedNodeCommand());
             context.installCommand(new CopyCommand());
             context.installCommand(new MoveCommand());
             context.installCommand(new RemoveCommand());

@@ -38,7 +38,7 @@ package ru.koldoon.fc.m.tree {
          * To get correct tree sequence this method can ask for nodes tree in subsequent
          * TreeProviders, so it's implementation is often recursive.
          */
-        function resolvePathString(path:String):ITreeResolvePathOperation;
+        function resolvePathString(path:String):ITreeGetNodeOperation;
 
 
         /**
