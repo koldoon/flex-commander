@@ -21,7 +21,8 @@
     <s:Rect
         id="background"
         left="0" right="0" top="0" bottom="0"
-        radiusX="2" radiusY="2">
+        radiusX="8" radiusY="8">
+
         <s:fill>
             <s:SolidColor color="0xFFFFFF" alpha="0.07"/>
         </s:fill>
@@ -32,7 +33,7 @@
 
     <s:Rect
         id="innerShadow"
-        left="2" top="2" right="2" height="3">
+        left="8" top="2" right="8" height="3">
         <s:fill>
             <s:SolidColor color="black" alpha="0.15"/>
         </s:fill>

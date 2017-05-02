@@ -17,8 +17,6 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
     import ru.koldoon.fc.m.tree.INodesBatchOperation;
     import ru.koldoon.fc.m.tree.ITreeTransferOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
-    import ru.koldoon.fc.m.tree.impl.DirectoryNode;
-    import ru.koldoon.fc.m.tree.impl.FileNode;
     import ru.koldoon.fc.m.tree.impl.TreeUtils;
 
     import spark.components.Button;
@@ -166,7 +164,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
                 INodesBatchOperation(operation)
                     .progress
                     .onProgress(function (op:INodesBatchOperation):void {
-                        p.currentItem = TreeUtils.getPathString(op.nodesQueue[op.processingNodeIndex]);
+                        p.currentItem = INode(op.nodesQueue[op.processingNodeIndex]).name;
                         p.itemsTotal = op.nodesQueue.length;
                         p.processingItemIndex = op.processingNodeIndex + 1;
                     });
@@ -209,18 +207,6 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
                     app.popupManager.remove(pd);
                 }
             });
-        }
-
-
-        private function getBytesTotal(nodes:Array):Number {
-            var bt:Number = 0;
-            for (var i:int = 0; i < nodes.length; i++) {
-                var fn:FileNode = nodes[i] as FileNode;
-                if (fn && !(fn is DirectoryNode)) {
-                    bt += fn.size;
-                }
-            }
-            return bt;
         }
 
     }
