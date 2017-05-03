@@ -25,6 +25,11 @@ package ru.koldoon.fc.m.tree.impl {
         }
 
 
+        public function setTarget(value:INode):void {
+            _target = value;
+        }
+
+
         /**
          * @inheritDoc
          */

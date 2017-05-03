@@ -17,6 +17,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
     import ru.koldoon.fc.m.tree.impl.FileNodeUtil;
     import ru.koldoon.fc.m.tree.impl.FileSystemReference;
+    import ru.koldoon.fc.m.tree.impl.LinkNode;
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_ListingCLO;
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_CopyOperation;
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_GetFilesOperation;
@@ -44,11 +45,11 @@ package ru.koldoon.fc.m.tree.impl.fs {
             var self:* = this;
             var op:IAsyncOperation = new LFS_ListingCLO()
                 .parentNode(dir)
-                .path(FileNodeUtil.getFileSystemPath(dir))
+                .path(FileNodeUtil.getAbsoluteFileSystemPath(dir))
                 .includeHiddenFiles(false);
 
             op.status.onComplete(function (op:LFS_ListingCLO):void {
-                DirectoryNode(dir).nodes = op.getNodes();
+                DirectoryNode(dir).setNodes(op.getNodes());
                 if (dir != self) {
                     DirectoryNode(dir).nodes.unshift(AbstractNode.PARENT_NODE);
                 }
@@ -60,7 +61,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
         public function resolveLink(lnk:ILink):IAsyncOperation {
             return pinAsyncOperation(new LFS_ResolveLinkOperation()
-                .setLink(lnk));
+                .setLink(lnk as LinkNode));
         }
 
 

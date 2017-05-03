@@ -49,7 +49,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
             // collect file system references
             for each (var n:INode in _sourceNodes) {
-                _nodesQueue.push(new ReferenceNode(n.name, null, FileNodeUtil.getFileSystemPath(n)));
+                _nodesQueue.push(new ReferenceNode(n.name, null, FileNodeUtil.getPath(n)));
             }
             removeNextFile();
         }

@@ -74,8 +74,8 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
             p.operationName = operationName;
-            p.source = FileNodeUtil.getFileSystemPath(panel.directory);
-            p.target = FileNodeUtil.getFileSystemPath(app.getPassivePanel().directory);
+            p.source = FileNodeUtil.getPath(panel.directory);
+            p.target = FileNodeUtil.getPath(app.getPassivePanel().directory);
 
             if (nodes.length == 1) {
                 p.itemName = INode(nodes[0]).name;
@@ -171,8 +171,8 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
             }
 
             p.title = operationName || "Progress";
-            p.source = FileNodeUtil.getFileSystemPath(source.directory);
-            p.target = FileNodeUtil.getFileSystemPath(app.getPassivePanel().directory);
+            p.source = FileNodeUtil.getPath(source.directory);
+            p.target = FileNodeUtil.getPath(app.getPassivePanel().directory);
 
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);

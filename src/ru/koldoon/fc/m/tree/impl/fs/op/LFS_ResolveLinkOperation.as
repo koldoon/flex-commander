@@ -1,17 +1,17 @@
 package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
-    import ru.koldoon.fc.m.tree.ILink;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.ITreeGetNodeOperation;
     import ru.koldoon.fc.m.tree.impl.FileNodeUtil;
+    import ru.koldoon.fc.m.tree.impl.LinkNode;
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_StatCLO;
 
     public class LFS_ResolveLinkOperation extends AbstractAsyncOperation implements ITreeGetNodeOperation {
         /**
          * Source link node
          */
-        public function setLink(value:ILink):LFS_ResolveLinkOperation {
+        public function setLink(value:LinkNode):LFS_ResolveLinkOperation {
             _link = value;
             return this;
         }
@@ -26,12 +26,16 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
 
         override protected function begin():void {
+            if (!_link) {
+                throw new Error("Link is not defined or a wrong type (Not a LinkNode)");
+            }
+
             resolveCurrentLink();
         }
 
 
         private function resolveCurrentLink():void {
-            var linkPath:String = FileNodeUtil.getFileSystemPath(_link, "all");
+            var linkPath:String = FileNodeUtil.getAbsoluteFileSystemPath(_link);
             if (linksIndex[linkPath]) {
                 // seems as if we've found a cycled link
                 fault();
@@ -48,7 +52,8 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                     .status
                     .onComplete(function (op:LFS_StatCLO):void {
                         _node = op.getNode();
-                        _link = _node as ILink;
+                        _link.setTarget(_node);
+                        _link = _node as LinkNode;
 
                         if (_link) {
                             resolveCurrentLink();
@@ -64,7 +69,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         }
 
 
-        private var _link:ILink;
+        private var _link:LinkNode;
         private var _node:INode;
         private var statOperation:IAsyncOperation;
 

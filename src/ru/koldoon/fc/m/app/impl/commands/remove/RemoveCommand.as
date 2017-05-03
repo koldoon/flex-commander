@@ -66,7 +66,7 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
             removeOperation = te.remove().setNodes(srcNodes);
 
             p.nodesCount = srcNodes.length;
-            p.srcDir = FileNodeUtil.getFileSystemPath(srcDir);
+            p.srcDir = FileNodeUtil.getPath(srcDir);
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 

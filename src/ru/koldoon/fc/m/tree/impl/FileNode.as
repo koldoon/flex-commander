@@ -54,7 +54,7 @@ package ru.koldoon.fc.m.tree.impl {
 
 
         override public function getPathString():String {
-            return FileNodeUtil.getFileSystemPath(this);
+            return FileNodeUtil.getPath(this);
         }
 
 

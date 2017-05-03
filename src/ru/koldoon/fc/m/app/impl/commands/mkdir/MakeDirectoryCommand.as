@@ -46,7 +46,7 @@ package ru.koldoon.fc.m.app.impl.commands.mkdir {
                 .setParent(dir)
                 .setName(NEW_DIR_NAME);
 
-            p.dir = FileNodeUtil.getFileSystemPath(dir);
+            p.dir = FileNodeUtil.getPath(dir);
             p.name = NEW_DIR_NAME;
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);

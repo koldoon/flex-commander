@@ -21,7 +21,7 @@ package ru.koldoon.fc.m.tree.impl {
         }
 
 
-        public function set nodes(value:Array):void {
+        public function setNodes(value:Array):void {
             _nodes = value;
         }
 

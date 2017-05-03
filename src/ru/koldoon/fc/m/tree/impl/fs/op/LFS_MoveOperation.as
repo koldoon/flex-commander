@@ -27,6 +27,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_MoveCLO;
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_RemoveDirCLO;
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_StatCLO;
+    import ru.koldoon.fc.utils.isEmpty;
     import ru.koldoon.fc.utils.notEmpty;
 
     public class LFS_MoveOperation extends AbstractNodesBunchOperation
@@ -96,8 +97,8 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         }
 
         override protected function begin():void {
-            sourcePath = FileNodeUtil.getFileSystemPath(source);
-            destinationPath = FileNodeUtil.getFileSystemPath(destination);
+            sourcePath = FileNodeUtil.getPath(source);
+            destinationPath = FileNodeUtil.getPath(destination);
 
             _nodesQueue = [];
             listingIndex = 0;
@@ -137,11 +138,11 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
             if (n is IDirectory) {
                 // Add source directories to remove queue
-                dirsToRemoveQueue.push(new ReferenceNode(n.name, null, FileNodeUtil.getFileSystemPath(n)))
+                dirsToRemoveQueue.push(new ReferenceNode(n.name, null, FileNodeUtil.getPath(n)));
 
                 // manually create and add root directory reference nodes, because they wont be
                 // included in listings
-                var referenceNode:ReferenceNode = new ReferenceNode(n.name, n.parent, FileNodeUtil.getFileSystemPath(n));
+                var referenceNode:ReferenceNode = new ReferenceNode(n.name, n.parent, FileNodeUtil.getPath(n));
                 referenceNode.fileType = FileType.DIRECTORY;
                 referenceNode.attributes = FileNode(n).attributes;
                 referenceNode.modified = FileNode(n).modified;
@@ -150,7 +151,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
             listingOp = new LFS_ListingCLO()
                 .parentNode(n)
-                .path(FileNodeUtil.getFileSystemPath(n))
+                .path(FileNodeUtil.getPath(n))
                 .followLinkNodes(false)
                 .recursive(true)
                 .createReferenceNodes(true)
@@ -310,13 +311,22 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
 
         private function updateNodeProgress():void {
+            if (!nodesQueue || nodesQueue.length <= processingNodeIndex) {
+                return;
+            }
+
             var self:* = this;
             var srcNode:ReferenceNode = nodesQueue[processingNodeIndex];
+            var srcRef:String = srcNode ? srcNode.reference : null;
+
+            if (isEmpty(srcRef)) {
+                return;
+            }
 
             cmdLineOperationObserver.pause();
 
             statCmdLineOperation = new LFS_StatCLO()
-                .path(FileNodeUtil.getTargetPath(sourcePath, srcNode.reference, destinationPath))
+                .path(FileNodeUtil.getTargetPath(sourcePath, srcRef, destinationPath))
                 .createReferenceNode(true)
                 .execute();
 
@@ -335,7 +345,9 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                     _progress.setPercent(processingNodeIndex / nodesQueue.length * 100 + nodeRatioCurrent * nodeRatioTotalPercent, self);
                 })
                 .onFinish(function (data:Object):void {
-                    cmdLineOperationObserver.play(0);
+                    if (status.isProcessing) {
+                        cmdLineOperationObserver.play(0);
+                    }
                 });
         }
 

@@ -167,7 +167,7 @@ package ru.koldoon.fc.m.app.impl.commands {
         private function openNodeByOS(node:INode):void {
             openOperation = new CommandLineOperation()
                 .command("bin/open")
-                .commandArguments([FileNodeUtil.getFileSystemPath(node)])
+                .commandArguments([FileNodeUtil.getPath(node)])
                 .execute();
         }
 
