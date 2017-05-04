@@ -1,4 +1,6 @@
 package ru.koldoon.fc.m.app.impl {
+    import com.greensock.TweenLite;
+
     import flash.desktop.NativeApplication;
     import flash.display.NativeMenu;
     import flash.display.NativeWindow;
@@ -154,9 +156,12 @@ package ru.koldoon.fc.m.app.impl {
 
         /**
          * Main keyboard events handling Loop
-         * @param event
          */
         private function onPanelKeyPress(event:KeyboardEvent):void {
+            if (keyboardDisabledFlag) {
+                return;
+            }
+
             if (event.keyCode == Keyboard.TAB) {
                 changeActivePanel();
                 return;
@@ -188,6 +193,10 @@ package ru.koldoon.fc.m.app.impl {
 
                     if (cmd.isExecutable()) {
                         cmd.execute();
+
+                        keyboardDisabledFlag = true;
+                        TweenLite.to(this, 1, {useFrames: true, onComplete: enableKeyboard});
+
                         return;
                     }
                 }
@@ -195,6 +204,22 @@ package ru.koldoon.fc.m.app.impl {
         }
 
 
+        private function enableKeyboard():void {
+            keyboardDisabledFlag = false;
+        }
+
+
+        /**
+         * This flag is used to prevent quick in-sequence commands execution
+         * because most operations are async and it is possible to execute several
+         * ones at one or two frames.
+         */
+        private var keyboardDisabledFlag:Boolean;
+
+
+        /**
+         * Execute commands dispose() methods
+         */
         private function onApplicationClosing(event:Event):void {
             for each (var cmd:ICommand in context.commandsInstalled) {
                 cmd.dispose();
