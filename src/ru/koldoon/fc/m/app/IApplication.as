@@ -37,15 +37,6 @@ package ru.koldoon.fc.m.app {
 
 
         /**
-         * "Target" - is a binding execution target for commands. When user presses
-         * a particular combination, that combination can be binded to a specified panel,
-         * not the active only.
-         * @see ExecutionTarget
-         */
-        function getTargetPanel(target:String):IPanel;
-
-
-        /**
          * Get panel that currently has a focus.
          * Usually its and operation SOURCE.
          */

@@ -42,15 +42,6 @@ package ru.koldoon.fc.m.app.impl {
 
 
         /**
-         * When command is executed from keyboard combination,
-         * this property can be used by command to select it's scope
-         * (For a such commands, like "Select Location" you can bind
-         * two combinations for different panels)
-         * @see ExecutionTarget
-         */
-        public var executionTarget:String = ExecutionTarget.ACTIVE_PANEL;
-
-        /**
          * Node Value Matching RegExp validator.
          * When user press Enter on a file,
          * application searches for a appropriate command to execute
@@ -58,11 +49,6 @@ package ru.koldoon.fc.m.app.impl {
          */
         public var nodeValue:RegExp;
 
-
-        public function setTarget(value:String):BindingProperties {
-            executionTarget = value;
-            return this;
-        }
 
 
         public static function optKeysDown(event:KeyboardEvent):Boolean {

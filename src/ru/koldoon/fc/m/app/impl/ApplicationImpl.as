@@ -67,23 +67,6 @@ package ru.koldoon.fc.m.app.impl {
         /**
          * @inheritDoc
          */
-        public function getTargetPanel(target:String):IPanel {
-            if (target == ExecutionTarget.ACTIVE_PANEL) {
-                return getActivePanel();
-            }
-            else if (target == ExecutionTarget.LEFT_PANEL) {
-                return leftPanel;
-            }
-            else if (target == ExecutionTarget.RIGHT_PANEL) {
-                return rightPanel;
-            }
-            return null;
-        }
-
-
-        /**
-         * @inheritDoc
-         */
         public function getActivePanel():IPanel {
             return leftPanel.active ? leftPanel : rightPanel;
         }
@@ -185,7 +168,7 @@ package ru.koldoon.fc.m.app.impl {
                     }
 
                     if (bp.nodeValue) {
-                        var node:INode = getTargetPanel(bp.executionTarget).selectedNode;
+                        var node:INode = getActivePanel().selectedNode;
                         if (node && !bp.nodeValue.exec(node.name)) {
                             continue;
                         }
