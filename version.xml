@@ -1,0 +1,7 @@
+<project name="Flex Commander Version Automation Script" default="increment-minor-version">
+    <target name="increment-minor-version">
+        <exec command="/usr/local/bin/node">
+            <arg value="version.js"/>
+        </exec>
+    </target>
+</project>
