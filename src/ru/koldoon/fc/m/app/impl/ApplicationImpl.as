@@ -170,6 +170,9 @@ package ru.koldoon.fc.m.app.impl {
         }
 
 
+        /**
+         * Execute a particular command binded on current conditions: combination and selected node
+         */
         public function processKeyboardCombination(combination:String):void {
             for each (var cmd:ICommand in context.commandsInstalled) {
                 if (!(cmd is IBindable)) {
