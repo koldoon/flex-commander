@@ -111,6 +111,7 @@ package ru.koldoon.fc.m.app.impl.commands {
                 })
                 .onFinish(function (op:IAsyncOperation):void {
                     ap.enabled = true;
+                    ap.setStatusText("-");
                 });
         }
 

@@ -92,6 +92,7 @@ mx|ToolTip {
 }
 
 mx|Label {
+    /*fontFamily: consolas_mx;*/
     /*fontFamily: "Droid Sans Mono", "Monaco";*/
     /*fontFamily: "Monaco";*/
     /*fontFamily: "Menlo";*/

@@ -75,7 +75,7 @@
 
         <s:Label
             id="extLabel"
-            maxDisplayedLines="1" paddingRight="10"
+            paddingRight="10" maxDisplayedLines="1"
             styleName="h5 right blue0 fixed"
             styleName.selected="h5 right white fixed"/>
 

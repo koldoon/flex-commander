@@ -230,8 +230,15 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
             if (_processingNodeIndex == nodesQueue.length) {
                 cmdLineOperationObserver.pause();
-                dirToRemoveIndex = 0;
-                removeNextEmptyDir();
+
+                if (dirsToRemoveQueue.length == 0) {
+                    dispose();
+                    done();
+                }
+                else {
+                    dirToRemoveIndex = 0;
+                    removeNextEmptyDir();
+                }
             }
             else {
                 var refNode:ReferenceNode = nodesQueue[_processingNodeIndex];
@@ -277,7 +284,6 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
             dispose();
             fault();
         }
-
 
 
         private function removeNextEmptyDir():void {

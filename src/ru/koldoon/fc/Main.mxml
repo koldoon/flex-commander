@@ -4,7 +4,8 @@
     xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
 
     backgroundColor="#011130" applicationDPI="320" frameRate="1000"
-    activate="onActivate()" applicationComplete="creationCompleteHandler(event)">
+    activate="onActivate()" deactivate="deactivateHandler(event)"
+    applicationComplete="applicationCompleteHandler(event)">
 
     <fx:Declarations>
         <!--<debug:SOSLoggingTarget/>-->
@@ -24,6 +25,7 @@
     <impl:FilesPanel
         id="rightPanel" position="right"
         right="0" bottom="85" top="20" width="{width / 2 - 10}"/>
+
 
     <s:List
         id="functionKeyList"
@@ -57,6 +59,7 @@
 
     </s:List>
 
+
     <impl2:PopupManager
         id="popupManager"
         left="0" right="0" top="0" bottom="0"/>
@@ -78,12 +81,19 @@
         private var app:ApplicationImpl;
 
 
+        private function deactivateHandler(event:Event):void {
+            trace("deactivateHandler");
+        }
+
+
         /**
          * Focus manager issues workaround:
          * Set focused component manually.
          * Sometime application looses on switch from/to it
          */
         private function onActivate():void {
+            trace("Activate");
+
             if (!app) {
                 // application is not ready yet
                 return;
@@ -93,17 +103,20 @@
                 popupManager.setFocus();
             }
             else {
-                (app.getActivePanel() as UIComponent).setFocus();
+                UIComponent(app.getActivePanel()).setFocus();
             }
         }
 
 
-        private function creationCompleteHandler(event:FlexEvent):void {
+        private function applicationCompleteHandler(event:FlexEvent):void {
             ToolTip.maxWidth = 1300;
 
             app = new ApplicationImpl();
             app.attachView(this);
             app.getContext().installCommand(new StartupCommand());
+
+            // DEBUG
+            // showRedrawRegions(true, 0xFF0000);
         }
 
 

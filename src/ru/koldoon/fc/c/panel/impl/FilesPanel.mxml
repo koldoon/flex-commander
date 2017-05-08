@@ -28,7 +28,7 @@
         verticalAlign="baseline">
 
         <impl:ColumnHeader
-            id="nameColumnHeader" text="Name" sortField="label" width="100%"
+            id="nameColumnHeader" text="Name" sortField="name" width="100%"
             click="changeSort(event)" sort="desc"/>
 
         <impl:ColumnHeader
@@ -111,6 +111,7 @@
         import ru.koldoon.fc.m.app.impl.BindingProperties;
         import ru.koldoon.fc.m.popups.IPopupManager;
         import ru.koldoon.fc.m.tree.IDirectory;
+        import ru.koldoon.fc.m.tree.ILink;
         import ru.koldoon.fc.m.tree.INode;
         import ru.koldoon.fc.m.tree.impl.AbstractNode;
 
@@ -403,7 +404,7 @@
             if (selLength > 0) {
                 return 'Items Selected: ' + selLength;
             }
-            else if (selectedItem) {
+            else if (selectedItem && selectedItem is ILink) {
                 return selectedItem.getInfo();
             }
             return "-";
