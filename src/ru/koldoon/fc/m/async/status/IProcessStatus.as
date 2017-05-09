@@ -1,7 +1,18 @@
 package ru.koldoon.fc.m.async.status {
 
     /**
-     * Operation status switcher and notifier
+     * Operation status switcher and notifier. Actual switching logic must be implemented
+     * in concrete class
+     * Supported STATUSES are:
+     *
+     *      - Inited
+     *      - Pending
+     *      - Processing
+     *      - Updating
+     *      - Complete
+     *      - Canceled
+     *      - Fault
+     *
      */
     public interface IProcessStatus {
 
@@ -102,7 +113,7 @@ package ru.koldoon.fc.m.async.status {
          * This the only method is introduced to simplify API, because
          * this operation needed really rarely.
          */
-        function removeEventHandler(handler:Function):void;
+        function removeEventHandler(handler:Function):IProcessStatus;
 
     }
 }

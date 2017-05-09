@@ -28,6 +28,7 @@ package ru.koldoon.fc.m.app.impl.commands.env {
 
             context.installCommand(new GoToLastNodeCommand());
             context.installCommand(new GoToFirstNodeCommand());
+            context.installCommand(new GoToRootCommand());
             context.installCommand(new SelectNodeCommand());
             context.installCommand(new ResetPanelSelectionCommand());
             context.installCommand(new OpenSelectedNodeCommand());

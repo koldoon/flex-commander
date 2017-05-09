@@ -222,7 +222,7 @@ package ru.koldoon.fc.m.async.impl {
         /**
          * @inheritDoc
          */
-        public function removeEventHandler(handler:Function):void {
+        public function removeEventHandler(handler:Function):IProcessStatus {
             if (_onStart) {
                 _onStart.remove(handler);
             }
@@ -238,6 +238,7 @@ package ru.koldoon.fc.m.async.impl {
             if (_onComplete) {
                 _onComplete.remove(handler);
             }
+            return this;
         }
 
 

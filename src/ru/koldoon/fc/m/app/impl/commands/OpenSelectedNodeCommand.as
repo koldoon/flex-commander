@@ -98,12 +98,10 @@ package ru.koldoon.fc.m.app.impl.commands {
         private function openDirectory(dir:IDirectory):void {
             var ap:IPanel = app.getActivePanel();
             ap.setStatusText("Loading...");
+            ap.enabled = false;
 
             listingOperation = dir.refresh();
             listingOperation.status
-                .onStart(function (data:Object):void {
-                    ap.enabled = false;
-                })
                 .onComplete(function (op:IAsyncOperation):void {
                     ap.selection.reset();
                     ap.directory = dir;
