@@ -26,13 +26,19 @@
         id="rightPanel" position="right"
         right="0" bottom="85" top="20" width="{width / 2 - 10}"/>
 
+    <!--
+    <s:TextInput
+        bottom="85" height="55" left="0" right="0"
+        skinClass="ru.koldoon.fc.resources.skins.input.TextInputBorderedSkin"
+        tabFocusEnabled="false"/>
+    -->
 
     <s:List
         id="functionKeyList"
         bottom="15" left="0" right="0" minHeight="0"
         itemRenderer="ru.koldoon.fc.c.fn.FunctionKeyRenderer"
         skinClass="ru.koldoon.fc.resources.skins.list.ListTransparentSkin"
-        preventSelection="true" focusEnabled="false" cacheAsBitmap="true"
+        preventSelection="true" focusEnabled="false"
         click="functionKeyList_clickHandler(event)">
 
         <s:layout>

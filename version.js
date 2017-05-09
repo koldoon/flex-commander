@@ -1,5 +1,5 @@
 var fs = require( "fs" );
-var file = "./FlexCommander-app.xml";
+var file = "./application.xml";
 
 var VERSION_RXP = /<versionNumber>(\d+).(\d+).(\d+)<\/versionNumber>/m;
 var data = fs.readFileSync( file, "utf8" );

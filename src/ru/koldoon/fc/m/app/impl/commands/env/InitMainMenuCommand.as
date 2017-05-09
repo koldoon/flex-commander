@@ -6,10 +6,9 @@ package ru.koldoon.fc.m.app.impl.commands.env {
 
     import mx.events.AIREvent;
 
+    import ru.koldoon.fc.c.windows.DialogWindow;
     import ru.koldoon.fc.m.app.IApplication;
     import ru.koldoon.fc.m.app.impl.commands.AbstractCommand;
-
-    import spark.components.Window;
 
     public class InitMainMenuCommand extends AbstractCommand {
 
@@ -42,9 +41,22 @@ package ru.koldoon.fc.m.app.impl.commands.env {
 
 
         private function example_selectHandler(event:Event):void {
-            var w:Window = new Window();
-            w.alwaysInFront = true;
-            w.showStatusBar = false;
+//            var nvo:NativeWindowInitOptions = new NativeWindowInitOptions();
+//            nvo.systemChrome = NativeWindowSystemChrome.STANDARD;
+//            nvo.type = NativeWindowType.NORMAL;
+//            nvo.renderMode = NativeWindowRenderMode.GPU;
+//            nvo.owner = FlexGlobals.topLevelApplication.stage.nativeWindow;
+//
+//            var nv:NativeWindow = new NativeWindow(nvo);
+//            nv.activate();
+//
+//            var tpd:TransferPrepareDialog = new TransferPrepareDialog();
+//            nv.stage.addChild(tpd);
+
+            var w:DialogWindow = new DialogWindow();
+            w.width = 600;
+            w.height = 400;
+            w.title = "Example Window";
             w.renderMode = NativeWindowRenderMode.GPU;
             w.open();
             w.addEventListener(AIREvent.WINDOW_DEACTIVATE, function (e:AIREvent):void {

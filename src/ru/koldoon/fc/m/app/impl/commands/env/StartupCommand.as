@@ -24,7 +24,7 @@ package ru.koldoon.fc.m.app.impl.commands.env {
             this.app = app;
             this.context = app.getContext();
 
-            context.installCommand(new InitMainMenuCommand());
+            // context.installCommand(new InitMainMenuCommand());
 
             context.installCommand(new GoToLastNodeCommand());
             context.installCommand(new GoToFirstNodeCommand());
