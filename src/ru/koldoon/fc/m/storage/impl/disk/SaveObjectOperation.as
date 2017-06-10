@@ -7,9 +7,9 @@ package ru.koldoon.fc.m.storage.impl.disk {
     import flash.filesystem.FileStream;
 
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.Progress;
-    import ru.koldoon.fc.m.async.progress.IProgress;
-    import ru.koldoon.fc.m.async.progress.IProgressReporter;
+    import ru.koldoon.fc.m.progress.IProgress;
+    import ru.koldoon.fc.m.progress.IProgressReporter;
+    import ru.koldoon.fc.m.progress.impl.Progress;
 
     public class SaveObjectOperation extends AbstractAsyncOperation implements IProgressReporter {
         public function SaveObjectOperation(location:File) {

@@ -1,4 +1,8 @@
 package ru.koldoon.fc.m.tree.impl.fs.cl {
+    import ru.koldoon.fc.m.interactive.IInteraction;
+    import ru.koldoon.fc.m.interactive.IInteractive;
+    import ru.koldoon.fc.m.interactive.impl.AccessDeniedMessage;
+    import ru.koldoon.fc.m.interactive.impl.Interaction;
     import ru.koldoon.fc.m.os.CommandLineOperation;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
@@ -10,7 +14,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
     /**
      * Using POSIX ls command creates nodes for a particular directory
      */
-    public class LFS_ListingCLO extends CommandLineOperation {
+    public class LFS_ListingCLO extends CommandLineOperation implements IInteractive {
 
         /**
          * Capture LS output:
@@ -40,6 +44,8 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
          */
         public static const LS_RXP:RegExp = /^([bcdlsp-])([srwxtTS-]{9})[@+]?\s+\d+\s+\w+\s+\w+\s+(\d+)\s+(\w{3})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})\s+(\d{4})\s+(?:(?:(.+) -> (.+))|(.+))$/;
 
+        public static const ACCESS_DENIED:RegExp = /^ls:\s+(.*):\s+Permission denied$/;
+
         /**
          * Get catalog name from LS header in recursive mode
          */
@@ -49,11 +55,6 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
          * Get total string and value
          */
         public static const TOTAL_RXP:RegExp = /^total\s+(\d+)$/;
-
-        /**
-         * Permission denied error message
-         */
-        public static const PERM_RXP:RegExp = /^ls:\s+.+:\s+Permission denied$/;
 
         public static const MONTHS:Object = {
             "Jan": 0,
@@ -70,6 +71,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
             "Dec": 11
         };
 
+
         /**
          * Nodes created
          */
@@ -85,7 +87,9 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
         public var sizeTotal:Number = 0;
 
 
-        public var errors:Array = [];
+        public function get interaction():IInteraction {
+            return _interaction;
+        }
 
 
         override protected function begin():void {
@@ -159,7 +163,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
             var link:String = ls[11];
             var node:FileNode;
 
-            if (_createReferenceNodes) {
+            if (_createReferenceNodes || _recursive) {
                 // create flat structure nodes:
                 // if given source node was a single file, then ls in its output
                 // prints the whole path and we don't need to concatenate is with root dir
@@ -195,14 +199,18 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
 
 
         override protected function onErrorLines(lines:Array):void {
-
+            for each (var l:String in lines) {
+                var ad:Object = ACCESS_DENIED.exec(l);
+                if (ad) {
+                    _interaction.setMessage(new AccessDeniedMessage(ad[1]));
+                }
+            }
         }
 
 
         // -----------------------------------------------------------------------------------
         // Options
         // -----------------------------------------------------------------------------------
-
 
 
         /**
@@ -234,7 +242,9 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
 
 
         /**
-         * Create flat structure of all nodes in directory and all its sub-directories.
+         * Recursively get listing for all sub-directories in one listing
+         * If option is set, Reference Nodes will be always created.
+         * Tree structure is not supported so far.
          */
         public function recursive(val:Boolean = true):LFS_ListingCLO {
             _recursive = val;
@@ -268,6 +278,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
         private var _path:String;
         private var _recursive:Boolean;
         private var _nodes:Array = [];
+        private var _interaction:Interaction = new Interaction();
 
     }
 }

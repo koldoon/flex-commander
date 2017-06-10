@@ -1,9 +1,13 @@
 package ru.koldoon.fc.m.app.impl.commands {
+    import ru.koldoon.fc.c.ErrorDialog;
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.Param;
+    import ru.koldoon.fc.m.interactive.IInteraction;
+    import ru.koldoon.fc.m.interactive.IInteractive;
+    import ru.koldoon.fc.m.interactive.impl.AccessDeniedMessage;
     import ru.koldoon.fc.m.os.CommandLineOperation;
+    import ru.koldoon.fc.m.parametrized.impl.Param;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.ILink;
     import ru.koldoon.fc.m.tree.INode;
@@ -37,6 +41,7 @@ package ru.koldoon.fc.m.app.impl.commands {
         private var resolveOperation:IAsyncOperation;
         private var openOperation:IAsyncOperation;
 
+
         override public function isExecutable():Boolean {
             return app.getActivePanel().selectedNode !== null;
         }
@@ -64,9 +69,6 @@ package ru.koldoon.fc.m.app.impl.commands {
             else if (linkToOpen) {
                 resolveOperation = tp
                     .resolveLink(linkToOpen)
-                    .execute();
-
-                resolveOperation
                     .status
                     .onComplete(function (op:ITreeGetNodeOperation):void {
                         var node:INode = op.getNode();
@@ -77,6 +79,8 @@ package ru.koldoon.fc.m.app.impl.commands {
                             openNodeByOS(node);
                         }
                     })
+                    .operation
+                    .execute();
             }
             else {
                 openNodeByOS(node);
@@ -111,6 +115,19 @@ package ru.koldoon.fc.m.app.impl.commands {
                     ap.enabled = true;
                     ap.setStatusText("-");
                 });
+
+            if (listingOperation is IInteractive) {
+                IInteractive(listingOperation)
+                    .interaction
+                    .onMessage(function (i:IInteraction):void {
+                        var msg:AccessDeniedMessage = i.getMessage() as AccessDeniedMessage;
+                        if (msg) {
+                            var p:ErrorDialog = new ErrorDialog();
+                            p.message = msg.text;
+                            app.popupManager.add().instance(p);
+                        }
+                    });
+            }
         }
 
 

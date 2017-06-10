@@ -1,5 +1,4 @@
-package ru.koldoon.fc.m.async.status {
-
+package ru.koldoon.fc.m.async {
     /**
      * Operation status switcher and notifier. Actual switching logic must be implemented
      * in concrete class
@@ -14,16 +13,7 @@ package ru.koldoon.fc.m.async.status {
      *      - Fault
      *
      */
-    public interface IProcessStatus {
-
-        /**
-         * Any associated with current status info data
-         */
-        function get info():*;
-
-
-        function set info(value:*):void;
-
+    public interface IAsyncOperationStatus {
 
         // Current status getters. To simplify checking
         // all getters organised as flags.
@@ -70,7 +60,7 @@ package ru.koldoon.fc.m.async.status {
         /**
          * Process is finished with some error.
          */
-        function get isFault():Boolean;
+        function get isError():Boolean;
 
 
         // Status Change signals.
@@ -78,25 +68,25 @@ package ru.koldoon.fc.m.async.status {
         /**
          * Operation start Handler shortcut;
          */
-        function onStart(handler:Function):IProcessStatus;
+        function onStart(handler:Function):IAsyncOperationStatus;
 
 
         /**
          * Process is completed with fault status.
          */
-        function onFault(handler:Function):IProcessStatus;
+        function onError(handler:Function):IAsyncOperationStatus;
 
 
         /**
          * Process is completed with Positive Status.
          */
-        function onComplete(handler:Function):IProcessStatus;
+        function onComplete(handler:Function):IAsyncOperationStatus;
 
 
         /**
          * Process is canceled.
          */
-        function onCancel(handler:Function):IProcessStatus;
+        function onCancel(handler:Function):IAsyncOperationStatus;
 
 
         /**
@@ -104,7 +94,7 @@ package ru.koldoon.fc.m.async.status {
          * This handler will be executed at any finish status that stops the process
          * without further continue.
          */
-        function onFinish(handler:Function):IProcessStatus;
+        function onFinish(handler:Function):IAsyncOperationStatus;
 
 
         /**
@@ -113,7 +103,20 @@ package ru.koldoon.fc.m.async.status {
          * This the only method is introduced to simplify API, because
          * this operation needed really rarely.
          */
-        function removeEventHandler(handler:Function):IProcessStatus;
+        function removeEventHandler(handler:Function):IAsyncOperationStatus;
 
+
+        /**
+         * Host operation accessor to simplify using nice dot style continuous API
+         * Example:
+         * <code><pre>
+         *   operation
+         *      .status
+         *      .onFinish(handler)
+         *      .operation
+         *      .execute();
+         * </pre></code>
+         */
+        function get operation():IAsyncOperation;
     }
 }

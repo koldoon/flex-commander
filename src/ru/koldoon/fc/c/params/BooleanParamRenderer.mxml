@@ -13,7 +13,7 @@
 
 
     <fx:Script><![CDATA[
-        import ru.koldoon.fc.m.async.parametrized.IParam;
+        import ru.koldoon.fc.m.parametrized.IParam;
 
         private var param:IParam;
 

@@ -3,6 +3,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
 
     import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.ICollectionPromise;
+    import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
     import ru.koldoon.fc.m.async.impl.CollectionPromise;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.IFilesProvider;
@@ -27,7 +28,8 @@ package ru.koldoon.fc.m.tree.impl.fs {
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_ResolveLinkOperation;
     import ru.koldoon.fc.m.tree.impl.fs.op.LFS_ResolvePathOperation;
 
-    public class LocalFileSystemTreeProvider extends DirectoryNode implements ITreeProvider, IFilesProvider, ITreeEditor {
+    public class LocalFileSystemTreeProvider extends DirectoryNode
+        implements ITreeProvider, IFilesProvider, ITreeEditor {
 
         public function LocalFileSystemTreeProvider() {
             super("");
@@ -43,10 +45,10 @@ package ru.koldoon.fc.m.tree.impl.fs {
          */
         public function getDirectoryListing(dir:IDirectory):IAsyncOperation {
             var self:* = this;
-            var op:IAsyncOperation = new LFS_ListingCLO()
+            var op:AbstractAsyncOperation = new LFS_ListingCLO()
                 .parentNode(dir)
                 .path(FileNodeUtil.getAbsoluteFileSystemPath(dir))
-                .includeHiddenFiles(false);
+                .includeHiddenFiles(true);
 
             op.status.onComplete(function (op:LFS_ListingCLO):void {
                 DirectoryNode(dir).setNodes(op.getNodes());
@@ -55,7 +57,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
                 }
             });
 
-            return pinAsyncOperation(op.execute());
+            return pinAsyncOperation(op.executeAsync());
         }
 
 
@@ -86,10 +88,10 @@ package ru.koldoon.fc.m.tree.impl.fs {
          */
         public function getFiles(nodes:Array, followLinks:Boolean = true):ICollectionPromise {
             var ac:CollectionPromise = new CollectionPromise();
-            var op:IAsyncOperation = new LFS_GetFilesOperation()
+            var op:AbstractAsyncOperation = new LFS_GetFilesOperation()
                 .setNodes(nodes)
                 .followLinks(followLinks)
-                .execute();
+                .executeAsync();
 
             op.status.onComplete(function (op:LFS_GetFilesOperation):void {
                 ac.applyResult(op.files);

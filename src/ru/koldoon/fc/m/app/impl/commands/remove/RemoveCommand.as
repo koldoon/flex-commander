@@ -7,10 +7,11 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
     import ru.koldoon.fc.m.app.impl.commands.AbstractBindableCommand;
-    import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.Param;
-    import ru.koldoon.fc.m.async.parametrized.IParam;
-    import ru.koldoon.fc.m.async.parametrized.IParametrized;
+    import ru.koldoon.fc.m.interactive.IInteraction;
+    import ru.koldoon.fc.m.interactive.IInteractive;
+    import ru.koldoon.fc.m.parametrized.IParam;
+    import ru.koldoon.fc.m.parametrized.IParametrized;
+    import ru.koldoon.fc.m.parametrized.impl.Param;
     import ru.koldoon.fc.m.popups.IPopupDescriptor;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
@@ -21,7 +22,6 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
     import ru.koldoon.fc.m.tree.impl.AbstractNode;
     import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
     import ru.koldoon.fc.m.tree.impl.FileNodeUtil;
-    import ru.koldoon.fc.m.tree.impl.fs.OperationError;
 
     public class RemoveCommand extends AbstractBindableCommand {
 
@@ -116,16 +116,7 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
             p.srcDir = srcDir.getPathString();
 
             removeOperation
-                .execute()
                 .status
-                .onFault(function (op:IAsyncOperation):void {
-                    var accessErr:OperationError = op.status.info as OperationError;
-                    if (accessErr) {
-                        var p:ErrorDialog = new ErrorDialog();
-                        p.message = "Access denied:\n" + accessErr.info;
-                        app.popupManager.add().instance(p);
-                    }
-                })
                 .onFinish(function (op:AbstractNodesBunchOperation):void {
                     srcPanel.directory.refresh()
                         .status
@@ -136,9 +127,18 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
                         });
                 });
 
-
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
+
+            if (removeOperation is IInteractive) {
+                IInteractive(removeOperation)
+                    .interaction
+                    .onMessage(function (i:IInteraction):void {
+                        var p:ErrorDialog = new ErrorDialog();
+                        p.message = i.getMessage().text;
+                        app.popupManager.add().instance(p);
+                    });
+            }
 
             if (removeOperation is INodesBatchOperation) {
                 INodesBatchOperation(removeOperation)
@@ -150,6 +150,7 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
                     });
             }
 
+            removeOperation.execute();
 
             function onPopupClick(e:MouseEvent):void {
                 if (p.cancelButton == e.target) {

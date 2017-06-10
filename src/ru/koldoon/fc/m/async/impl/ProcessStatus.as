@@ -5,17 +5,19 @@ package ru.koldoon.fc.m.async.impl {
     import org.osflash.signals.Signal;
     import org.spicefactory.lib.reflect.ClassInfo;
 
-    import ru.koldoon.fc.m.async.status.IProcessStatus;
+    import ru.koldoon.fc.m.async.IAsyncOperation;
+    import ru.koldoon.fc.m.async.IAsyncOperationStatus;
 
     /**
-     * Common implementation of IProcessStatus state machine
+     * Common implementation of IAsyncOperationStatus state machine
      */
-    public class ProcessStatus implements IProcessStatus {
+    public class ProcessStatus implements IAsyncOperationStatus {
         protected static var LOG:ILogger;
 
 
-        public function ProcessStatus() {
+        public function ProcessStatus(op:IAsyncOperation) {
             LOG = Log.getLogger("fc." + ClassInfo.forInstance(this).simpleName);
+            _hostOperation = op;
         }
 
 
@@ -75,8 +77,8 @@ package ru.koldoon.fc.m.async.impl {
         /**
          * @inheritDoc
          */
-        public function get isFault():Boolean {
-            return status == FAULT;
+        public function get isError():Boolean {
+            return status == ERROR;
         }
 
 
@@ -105,9 +107,7 @@ package ru.koldoon.fc.m.async.impl {
         public function setProcessing(updating:Boolean = false, data:* = null):void {
             this.updating = updating;
             status = IN_PROGRESS;
-            if (_onStart) {
-                _onStart.dispatch(data);
-            }
+            _onStart && _onStart.dispatch(data);
         }
 
 
@@ -118,12 +118,8 @@ package ru.koldoon.fc.m.async.impl {
         public function setComplete(data:* = null):void {
             updating = false;
             status = COMPLETE;
-            if (_onComplete) {
-                _onComplete.dispatch(data);
-            }
-            if (_onFinish) {
-                _onFinish.dispatch(data);
-            }
+            _onComplete && _onComplete.dispatch(data);
+            _onFinish && _onFinish.dispatch(data);
         }
 
 
@@ -132,14 +128,10 @@ package ru.koldoon.fc.m.async.impl {
          * @param data Any related data to pass to signal listener
          */
         public function setFault(data:* = null):void {
-            status = FAULT;
+            status = ERROR;
             updating = false;
-            if (_onFault) {
-                _onFault.dispatch(data);
-            }
-            if (_onFinish) {
-                _onFinish.dispatch(data);
-            }
+            _onError && _onError.dispatch(data);
+            _onFinish && _onFinish.dispatch(data);
         }
 
 
@@ -150,22 +142,16 @@ package ru.koldoon.fc.m.async.impl {
         public function setCanceled(data:* = null):void {
             status = CANCEL;
             updating = false;
-            if (_onCancel) {
-                _onCancel.dispatch(data);
-            }
-            if (_onFinish) {
-                _onFinish.dispatch(data);
-            }
+            _onCancel && _onCancel.dispatch(data);
+            _onFinish && _onFinish.dispatch(data);
         }
 
 
         /**
          * @inheritDoc
          */
-        public function onComplete(handler:Function):IProcessStatus {
-            if (!_onComplete) {
-                _onComplete = new Signal();
-            }
+        public function onComplete(handler:Function):IAsyncOperationStatus {
+            !_onComplete && (_onComplete = new Signal());
             _onComplete.add(handler);
             return this;
         }
@@ -174,10 +160,8 @@ package ru.koldoon.fc.m.async.impl {
         /**
          * @inheritDoc
          */
-        public function onStart(handler:Function):IProcessStatus {
-            if (!_onStart) {
-                _onStart = new Signal();
-            }
+        public function onStart(handler:Function):IAsyncOperationStatus {
+            !_onStart && (_onStart = new Signal());
             _onStart.add(handler);
             return this;
         }
@@ -186,11 +170,9 @@ package ru.koldoon.fc.m.async.impl {
         /**
          * @inheritDoc
          */
-        public function onFault(handler:Function):IProcessStatus {
-            if (!_onFault) {
-                _onFault = new Signal();
-            }
-            _onFault.add(handler);
+        public function onError(handler:Function):IAsyncOperationStatus {
+            !_onError && (_onError = new Signal());
+            _onError.add(handler);
             return this;
         }
 
@@ -198,10 +180,8 @@ package ru.koldoon.fc.m.async.impl {
         /**
          * @inheritDoc
          */
-        public function onCancel(handler:Function):IProcessStatus {
-            if (!_onCancel) {
-                _onCancel = new Signal();
-            }
+        public function onCancel(handler:Function):IAsyncOperationStatus {
+            !_onCancel && (_onCancel = new Signal());
             _onCancel.addOnce(handler);
             return this;
         }
@@ -210,10 +190,8 @@ package ru.koldoon.fc.m.async.impl {
         /**
          * @inheritDoc
          */
-        public function onFinish(handler:Function):IProcessStatus {
-            if (!_onFinish) {
-                _onFinish = new Signal();
-            }
+        public function onFinish(handler:Function):IAsyncOperationStatus {
+            !_onFinish && (_onFinish = new Signal());
             _onFinish.addOnce(handler);
             return this;
         }
@@ -222,23 +200,21 @@ package ru.koldoon.fc.m.async.impl {
         /**
          * @inheritDoc
          */
-        public function removeEventHandler(handler:Function):IProcessStatus {
-            if (_onStart) {
-                _onStart.remove(handler);
-            }
-            if (_onFault) {
-                _onFault.remove(handler);
-            }
-            if (_onCancel) {
-                _onCancel.remove(handler);
-            }
-            if (_onFinish) {
-                _onFinish.remove(handler);
-            }
-            if (_onComplete) {
-                _onComplete.remove(handler);
-            }
+        public function removeEventHandler(handler:Function):IAsyncOperationStatus {
+            _onStart && _onStart.remove(handler);
+            _onError && _onError.remove(handler);
+            _onCancel && _onCancel.remove(handler);
+            _onFinish && _onFinish.remove(handler);
+            _onComplete && _onComplete.remove(handler);
             return this;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function get operation():IAsyncOperation {
+            return _hostOperation;
         }
 
 
@@ -250,7 +226,7 @@ package ru.koldoon.fc.m.async.impl {
         private static const PENDING:int = 1;
         private static const IN_PROGRESS:int = 2;
         private static const COMPLETE:int = 3;
-        private static const FAULT:int = 4;
+        private static const ERROR:int = 4;
         private static const CANCEL:int = 5;
 
 
@@ -259,10 +235,11 @@ package ru.koldoon.fc.m.async.impl {
         private var _info:*;
 
         protected var _onStart:Signal;
-        protected var _onFault:Signal;
+        protected var _onError:Signal;
         protected var _onCancel:Signal;
         protected var _onFinish:Signal;
         protected var _onComplete:Signal;
+        protected var _hostOperation:IAsyncOperation;
 
     }
 }

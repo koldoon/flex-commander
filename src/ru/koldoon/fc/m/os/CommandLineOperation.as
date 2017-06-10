@@ -170,7 +170,7 @@ package ru.koldoon.fc.m.os {
 
 
         private function onProcessFinish(event:NativeProcessExitEvent):void {
-            if (status.isCanceled || status.isFault) {
+            if (status.isCanceled || status.isError) {
                 return;
             }
 
@@ -195,11 +195,17 @@ package ru.koldoon.fc.m.os {
         }
 
 
+        /**
+         * Std Error lines handler
+         */
         protected function onErrorLines(lines:Array):void {
 
         }
 
 
+        /**
+         * Std Out lines handler
+         */
         protected function onLines(lines:Array):void {
 
         }

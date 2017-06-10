@@ -1,7 +1,7 @@
 package ru.koldoon.fc.m.tree.impl {
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.Progress;
-    import ru.koldoon.fc.m.async.progress.IProgress;
+    import ru.koldoon.fc.m.progress.IProgress;
+    import ru.koldoon.fc.m.progress.impl.Progress;
     import ru.koldoon.fc.m.tree.INodesBatchOperation;
 
     public class AbstractNodesBunchOperation extends AbstractAsyncOperation implements INodesBatchOperation {

@@ -1,7 +1,7 @@
-package ru.koldoon.fc.m.async.impl {
+package ru.koldoon.fc.m.progress.impl {
     import org.osflash.signals.Signal;
 
-    import ru.koldoon.fc.m.async.progress.IProgress;
+    import ru.koldoon.fc.m.progress.IProgress;
 
     /**
      * Basic implementation of IProgress

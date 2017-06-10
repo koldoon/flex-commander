@@ -1,15 +1,15 @@
-package ru.koldoon.fc.m.async.impl {
+package ru.koldoon.fc.m.interactive.impl {
     import org.osflash.signals.Signal;
 
-    import ru.koldoon.fc.m.async.interactive.IInteraction;
-    import ru.koldoon.fc.m.async.interactive.IInteractionMessage;
+    import ru.koldoon.fc.m.interactive.IInteraction;
+    import ru.koldoon.fc.m.interactive.IMessage;
 
     public class Interaction implements IInteraction {
 
         /**
          * @inheritDoc
          */
-        public function getMessage():IInteractionMessage {
+        public function getMessage():IMessage {
             return _message;
         }
 
@@ -28,7 +28,7 @@ package ru.koldoon.fc.m.async.impl {
         }
 
 
-        public function setMessage(msg:IInteractionMessage):void {
+        public function setMessage(msg:IMessage):void {
             _message = msg;
             _onMessage.dispatch(this);
         }
@@ -46,7 +46,9 @@ package ru.koldoon.fc.m.async.impl {
                 listeningSource.removeEventListener(onSourceMessage);
             }
             listeningSource = anotherInteraction;
-            listeningSource.onMessage(onSourceMessage);
+            if (listeningSource) {
+                listeningSource.onMessage(onSourceMessage);
+            }
             return this;
         }
 
@@ -56,7 +58,7 @@ package ru.koldoon.fc.m.async.impl {
         }
 
 
-        private var _message:IInteractionMessage;
+        private var _message:IMessage;
         private var _onMessage:Signal = new Signal();
         private var listeningSource:IInteraction;
     }

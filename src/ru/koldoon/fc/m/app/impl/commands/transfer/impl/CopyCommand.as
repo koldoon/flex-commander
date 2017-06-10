@@ -5,7 +5,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer.impl {
     import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.tree.ITreeEditor;
 
-    public class CopyCommand extends AbstractTreeTransferCommand {
+    public class CopyCommand extends AbstractNodesTransferCommand {
 
         public function CopyCommand() {
             bindings = [
@@ -14,7 +14,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer.impl {
         }
 
 
-        override protected function onTransmitOperationFinish():void {
+        override protected function onTransferOperationFinish():void {
             var source:IPanel = app.getActivePanel();
             var target:IPanel = app.getPassivePanel();
 

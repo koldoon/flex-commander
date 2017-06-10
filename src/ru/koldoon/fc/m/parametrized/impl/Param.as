@@ -1,5 +1,5 @@
-package ru.koldoon.fc.m.async.impl {
-    import ru.koldoon.fc.m.async.parametrized.IParam;
+package ru.koldoon.fc.m.parametrized.impl {
+    import ru.koldoon.fc.m.parametrized.IParam;
 
     /**
      * Basic implementation of IParam

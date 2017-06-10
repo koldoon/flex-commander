@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.async.progress {
+package ru.koldoon.fc.m.progress {
     public interface IProgress {
 
         /**

@@ -36,10 +36,10 @@
         import mx.collections.ArrayList;
         import mx.core.UIComponent;
 
-        import ru.koldoon.fc.m.async.interactive.IInteractionMessage;
+        import ru.koldoon.fc.m.interactive.ISelectOptionMessage;
 
         [Bindable]
-        public var message:IInteractionMessage;
+        public var message:ISelectOptionMessage;
 
 
         override public function setFocus():void {

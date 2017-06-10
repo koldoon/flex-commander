@@ -8,12 +8,15 @@
         left="0" right="0" top="0" bottom="0"/>
 
     <fx:Script><![CDATA[
-        import ru.koldoon.fc.m.async.impl.InteractionOption;
-        import ru.koldoon.fc.m.async.interactive.IInteractionMessage;
+        import ru.koldoon.fc.m.interactive.ISelectOptionMessage;
+        import ru.koldoon.fc.m.interactive.impl.InteractionOption;
 
-        public var message:IInteractionMessage;
+        /**
+         * @inject
+         */
+        public var message:ISelectOptionMessage;
 
-        public var option:InteractionOption;
+        private var option:InteractionOption;
 
 
         override public function set data(value:Object):void {

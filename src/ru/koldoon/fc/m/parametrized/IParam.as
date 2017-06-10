@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.async.parametrized {
+package ru.koldoon.fc.m.parametrized {
     public interface IParam {
 
         /**

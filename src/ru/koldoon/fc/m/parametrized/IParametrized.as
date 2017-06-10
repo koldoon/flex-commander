@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.async.parametrized {
+package ru.koldoon.fc.m.parametrized {
 
     /**
      * Describes object that can be dynamically configured used parameters

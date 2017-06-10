@@ -1,6 +1,6 @@
-package ru.koldoon.fc.m.async.impl {
-    import ru.koldoon.fc.m.async.parametrized.IParam;
-    import ru.koldoon.fc.m.async.parametrized.IParameters;
+package ru.koldoon.fc.m.parametrized.impl {
+    import ru.koldoon.fc.m.parametrized.IParam;
+    import ru.koldoon.fc.m.parametrized.IParameters;
 
     /**
      * Simple implementation of IParameters

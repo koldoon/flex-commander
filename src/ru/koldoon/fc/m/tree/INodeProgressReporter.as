@@ -1,5 +1,5 @@
 package ru.koldoon.fc.m.tree {
-    import ru.koldoon.fc.m.async.progress.IProgress;
+    import ru.koldoon.fc.m.progress.IProgress;
 
     /**
      * Provides currently processing node progress.

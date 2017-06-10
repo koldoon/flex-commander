@@ -2,8 +2,8 @@ package ru.koldoon.fc.m.app.impl {
     import flash.events.KeyboardEvent;
     import flash.ui.Keyboard;
 
-    import ru.koldoon.fc.m.async.impl.Parameters;
-    import ru.koldoon.fc.m.async.parametrized.IParameters;
+    import ru.koldoon.fc.m.parametrized.IParameters;
+    import ru.koldoon.fc.m.parametrized.impl.Parameters;
 
     /**
      * This options will be checked on keys combination or node Enter press.

@@ -7,7 +7,7 @@ package ru.koldoon.fc.m.app.impl.commands.mkdir {
     import ru.koldoon.fc.m.app.impl.BindingProperties;
     import ru.koldoon.fc.m.app.impl.commands.AbstractBindableCommand;
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.parametrized.IParametrized;
+    import ru.koldoon.fc.m.parametrized.IParametrized;
     import ru.koldoon.fc.m.popups.IPopupDescriptor;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
@@ -87,9 +87,10 @@ package ru.koldoon.fc.m.app.impl.commands.mkdir {
 
         private function beginCreate():void {
             mkDirOperation
-                .execute()
                 .status
-                .onComplete(refreshPanels);
+                .onComplete(refreshPanels)
+                .operation
+                .execute();
         }
 
 

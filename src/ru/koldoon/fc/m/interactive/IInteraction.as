@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.async.interactive {
+package ru.koldoon.fc.m.interactive {
     /**
      * Interaction Line for interactive processes.
      * Allows ask questions and receive responses.
@@ -8,7 +8,7 @@ package ru.koldoon.fc.m.async.interactive {
          * Get current user interaction message
          * @return
          */
-        function getMessage():IInteractionMessage;
+        function getMessage():IMessage;
 
 
         /**

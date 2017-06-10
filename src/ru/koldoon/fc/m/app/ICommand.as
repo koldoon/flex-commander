@@ -1,6 +1,8 @@
 package ru.koldoon.fc.m.app {
+
     /**
-     * Synchronous Command
+     * Synchronous Application Command.
+     * Describes some application-level functionality
      */
     public interface ICommand {
 
@@ -11,6 +13,8 @@ package ru.koldoon.fc.m.app {
         /**
          * This method is executed when application starts and initializes all
          * commands available.
+         * Everything that has to be done at startup should be here.
+         *
          * @return True on success. If init fails, this command is not added to context.
          * @param app Current Application Context
          */
@@ -18,7 +22,8 @@ package ru.koldoon.fc.m.app {
 
 
         /**
-         * Check if command can be executed in current conditions
+         * Simple Check if command can be executed in current conditions:
+         * app and panels state, etc
          */
         function isExecutable():Boolean;
 
@@ -31,8 +36,10 @@ package ru.koldoon.fc.m.app {
 
         /**
          * Dispose command (when application closes).
+         * Put in this method everything, you want to be done before
+         * application is closed: save settings, close active connections, etc.
          */
-        function dispose():void;
+        function shutdown():void;
 
     }
 }

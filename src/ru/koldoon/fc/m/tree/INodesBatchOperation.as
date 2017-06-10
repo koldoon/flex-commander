@@ -1,6 +1,6 @@
 package ru.koldoon.fc.m.tree {
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.progress.IProgressReporter;
+    import ru.koldoon.fc.m.progress.IProgressReporter;
 
     /**
      * Provides common contract to get overall nodes list to process

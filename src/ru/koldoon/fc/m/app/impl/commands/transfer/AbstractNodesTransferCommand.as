@@ -3,15 +3,18 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
     import flash.events.MouseEvent;
     import flash.ui.Keyboard;
 
+    import ru.koldoon.fc.c.alert.AlertDialog;
     import ru.koldoon.fc.c.confirmation.ConfirmationDialog;
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.commands.*;
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.interactive.IInteraction;
-    import ru.koldoon.fc.m.async.interactive.IInteractiveOperation;
-    import ru.koldoon.fc.m.async.parametrized.IParametrized;
-    import ru.koldoon.fc.m.async.progress.IProgressReporter;
+    import ru.koldoon.fc.m.interactive.IInteraction;
+    import ru.koldoon.fc.m.interactive.IInteractive;
+    import ru.koldoon.fc.m.interactive.IMessage;
+    import ru.koldoon.fc.m.interactive.ISelectOptionMessage;
+    import ru.koldoon.fc.m.parametrized.IParametrized;
     import ru.koldoon.fc.m.popups.IPopupDescriptor;
+    import ru.koldoon.fc.m.progress.IProgressReporter;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.INodeProgressReporter;
     import ru.koldoon.fc.m.tree.INodesBatchOperation;
@@ -21,13 +24,13 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
 
     import spark.components.Button;
 
-    public class AbstractTreeTransferCommand extends AbstractBindableCommand {
+    public class AbstractNodesTransferCommand extends AbstractBindableCommand {
 
         protected var operation:ITreeTransferOperation;
 
         /**
          * Move and Copy operations have the same interface. The only difference is
-         * operation name.
+         * operation name. This property is used in dialog title.
          */
         protected var operationName:String;
 
@@ -41,7 +44,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
                 return false;
             }
 
-            // the same directories could be different objects, so we use String representation
+            // the same directories can be different objects, so we use String representation
             // to actual comparing
             if (app.leftPanel.directory.getPath().join("/") == app.rightPanel.directory.getPath().join("/")) {
                 // commonly it makes no sense to copy/move to the same dir
@@ -56,6 +59,10 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
             var panel:IPanel = app.getActivePanel();
             var nodes:Array = panel.selection.length > 0 ? panel.selection.getSelectedNodes() : [panel.selectedNode];
 
+            if (!operation) {
+                throw new Error("Operation is not defined in implementation.");
+            }
+
             operation
                 .setSource(panel.directory)
                 .setDestination(app.getPassivePanel().directory)
@@ -63,6 +70,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
 
             showInitDialog();
         }
+
 
         private function showInitDialog():void {
             var p:TransferInitDialog = new TransferInitDialog();
@@ -113,7 +121,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
         }
 
 
-        protected function onTransmitOperationFinish():void {
+        protected function onTransferOperationFinish():void {
             // Abstract Method
         }
 
@@ -126,19 +134,10 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
             var pd:IPopupDescriptor = app.popupManager.add().instance(p).modal(true);
             var source:IPanel = app.getActivePanel();
 
-            operation
-                .execute()
-                .status
-                .onFinish(function (op:IAsyncOperation):void {
-                    app.popupManager.remove(pd);
-                    onTransmitOperationFinish();
-                });
-
-
-            if (operation is IInteractiveOperation) {
-                IInteractiveOperation(operation)
-                    .getInteraction()
-                    .onMessage(onConfirmationMessage);
+            if (operation is IInteractive) {
+                IInteractive(operation)
+                    .interaction
+                    .onMessage(onInteractionMessage);
             }
 
             if (operation is IProgressReporter) {
@@ -170,6 +169,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
                     });
             }
 
+
             p.title = operationName || "Progress";
             p.source = FileNodeUtil.getPath(source.directory);
             p.target = FileNodeUtil.getPath(app.getPassivePanel().directory);
@@ -177,6 +177,14 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
             p.addEventListener(MouseEvent.CLICK, onPopupClick);
             p.addEventListener(KeyboardEvent.KEY_DOWN, onPopupKeyDown);
 
+            operation
+                .status
+                .onFinish(function (op:IAsyncOperation):void {
+                    app.popupManager.remove(pd);
+                    onTransferOperationFinish();
+                })
+                .operation
+                .execute();
 
             function onPopupClick(e:MouseEvent):void {
                 if (p.cancelButton == e.target) { cancel() }
@@ -195,15 +203,39 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
         }
 
 
-        private function onConfirmationMessage(i:IInteraction):void {
+        private function onInteractionMessage(i:IInteraction):void {
+            var msg:* = i.getMessage();
+
+            if (msg is ISelectOptionMessage) {
+                showConfirmationDialog(msg);
+            }
+            else if (msg is IMessage) {
+                showAlertDialog(msg);
+            }
+        }
+
+
+        private function showConfirmationDialog(msg:ISelectOptionMessage):void {
             var p:ConfirmationDialog = new ConfirmationDialog();
             var pd:IPopupDescriptor = app.popupManager.add().instance(p).modal(true);
 
-            p.message = i.getMessage();
-
+            p.message = msg;
             p.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
                 if (e.target is Button) {
                     // Any confirmation Button was clicked
+                    app.popupManager.remove(pd);
+                }
+            });
+        }
+
+
+        private function showAlertDialog(msg:IMessage):void {
+            var p:AlertDialog = new AlertDialog();
+            var pd:IPopupDescriptor = app.popupManager.add().instance(p).modal(true);
+
+            p.message = msg;
+            p.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
+                if (e.target == p.okButton) {
                     app.popupManager.remove(pd);
                 }
             });

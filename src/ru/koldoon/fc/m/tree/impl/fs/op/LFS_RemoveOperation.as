@@ -1,10 +1,14 @@
 package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.Param;
-    import ru.koldoon.fc.m.async.impl.Parameters;
-    import ru.koldoon.fc.m.async.parametrized.IParameters;
-    import ru.koldoon.fc.m.async.parametrized.IParametrized;
-    import ru.koldoon.fc.m.async.progress.IProgressReporter;
+    import ru.koldoon.fc.m.interactive.IInteraction;
+    import ru.koldoon.fc.m.interactive.IInteractive;
+    import ru.koldoon.fc.m.interactive.impl.Interaction;
+    import ru.koldoon.fc.m.interactive.impl.Message;
+    import ru.koldoon.fc.m.parametrized.IParameters;
+    import ru.koldoon.fc.m.parametrized.IParametrized;
+    import ru.koldoon.fc.m.parametrized.impl.Param;
+    import ru.koldoon.fc.m.parametrized.impl.Parameters;
+    import ru.koldoon.fc.m.progress.IProgressReporter;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.ITreeRemoveOperation;
     import ru.koldoon.fc.m.tree.impl.AbstractNodesBunchOperation;
@@ -14,7 +18,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.m.tree.impl.fs.cl.LFS_TrashCLO;
 
     public class LFS_RemoveOperation extends AbstractNodesBunchOperation
-        implements IParametrized, ITreeRemoveOperation, IProgressReporter {
+        implements IParametrized, ITreeRemoveOperation, IProgressReporter, IInteractive {
 
         public static const MOVE_TO_TRASH:String = "MOVE_TO_TRASH";
 
@@ -31,6 +35,14 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
          */
         public function getParameters():IParameters {
             return parameters;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function get interaction():IInteraction {
+            return _interaction;
         }
 
 
@@ -75,25 +87,31 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
                 if (parameters.param(MOVE_TO_TRASH).value) {
                     cmdLineOperation = new LFS_TrashCLO()
-                        .setPath(fsRef.reference)
-                        .execute();
+                        .setPath(fsRef.reference);
                 }
                 else {
                     cmdLineOperation = new LFS_RemoveCLO()
-                        .setPath(fsRef.reference)
-                        .execute();
+                        .setPath(fsRef.reference);
+                }
+
+                if (cmdLineOperation is IInteractive) {
+                    _interaction.listenTo(IInteractive(cmdLineOperation).interaction);
                 }
 
                 cmdLineOperation
                     .status
                     .onComplete(continueRemove)
-                    .onFault(onCmdLineOperationFault);
+                    .onError(onCmdLineOperationFault)
+                    .operation
+                    .execute();
             }
         }
 
 
         private function onCmdLineOperationFault(op:IAsyncOperation):void {
-            status.info = op.status.info;
+            if (!(cmdLineOperation is IInteractive)) {
+                _interaction.setMessage(new Message().setText("CmdLineOperation Error"));
+            }
             fault();
         }
 
@@ -107,6 +125,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
 
         private var parameters:Parameters = new Parameters();
+        private var _interaction:Interaction = new Interaction();
         private var _sourceNodes:Array;
     }
 }

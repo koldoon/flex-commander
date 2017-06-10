@@ -46,9 +46,6 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
             statOperation = new LFS_StatCLO()
                 .parentNode(_node)
                 .path(_currentPath.split("/").slice(0, currentPathIndex + 1).join("/"))
-                .execute();
-
-            statOperation
                 .status
                 .onComplete(function (op:LFS_StatCLO):void {
                     _node = op.getNode();
@@ -60,9 +57,11 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                         getNextNode();
                     }
                 })
-                .onFault(function (op:LFS_StatCLO):void {
+                .onError(function (op:LFS_StatCLO):void {
                     fault();
-                });
+                })
+                .operation
+                .execute();
         }
 
 

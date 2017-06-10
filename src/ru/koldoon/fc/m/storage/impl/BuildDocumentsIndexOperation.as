@@ -5,9 +5,9 @@ package ru.koldoon.fc.m.storage.impl {
     import flash.filesystem.File;
 
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.Progress;
-    import ru.koldoon.fc.m.async.progress.IProgress;
-    import ru.koldoon.fc.m.async.progress.IProgressReporter;
+    import ru.koldoon.fc.m.progress.IProgress;
+    import ru.koldoon.fc.m.progress.IProgressReporter;
+    import ru.koldoon.fc.m.progress.impl.Progress;
 
     public class BuildDocumentsIndexOperation extends AbstractAsyncOperation implements IProgressReporter {
         public function BuildDocumentsIndexOperation(location:File) {

@@ -1,15 +1,14 @@
 package ru.koldoon.fc.m.async {
-    import ru.koldoon.fc.m.async.status.IProcessStatus;
-
     /**
      * Async resource getting operation promise
      */
 
     public interface IAsyncOperation {
+
         /**
-         * Operation Status
+         * Operation Status.
          */
-        function get status():IProcessStatus;
+        function get status():IAsyncOperationStatus;
 
 
         /**
@@ -22,5 +21,6 @@ package ru.koldoon.fc.m.async {
          * Stops async process.
          */
         function cancel():void;
+
     }
 }

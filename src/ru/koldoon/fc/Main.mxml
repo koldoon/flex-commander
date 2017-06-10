@@ -2,13 +2,14 @@
 <s:Application
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:impl="ru.koldoon.fc.c.panel.impl.*" xmlns:impl2="ru.koldoon.fc.c.popups.impl.*"
+    xmlns:debug="ru.koldoon.fc.c.debug.*"
 
-    backgroundColor="#011130" applicationDPI="320" frameRate="1000"
+    backgroundColor="#011130" applicationDPI="320" frameRate="1000" width="100%" height="100%"
     activate="onActivate()" deactivate="deactivateHandler(event)"
     applicationComplete="applicationCompleteHandler(event)">
 
     <fx:Declarations>
-        <!--<debug:SOSLoggingTarget/>-->
+        <debug:SOSLoggingTarget/>
     </fx:Declarations>
 
 

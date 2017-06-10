@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.async.impl {
+package ru.koldoon.fc.m.interactive.impl {
     public class InteractionOption {
 
         public function InteractionOption(value:String, label:String, context:* = null) {

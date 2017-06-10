@@ -1,9 +1,9 @@
-package ru.koldoon.fc.m.async.parametrized {
+package ru.koldoon.fc.m.parametrized {
     public interface IParameters {
 
         /**
          * List of all params
-         * @see ru.koldoon.fc.m.async.parametrized.IParam
+         * @see ru.koldoon.fc.m.parametrized.IParam
          */
         function get list():Array;
 

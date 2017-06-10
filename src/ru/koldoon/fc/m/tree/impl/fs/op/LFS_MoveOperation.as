@@ -2,17 +2,17 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import com.greensock.TweenMax;
 
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.impl.Interaction;
-    import ru.koldoon.fc.m.async.impl.InteractionMessage;
-    import ru.koldoon.fc.m.async.impl.InteractionOption;
-    import ru.koldoon.fc.m.async.impl.Param;
-    import ru.koldoon.fc.m.async.impl.Parameters;
-    import ru.koldoon.fc.m.async.impl.Progress;
-    import ru.koldoon.fc.m.async.interactive.IInteraction;
-    import ru.koldoon.fc.m.async.interactive.IInteractiveOperation;
-    import ru.koldoon.fc.m.async.parametrized.IParameters;
-    import ru.koldoon.fc.m.async.parametrized.IParametrized;
-    import ru.koldoon.fc.m.async.progress.IProgress;
+    import ru.koldoon.fc.m.interactive.IInteraction;
+    import ru.koldoon.fc.m.interactive.IInteractive;
+    import ru.koldoon.fc.m.interactive.impl.Interaction;
+    import ru.koldoon.fc.m.interactive.impl.InteractionOption;
+    import ru.koldoon.fc.m.interactive.impl.SelectOptionMessage;
+    import ru.koldoon.fc.m.parametrized.IParameters;
+    import ru.koldoon.fc.m.parametrized.IParametrized;
+    import ru.koldoon.fc.m.parametrized.impl.Param;
+    import ru.koldoon.fc.m.parametrized.impl.Parameters;
+    import ru.koldoon.fc.m.progress.IProgress;
+    import ru.koldoon.fc.m.progress.impl.Progress;
     import ru.koldoon.fc.m.tree.IDirectory;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.INodeProgressReporter;
@@ -31,7 +31,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
     import ru.koldoon.fc.utils.notEmpty;
 
     public class LFS_MoveOperation extends AbstractNodesBunchOperation
-        implements IInteractiveOperation, IParametrized, ITreeTransferOperation, INodeProgressReporter {
+        implements IInteractive, IParametrized, ITreeTransferOperation, INodeProgressReporter {
 
         public static const OVERWRITE_ALL:String = "OVERWRITE_ALL";
         public static const SKIP_ALL:String = "SKIP_ALL";
@@ -42,7 +42,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                 new Param(SKIP_ALL, false)
             ]);
 
-            interaction.onMessage(onInteractionMessage);
+            _interaction.onMessage(onInteractionMessage);
         }
 
 
@@ -84,8 +84,8 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         /**
          * @inheritDoc
          */
-        public function getInteraction():IInteraction {
-            return interaction;
+        public function get interaction():IInteraction {
+            return _interaction;
         }
 
 
@@ -95,6 +95,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         public function get processingNodeProgress():IProgress {
             return _processingNodeProgress;
         }
+
 
         override protected function begin():void {
             sourcePath = FileNodeUtil.getPath(source);
@@ -120,7 +121,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
         private var destinationPath:String;
 
         private var parameters:Parameters = new Parameters();
-        private var interaction:Interaction = new Interaction();
+        private var _interaction:Interaction = new Interaction();
 
         private var listingOp:IAsyncOperation;
         private var listingIndex:Number;
@@ -130,7 +131,6 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
          * Watch out for long copying processes.
          */
         private var cmdLineOperationObserver:TweenMax;
-
 
 
         private function getNextListing():void {
@@ -155,10 +155,10 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                 .followLinkNodes(false)
                 .recursive(true)
                 .createReferenceNodes(true)
+                .status
+                .onFinish(onListingComplete)
+                .operation
                 .execute();
-
-            listingOp.status
-                .onFinish(onListingComplete);
         }
 
 
@@ -176,8 +176,13 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                     onRepeat: updateNodeProgress
                 });
 
-                _processingNodeIndex = 0;
-                moveNextFile();
+                if (nodesQueue.length > 0) {
+                    _processingNodeIndex = 0;
+                    moveNextFile();
+                }
+                else {
+                    done();
+                }
             }
             else {
                 getNextListing();
@@ -190,7 +195,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
          * caught by another code
          */
         private function onInteractionMessage(i:Interaction):void {
-            var msg:InteractionMessage = i.getMessage() as InteractionMessage;
+            var msg:SelectOptionMessage = i.getMessage() as SelectOptionMessage;
             msg.options.push(new InteractionOption("n", "Skip All", SKIP_ALL));
             msg.options.push(new InteractionOption("y", "Overwrite All", OVERWRITE_ALL));
             msg.onResponse(onInteractionResponse);
@@ -237,6 +242,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                 }
                 else {
                     dirToRemoveIndex = 0;
+                    _processingNodeIndex = nodesQueue.length - 1; // to prevent NPE
                     removeNextEmptyDir();
                 }
             }
@@ -248,12 +254,10 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
                     removeCmdLineOperation = new LFS_MakeDirCLO()
                         .path(FileNodeUtil.getTargetPath(sourcePath, refNode.reference, destinationPath))
-                        .execute();
-
-                    removeCmdLineOperation
                         .status
                         .onComplete(continueMove)
-                        .onFault(onMkDirLineOperationFault);
+                        .onError(onMkDirCmdLineOperationFault)
+                        .operation;
                 }
                 else {
                     removeCmdLineOperation = new LFS_MoveCLO()
@@ -261,26 +265,26 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                         .targetFilePath(FileNodeUtil.getTargetPath(sourcePath, refNode.reference, destinationPath))
                         .overwriteExisting(parameters.param(OVERWRITE_ALL).value)
                         .skipExisting(parameters.param(SKIP_ALL).value)
-                        .execute();
-
-                    removeCmdLineOperation
                         .status
                         .onFinish(continueMove)
-                        .onFault(onCmdLineOperationFault);
-
-                    cmdLineOperationObserver.play(0);
-
-                    // Traverse remote interaction to ours
-                    interaction
-                        .listenTo(IInteractiveOperation(removeCmdLineOperation).getInteraction())
-                        .onMessage(cmdLineOperationObserver.pause);
+                        .onError(onCmdLineOperationFault)
+                        .operation;
                 }
+
+                // Traverse remote interaction to ours
+                _interaction
+                    .listenTo(IInteractive(removeCmdLineOperation).interaction)
+                    .onMessage(cmdLineOperationObserver.pause);
+
+                removeCmdLineOperation
+                    .execute();
+
+                cmdLineOperationObserver.play(0);
             }
         }
 
 
-        private function onMkDirLineOperationFault(op:IAsyncOperation):void {
-            status.info = op.status.info;
+        private function onMkDirCmdLineOperationFault(op:IAsyncOperation):void {
             dispose();
             fault();
         }
@@ -291,11 +295,10 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
             removeCmdLineOperation = new LFS_RemoveDirCLO()
                 .setPath(refNode.reference)
-                .execute();
-
-            removeCmdLineOperation
                 .status
-                .onFinish(onRemoveDirectoryComplete);
+                .onFinish(onRemoveDirectoryComplete)
+                .operation
+                .execute();
         }
 
 
@@ -334,13 +337,10 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
             statCmdLineOperation = new LFS_StatCLO()
                 .path(FileNodeUtil.getTargetPath(sourcePath, srcRef, destinationPath))
                 .createReferenceNode(true)
-                .execute();
-
-            statCmdLineOperation
                 .status
                 .onComplete(function (op:LFS_StatCLO):void {
                     var dstNode:INode = op.getNode();
-                    if (!dstNode){
+                    if (!dstNode) {
                         return;
                     }
 
@@ -354,9 +354,10 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                     if (status.isProcessing) {
                         cmdLineOperationObserver.play(0);
                     }
-                });
+                })
+                .operation
+                .execute();
         }
-
 
 
         private function onCmdLineOperationFault(op:IAsyncOperation):void {

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<s:Application
+    xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    backgroundColor="#011130">
+
+    <s:DataGroup left="0" right="0" top="0" bottom="0">
+        <s:itemRenderer>
+            <fx:Component>
+                <s:DataRenderer cacheAsBitmap="true">
+                    <!--<impl:PanelLine left="0" right="0"/>-->
+                    <s:Line left="0" right="0">
+                        <s:stroke>
+                            <s:SolidColorStroke color="white" alpha="0.15" weight="2"/>
+                        </s:stroke>
+                    </s:Line>
+                    <!--<s:Rect left="0" right="0" height="1">-->
+                        <!--<s:fill>-->
+                            <!--<s:SolidColor color="white" />-->
+                        <!--</s:fill>-->
+                    <!--</s:Rect>-->
+                </s:DataRenderer>
+            </fx:Component>
+        </s:itemRenderer>
+
+        <s:layout>
+            <s:VerticalLayout horizontalAlign="justify" gap="{ height * 0.05 }"/>
+        </s:layout>
+
+        <s:dataProvider>
+            <s:ArrayCollection>
+                <fx:Object/>
+                <fx:Object/>
+                <fx:Object/>
+                <fx:Object/>
+                <fx:Object/>
+                <fx:Object/>
+                <fx:Object/>
+                <fx:Object/>
+                <fx:Object/>
+            </s:ArrayCollection>
+        </s:dataProvider>
+    </s:DataGroup>
+
+</s:Application>

@@ -11,7 +11,7 @@ package ru.koldoon.fc.m.async.impl {
     import org.spicefactory.lib.reflect.ClassInfo;
 
     import ru.koldoon.fc.m.async.IAsyncOperation;
-    import ru.koldoon.fc.m.async.status.IProcessStatus;
+    import ru.koldoon.fc.m.async.IAsyncOperationStatus;
 
     public class AbstractAsyncOperation implements IAsyncOperation {
 
@@ -23,12 +23,13 @@ package ru.koldoon.fc.m.async.impl {
 
 
         public function AbstractAsyncOperation() {
+            _status = new ProcessStatus(this);
             OPERATIONS[this] = getTimer();
             LOG = Log.getLogger("fc." + ClassInfo.forInstance(this).simpleName);
         }
 
 
-        public function get status():IProcessStatus {
+        public function get status():IAsyncOperationStatus {
             return _status;
         }
 
@@ -45,6 +46,14 @@ package ru.koldoon.fc.m.async.impl {
                 return this;
             }
 
+            LOG.debug("Starting");
+            _status.setProcessing(!_status.isInited, this);
+            begin();
+            return this;
+        }
+
+
+        public function executeAsync():AbstractAsyncOperation {
             var self:AbstractAsyncOperation = this;
 
             ticker.addEventListener(Event.ENTER_FRAME, function call_execute(e:Event):void {
@@ -56,6 +65,7 @@ package ru.koldoon.fc.m.async.impl {
                     begin();
                 }
             });
+
             return this;
         }
 
@@ -76,7 +86,7 @@ package ru.koldoon.fc.m.async.impl {
         // -----------------------------------------------------------------------------------
 
         protected static var ticker:Shape = new Shape();
-        protected var _status:ProcessStatus = new ProcessStatus();
+        protected var _status:ProcessStatus;
 
 
         /**
@@ -86,7 +96,7 @@ package ru.koldoon.fc.m.async.impl {
             ticker.addEventListener(Event.ENTER_FRAME, callDone);
             function callDone(e:Event):void {
                 ticker.removeEventListener(Event.ENTER_FRAME, callDone);
-                if (!_status.isCanceled && !_status.isFault && !_status.isComplete) {
+                if (!_status.isCanceled && !_status.isError && !_status.isComplete) {
                     done();
                 }
             }
@@ -95,12 +105,14 @@ package ru.koldoon.fc.m.async.impl {
 
         protected function done():void {
             LOG.debug("Completed");
-            _status.setComplete(this);
+            if (!_status.isCanceled && !_status.isError) {
+                _status.setComplete(this);
+            }
         }
 
 
         protected function fault():void {
-            LOG.error("Fault: {0}", status.info || "Unknown");
+            LOG.error("Fault");
             _status.setFault(this);
         }
 

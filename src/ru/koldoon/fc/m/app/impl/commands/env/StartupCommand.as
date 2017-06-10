@@ -41,11 +41,12 @@ package ru.koldoon.fc.m.app.impl.commands.env {
 
             new CommandLineOperation()
                 .command("bin/init.sh")
-                .execute()
                 .status
                 .onFinish(function (op:CommandLineOperation):void {
                     loadSettings();
-                });
+                })
+                .operation
+                .execute();
 
             return false;
         }
@@ -57,7 +58,6 @@ package ru.koldoon.fc.m.app.impl.commands.env {
             if (notEmpty(AppConfig.getInstance().left_panel_path)) {
                 fileSystemTreeProvider
                     .resolvePathString(AppConfig.getInstance().left_panel_path)
-                    .execute()
                     .status
                     .onFinish(function (op:LFS_ResolvePathOperation):void {
                         var node:INode = op.getNode();
@@ -68,7 +68,9 @@ package ru.koldoon.fc.m.app.impl.commands.env {
                             app.leftPanel.directory = fileSystemTreeProvider.getRootDirectory();
                         }
                         refreshLeftPanel();
-                    });
+                    })
+                    .operation
+                    .execute();
             }
             else {
                 app.leftPanel.directory = fileSystemTreeProvider.getRootDirectory();
@@ -78,7 +80,6 @@ package ru.koldoon.fc.m.app.impl.commands.env {
             if (notEmpty(AppConfig.getInstance().right_panel_path)) {
                 fileSystemTreeProvider
                     .resolvePathString(AppConfig.getInstance().right_panel_path)
-                    .execute()
                     .status
                     .onFinish(function (op:LFS_ResolvePathOperation):void {
                         var node:INode = op.getNode();
@@ -89,7 +90,9 @@ package ru.koldoon.fc.m.app.impl.commands.env {
                             app.rightPanel.directory = fileSystemTreeProvider.getRootDirectory();
                         }
                         refreshRightPanel();
-                    });
+                    })
+                    .operation
+                    .execute();
             }
             else {
                 app.rightPanel.directory = fileSystemTreeProvider.getRootDirectory();

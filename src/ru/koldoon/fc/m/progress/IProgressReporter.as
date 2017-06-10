@@ -1,4 +1,4 @@
-package ru.koldoon.fc.m.async.progress {
+package ru.koldoon.fc.m.progress {
     /**
      * This interface defines class that can report it's progress
      * via message or percent value.

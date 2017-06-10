@@ -32,7 +32,7 @@ package ru.koldoon.fc.m.app.impl.commands {
         }
 
 
-        public function dispose():void {
+        public function shutdown():void {
         }
 
 

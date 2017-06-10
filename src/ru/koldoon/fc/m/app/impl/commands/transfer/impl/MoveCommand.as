@@ -1,11 +1,11 @@
 package ru.koldoon.fc.m.app.impl.commands.transfer.impl {
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
-    import ru.koldoon.fc.m.app.impl.commands.transfer.AbstractTreeTransferCommand;
+    import ru.koldoon.fc.m.app.impl.commands.transfer.AbstractNodesTransferCommand;
     import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.tree.ITreeEditor;
 
-    public class MoveCommand extends AbstractTreeTransferCommand {
+    public class MoveCommand extends AbstractNodesTransferCommand {
         public function MoveCommand() {
             bindings = [
                 new BindingProperties("F6")
@@ -13,7 +13,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer.impl {
         }
 
 
-        override protected function onTransmitOperationFinish():void {
+        override protected function onTransferOperationFinish():void {
             var source:IPanel = app.getActivePanel();
             var target:IPanel = app.getPassivePanel();
 

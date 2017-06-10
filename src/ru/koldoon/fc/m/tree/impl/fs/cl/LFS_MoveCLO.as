@@ -1,15 +1,14 @@
 package ru.koldoon.fc.m.tree.impl.fs.cl {
     import mx.utils.StringUtil;
 
-    import ru.koldoon.fc.m.async.impl.Interaction;
-    import ru.koldoon.fc.m.async.impl.InteractionMessage;
-    import ru.koldoon.fc.m.async.impl.InteractionMessageType;
-    import ru.koldoon.fc.m.async.impl.InteractionOption;
-    import ru.koldoon.fc.m.async.interactive.IInteraction;
-    import ru.koldoon.fc.m.async.interactive.IInteractiveOperation;
+    import ru.koldoon.fc.m.interactive.IInteraction;
+    import ru.koldoon.fc.m.interactive.IInteractive;
+    import ru.koldoon.fc.m.interactive.impl.Interaction;
+    import ru.koldoon.fc.m.interactive.impl.InteractionOption;
+    import ru.koldoon.fc.m.interactive.impl.SelectOptionMessage;
     import ru.koldoon.fc.m.os.CommandLineOperation;
 
-    public class LFS_MoveCLO extends CommandLineOperation implements IInteractiveOperation {
+    public class LFS_MoveCLO extends CommandLineOperation implements IInteractive {
 
         /**
          * Group 1: File Path to overwrite
@@ -21,9 +20,9 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
         public function LFS_MoveCLO() {
             super();
 
-            interaction = new Interaction();
+            _interaction = new Interaction();
             status.onFinish(function (data:Object):void {
-                interaction.dispose();
+                _interaction.dispose();
             });
         }
 
@@ -40,8 +39,11 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
         }
 
 
-        public function getInteraction():IInteraction {
-            return interaction;
+        /**
+         * @inheritDoc
+         */
+        public function get interaction():IInteraction {
+            return _interaction;
         }
 
 
@@ -74,15 +76,15 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
             var no:Object = NOT_OVERWRITTEN_RXP.exec(lines[0]);
 
             if (o) {
-                interaction.setMessage(
-                    new InteractionMessage(InteractionMessageType.CONFIRMATION)
-                        .setText(StringUtil.substitute("Could not move: File exists.\nOverwrite existing file?\n\n{0}\n", o[1]))
+                _interaction.setMessage(
+                    new SelectOptionMessage()
                         .responseOptions([
                             new InteractionOption("n", "Skip"),
                             new InteractionOption("y", "Overwrite")])
                         .onResponse(function (option:InteractionOption):void {
                             stdInput(option.value);
                         })
+                        .setText(StringUtil.substitute("Could not move: File exists.\nOverwrite existing file?\n\n{0}\n", o[1]))
                 );
             }
             else if (no) {
@@ -107,7 +109,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
         }
 
 
-        private var interaction:Interaction;
+        private var _interaction:Interaction;
 
         private var _sourceFilePath:String;
         private var _targetFilePath:String;

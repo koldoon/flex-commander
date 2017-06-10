@@ -190,7 +190,7 @@ package ru.koldoon.fc.m.app.impl {
          */
         private function onApplicationClosing(event:Event):void {
             for each (var cmd:ICommand in context.commandsInstalled) {
-                cmd.dispose();
+                cmd.shutdown();
             }
         }
     }
