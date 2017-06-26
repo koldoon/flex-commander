@@ -6,7 +6,6 @@ package ru.koldoon.fc.m.interactive {
     public interface IInteraction {
         /**
          * Get current user interaction message
-         * @return
          */
         function getMessage():IMessage;
 
@@ -14,7 +13,7 @@ package ru.koldoon.fc.m.interactive {
         /**
          * Interactive process Message handler.
          * Usually messages pauses async process until user response
-         * @param f
+         * @param f handler like function(i:IInteraction):void
          */
         function onMessage(f:Function):IInteraction;
 

@@ -1,5 +1,5 @@
 package ru.koldoon.fc.m.app.impl.commands {
-    import ru.koldoon.fc.c.ErrorDialog;
+    import ru.koldoon.fc.c.alert.ErrorDialog;
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
     import ru.koldoon.fc.m.async.IAsyncOperation;
@@ -120,10 +120,10 @@ package ru.koldoon.fc.m.app.impl.commands {
                 IInteractive(listingOperation)
                     .interaction
                     .onMessage(function (i:IInteraction):void {
-                        var msg:AccessDeniedMessage = i.getMessage() as AccessDeniedMessage;
-                        if (msg) {
+                        var adMsg:AccessDeniedMessage = i.getMessage() as AccessDeniedMessage;
+                        if (adMsg) {
                             var p:ErrorDialog = new ErrorDialog();
-                            p.message = msg.text;
+                            p.setMessage(adMsg.text);
                             app.popupManager.add().instance(p);
                         }
                     });

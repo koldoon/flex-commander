@@ -186,14 +186,17 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
 
         /**
-         * Add Extra options to interaction message before it will be
+         * Add Extra options to overwrite interaction message options before it will be
          * caught by another code
          */
         private function onInteractionMessage(i:Interaction):void {
             var msg:SelectOptionMessage = i.getMessage() as SelectOptionMessage;
-            msg.options.push(new InteractionOption("n", "Skip All", SKIP_EXISTING_FILES));
-            msg.options.push(new InteractionOption("y", "Overwrite All", OVERWRITE_EXISTING_FILES));
-            msg.onResponse(onInteractionResponse);
+
+            if (msg) {
+                msg.options.push(new InteractionOption("n", "Skip All", SKIP_EXISTING_FILES));
+                msg.options.push(new InteractionOption("y", "Overwrite All", OVERWRITE_EXISTING_FILES));
+                msg.onResponse(onInteractionResponse);
+            }
         }
 
 
@@ -227,7 +230,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
 
             cmdLineOperationObserver.pause();
 
-            if (!nodesQueue || processingNodeIndex == nodesQueue.length) {
+            if (!nodesQueue || processingNodeIndex >= nodesQueue.length) {
                 dispose();
                 done();
             }
@@ -243,8 +246,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                         .status
                         .onComplete(onMkDirOperationComplete)
                         .onError(onMkDirLineOperationFault)
-                        .operation
-                        .execute();
+                        .operation;
                 }
                 else {
                     copyCmdLineOperation = new LFS_CopyCLO()
@@ -258,15 +260,15 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
                         .operation;
 
                     cmdLineOperationObserver.play(0);
-
-                    // Traverse remote interaction to ours
-                    _interaction
-                        .listenTo(IInteractive(copyCmdLineOperation).interaction)
-                        .onMessage(cmdLineOperationObserver.pause);
-
-                    copyCmdLineOperation
-                        .execute();
                 }
+
+                // Traverse remote interaction to ours
+                _interaction
+                    .listenTo(IInteractive(copyCmdLineOperation).interaction)
+                    .onMessage(cmdLineOperationObserver.pause);
+
+                copyCmdLineOperation
+                    .execute();
             }
         }
 
@@ -275,6 +277,7 @@ package ru.koldoon.fc.m.tree.impl.fs.op {
             failedDir = null;
             continueCopy();
         }
+
 
         private function onMkDirLineOperationFault(op:LFS_MakeDirCLO):void {
             failedDir = op.getPath();

@@ -2,6 +2,7 @@
 <s:Panel
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledErrorPopupPanelSkin"
+    implements="ru.koldoon.fc.c.alert.IMessageDisplayDialog"
     title="Error" minWidth="600" defaultButton="{okButton}">
 
     <s:layout>
@@ -25,6 +26,16 @@
 
         [Bindable]
         public var message:String;
+
+
+        public function setMessage(str:String):void {
+            message = str;
+        }
+
+
+        public function getOkButton():Button {
+            return okButton;
+        }
 
 
         override public function setFocus():void {

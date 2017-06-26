@@ -1,12 +1,12 @@
 package ru.koldoon.fc.m.tree.impl.fs.cl {
     import mx.utils.StringUtil;
 
-    import ru.koldoon.fc.m.interactive.IInteraction;
     import ru.koldoon.fc.m.interactive.IInteractive;
     import ru.koldoon.fc.m.interactive.impl.Interaction;
     import ru.koldoon.fc.m.interactive.impl.InteractionOption;
     import ru.koldoon.fc.m.interactive.impl.SelectOptionMessage;
     import ru.koldoon.fc.m.os.CommandLineOperation;
+    import ru.koldoon.fc.m.tree.impl.fs.cl.utils.LFS_CLO_Lines;
 
     public class LFS_MoveCLO extends CommandLineOperation implements IInteractive {
 
@@ -39,14 +39,6 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
         }
 
 
-        /**
-         * @inheritDoc
-         */
-        public function get interaction():IInteraction {
-            return _interaction;
-        }
-
-
         override protected function begin():void {
             command("bin/mv");
 
@@ -72,6 +64,11 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
 
 
         override protected function onErrorLines(lines:Array):void {
+            if (LFS_CLO_Lines.checkAccessDeniedLines(lines, _interaction)) {
+                fault();
+                return;
+            }
+
             var o:Object = OVERWRITE_RXP.exec(lines[0]);
             var no:Object = NOT_OVERWRITTEN_RXP.exec(lines[0]);
 
@@ -84,7 +81,8 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
                         .onResponse(function (option:InteractionOption):void {
                             stdInput(option.value);
                         })
-                        .setText(StringUtil.substitute("Could not move: File exists.\nOverwrite existing file?\n\n{0}\n", o[1]))
+                        .setText(StringUtil.substitute(
+                            "Could not move: File exists.\nOverwrite existing file?\n\n{0}\n", o[1]))
                 );
             }
             else if (no) {
@@ -108,8 +106,6 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
             return this;
         }
 
-
-        private var _interaction:Interaction;
 
         private var _sourceFilePath:String;
         private var _targetFilePath:String;

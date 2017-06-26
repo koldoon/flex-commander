@@ -6,10 +6,14 @@ package ru.koldoon.fc.m.os {
     import flash.events.ProgressEvent;
     import flash.filesystem.File;
 
+    import ru.koldoon.fc.m.async.IAsyncOperation;
     import ru.koldoon.fc.m.async.impl.AbstractAsyncOperation;
+    import ru.koldoon.fc.m.interactive.IInteraction;
+    import ru.koldoon.fc.m.interactive.IInteractive;
+    import ru.koldoon.fc.m.interactive.impl.Interaction;
     import ru.koldoon.fc.utils.notEmpty;
 
-    public class CommandLineOperation extends AbstractAsyncOperation {
+    public class CommandLineOperation extends AbstractAsyncOperation implements IInteractive {
         private static const LOG_SPACES_TRIM_RXP:RegExp = /\s/g;
 
         private var _commandName:String;
@@ -23,6 +27,23 @@ package ru.koldoon.fc.m.os {
         private var incompleteStdErr:String;
         private var npsi:NativeProcessStartupInfo;
         private var proc:NativeProcess;
+
+
+        public function CommandLineOperation() {
+            _interaction = new Interaction();
+            _status.onFinish(disposeInteraction);
+        }
+
+
+        private function disposeInteraction(op:IAsyncOperation):void {
+            _interaction.dispose();
+        }
+
+
+        /**
+         * Interaction implementation accessor
+         */
+        protected var _interaction:Interaction;
 
 
         /**
@@ -47,6 +68,17 @@ package ru.koldoon.fc.m.os {
         }
 
 
+        /**
+         * @inheritDoc
+         */
+        public function get interaction():IInteraction {
+            return _interaction;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
         override public function cancel():void {
             super.cancel();
             close();
@@ -75,7 +107,7 @@ package ru.koldoon.fc.m.os {
 
 
         /**
-         * Do not report new line until CR is received
+         * Do not report new line until CR is received from StdOut
          * @default true
          */
         public function waitForReturnOnStdOut(value:Boolean):CommandLineOperation {
@@ -84,12 +116,20 @@ package ru.koldoon.fc.m.os {
         }
 
 
+        /**
+         * Do not report new line until CR is received from StdErr
+         * @default false
+         */
         public function waitForReturnOnStdErr(value:Boolean):CommandLineOperation {
             _waitForReturnOnStdErr = value;
             return this;
         }
 
 
+
+        /**
+         * @inheritDoc
+         */
         override protected function begin():void {
             LOG.debug("Executing: " + _commandName + " " + (_commandArguments ? _commandArguments.join(" ") : ""));
             incompleteStdOut = "";

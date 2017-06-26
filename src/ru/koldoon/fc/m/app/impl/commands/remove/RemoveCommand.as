@@ -3,7 +3,7 @@ package ru.koldoon.fc.m.app.impl.commands.remove {
     import flash.events.MouseEvent;
     import flash.ui.Keyboard;
 
-    import ru.koldoon.fc.c.ErrorDialog;
+    import ru.koldoon.fc.c.alert.ErrorDialog;
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.BindingProperties;
     import ru.koldoon.fc.m.app.impl.commands.AbstractBindableCommand;

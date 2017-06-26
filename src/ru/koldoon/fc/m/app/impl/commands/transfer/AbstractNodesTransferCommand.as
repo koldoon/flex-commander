@@ -3,7 +3,6 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
     import flash.events.MouseEvent;
     import flash.ui.Keyboard;
 
-    import ru.koldoon.fc.c.alert.AlertDialog;
     import ru.koldoon.fc.c.confirmation.ConfirmationDialog;
     import ru.koldoon.fc.m.app.IPanel;
     import ru.koldoon.fc.m.app.impl.commands.*;
@@ -137,7 +136,19 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
             if (operation is IInteractive) {
                 IInteractive(operation)
                     .interaction
-                    .onMessage(onInteractionMessage);
+                    .onMessage(function onInteractionMessage(i:IInteraction):void {
+                        var msg:* = i.getMessage();
+
+                        if (msg is ISelectOptionMessage) {
+                            showConfirmationDialog(msg);
+                        }
+                        else if (msg is IMessage) {
+                            if (!p.messages) {
+                                p.messages = "";
+                            }
+                            p.messages += IMessage(msg).text + "\n";
+                        }
+                    });
             }
 
             if (operation is IProgressReporter) {
@@ -145,7 +156,7 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
                 IProgressReporter(operation)
                     .progress
                     .onProgress(function (op:IProgressReporter):void {
-                        p.message = op.progress.message;
+                        p.operationMessage = op.progress.message;
                         p.percentCompleted = op.progress.percent;
                     });
             }
@@ -163,7 +174,9 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
                 INodesBatchOperation(operation)
                     .progress
                     .onProgress(function (op:INodesBatchOperation):void {
-                        p.currentItem = INode(op.nodesQueue[op.processingNodeIndex]).name;
+                        if (op.processingNodeIndex < op.nodesQueue.length) {
+                            p.currentItem = INode(op.nodesQueue[op.processingNodeIndex]).name;
+                        }
                         p.itemsTotal = op.nodesQueue.length;
                         p.processingItemIndex = op.processingNodeIndex + 1;
                     });
@@ -203,18 +216,6 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
         }
 
 
-        private function onInteractionMessage(i:IInteraction):void {
-            var msg:* = i.getMessage();
-
-            if (msg is ISelectOptionMessage) {
-                showConfirmationDialog(msg);
-            }
-            else if (msg is IMessage) {
-                showAlertDialog(msg);
-            }
-        }
-
-
         private function showConfirmationDialog(msg:ISelectOptionMessage):void {
             var p:ConfirmationDialog = new ConfirmationDialog();
             var pd:IPopupDescriptor = app.popupManager.add().instance(p).modal(true);
@@ -229,17 +230,26 @@ package ru.koldoon.fc.m.app.impl.commands.transfer {
         }
 
 
-        private function showAlertDialog(msg:IMessage):void {
-            var p:AlertDialog = new AlertDialog();
-            var pd:IPopupDescriptor = app.popupManager.add().instance(p).modal(true);
-
-            p.message = msg;
-            p.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
-                if (e.target == p.okButton) {
-                    app.popupManager.remove(pd);
-                }
-            });
-        }
+//        private function showAlertDialog(msg:IMessage):void {
+//            var p:IMessageDisplayDialog;
+//            if (msg is AccessDeniedMessage) {
+//                p = new ErrorDialog();
+//                p.setMessage("Permission denied:\n" + msg.data);
+//            }
+//            else {
+//                // legacy message
+//                p = new AlertDialog();
+//                p.setMessage(msg.text);
+//            }
+//
+//            var pd:IPopupDescriptor = app.popupManager.add().instance(UIComponent(p)).modal(true);
+//
+//            p.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
+//                if (e.target == p.getOkButton()) {
+//                    app.popupManager.remove(pd);
+//                }
+//            });
+//        }
 
     }
 }

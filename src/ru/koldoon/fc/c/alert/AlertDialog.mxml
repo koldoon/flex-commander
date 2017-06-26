@@ -2,6 +2,7 @@
 <s:Panel
     xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     skinClass="ru.koldoon.fc.resources.skins.panel.TitledPopupPanelSkin"
+    implements="ru.koldoon.fc.c.alert.IMessageDisplayDialog"
     title="Alert" minWidth="400" maxWidth="1600">
 
     <s:layout>
@@ -12,7 +13,7 @@
     <s:Label
         id="textLabel"
         styleName="white" width="100%"
-        text="{message.text}"/>
+        text="{message}"/>
 
     <s:controlBarContent>
         <s:Button
@@ -21,10 +22,24 @@
     </s:controlBarContent>
 
     <fx:Script><![CDATA[
-        import ru.koldoon.fc.m.interactive.IMessage;
-
         [Bindable]
-        public var message:IMessage;
+        public var message:String;
+
+
+        /**
+         * @inheritDoc
+         */
+        public function setMessage(str:String):void {
+            message = str;
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function getOkButton():Button {
+            return okButton;
+        }
 
 
         override public function setFocus():void {

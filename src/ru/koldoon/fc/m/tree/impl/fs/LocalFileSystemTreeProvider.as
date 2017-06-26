@@ -61,7 +61,7 @@ package ru.koldoon.fc.m.tree.impl.fs {
         }
 
 
-        public function resolveLink(lnk:ILink):IAsyncOperation {
+        public function resolveLink(lnk:ILink):ITreeGetNodeOperation {
             return pinAsyncOperation(new LFS_ResolveLinkOperation()
                 .setLink(lnk as LinkNode));
         }

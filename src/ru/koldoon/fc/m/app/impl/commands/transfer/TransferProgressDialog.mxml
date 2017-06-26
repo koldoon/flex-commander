@@ -12,8 +12,8 @@
 
     <s:Form styleName="simple">
 
-        <s:FormItem label="" width="100%" includeInLayout="{message}">
-            <s:Label text="{message}" styleName="blue0" maxDisplayedLines="1" width="100%"/>
+        <s:FormItem label="" width="100%" includeInLayout="{operationMessage}">
+            <s:Label text="{operationMessage}" styleName="blue0" maxDisplayedLines="1" width="100%"/>
         </s:FormItem>
 
         <s:FormItem label="From:">
@@ -69,6 +69,15 @@
     </s:Form>
 
 
+    <s:Label
+        text="Messages:" textAlign="center"
+        visible="{messages}" includeInLayout="{messages}"/>
+
+    <s:TextArea
+        skinClass="ru.koldoon.fc.resources.skins.input.TextAreaBorderedSkin"
+        text="{messages}" visible="{messages}" includeInLayout="{messages}"
+        heightInLines="4"/>
+
     <s:controlBarContent>
         <s:Button id="cancelButton" label="Cancel"/>
     </s:controlBarContent>
@@ -91,7 +100,7 @@
          * Operation status message.
          */
         [Bindable]
-        public var message:String;
+        public var operationMessage:String;
 
         /**
          * Currently processing item
@@ -122,6 +131,9 @@
          */
         [Bindable]
         public var percentCompleted:Number;
+
+        [Bindable]
+        public var messages:String;
 
 
         override public function setFocus():void {

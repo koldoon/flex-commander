@@ -1,5 +1,6 @@
 package ru.koldoon.fc.m.app.impl.commands {
     import ru.koldoon.fc.m.app.impl.BindingProperties;
+    import ru.koldoon.fc.m.app.impl.commands.transfer.TransferProgressDialog;
 
     public class SaveSettingsCommand extends AbstractBindableCommand {
         public function SaveSettingsCommand() {
@@ -10,7 +11,7 @@ package ru.koldoon.fc.m.app.impl.commands {
 
 
         override public function execute():void {
-            trace(JSON.stringify(app.getActivePanel().directory.getPath(), null, 4));
+            app.popupManager.add().instance(new TransferProgressDialog());
         }
     }
 }

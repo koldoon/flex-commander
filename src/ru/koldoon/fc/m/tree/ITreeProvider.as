@@ -51,6 +51,6 @@ package ru.koldoon.fc.m.tree {
          * Resolves link node: fill in its <code>target</code> property
          * with concrete node or null if resolving is impossible
          */
-        function resolveLink(lnk:ILink):IAsyncOperation;
+        function resolveLink(lnk:ILink):ITreeGetNodeOperation;
     }
 }

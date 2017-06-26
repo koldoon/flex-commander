@@ -5,8 +5,14 @@ package ru.koldoon.fc.m.app.impl.commands.env {
     public class ShutdownCommand extends AbstractCommand {
 
         override public function shutdown():void {
-            AppConfig.getInstance().left_panel_path = app.leftPanel.directory.getPathString();
-            AppConfig.getInstance().right_panel_path = app.rightPanel.directory.getPathString();
+            if (app.leftPanel.directory) {
+                AppConfig.getInstance().left_panel_path = app.leftPanel.directory.getPathString();
+            }
+
+            if (app.rightPanel.directory) {
+                AppConfig.getInstance().right_panel_path = app.rightPanel.directory.getPathString();
+            }
+
             AppConfig.getInstance().save();
         }
     }

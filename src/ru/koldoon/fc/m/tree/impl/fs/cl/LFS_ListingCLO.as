@@ -1,8 +1,5 @@
 package ru.koldoon.fc.m.tree.impl.fs.cl {
-    import ru.koldoon.fc.m.interactive.IInteraction;
     import ru.koldoon.fc.m.interactive.IInteractive;
-    import ru.koldoon.fc.m.interactive.impl.AccessDeniedMessage;
-    import ru.koldoon.fc.m.interactive.impl.Interaction;
     import ru.koldoon.fc.m.os.CommandLineOperation;
     import ru.koldoon.fc.m.tree.INode;
     import ru.koldoon.fc.m.tree.impl.DirectoryNode;
@@ -10,6 +7,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
     import ru.koldoon.fc.m.tree.impl.FileType;
     import ru.koldoon.fc.m.tree.impl.LinkNode;
     import ru.koldoon.fc.m.tree.impl.ReferenceNode;
+    import ru.koldoon.fc.m.tree.impl.fs.cl.utils.LFS_CLO_Lines;
 
     /**
      * Using POSIX ls command creates nodes for a particular directory
@@ -43,8 +41,6 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
          * Group 12: File name if NOT a link: rc.netboot
          */
         public static const LS_RXP:RegExp = /^([bcdlsp-])([srwxtTS-]{9})[@+]?\s+\d+\s+\w+\s+\w+\s+(\d+)\s+(\w{3})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})\s+(\d{4})\s+(?:(?:(.+) -> (.+))|(.+))$/;
-
-        public static const ACCESS_DENIED:RegExp = /^ls:\s+(.*):\s+Permission denied$/;
 
         /**
          * Get catalog name from LS header in recursive mode
@@ -85,11 +81,6 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
          * Total size of all regular file nodes in Bytes
          */
         public var sizeTotal:Number = 0;
-
-
-        public function get interaction():IInteraction {
-            return _interaction;
-        }
 
 
         override protected function begin():void {
@@ -199,12 +190,7 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
 
 
         override protected function onErrorLines(lines:Array):void {
-            for each (var l:String in lines) {
-                var ad:Object = ACCESS_DENIED.exec(l);
-                if (ad) {
-                    _interaction.setMessage(new AccessDeniedMessage(ad[1]));
-                }
-            }
+            LFS_CLO_Lines.checkAccessDeniedLines(lines, _interaction);
         }
 
 
@@ -278,7 +264,6 @@ package ru.koldoon.fc.m.tree.impl.fs.cl {
         private var _path:String;
         private var _recursive:Boolean;
         private var _nodes:Array = [];
-        private var _interaction:Interaction = new Interaction();
 
     }
 }

@@ -29,6 +29,9 @@ package ru.koldoon.fc.m.async.impl {
         }
 
 
+        /**
+         * @inheritDoc
+         */
         public function get status():IAsyncOperationStatus {
             return _status;
         }
@@ -70,11 +73,18 @@ package ru.koldoon.fc.m.async.impl {
         }
 
 
+
+        /**
+         * Actual execution method that is automatically executed after all preparations
+         */
         protected function begin():void {
             throw new Error("You must implement abstract method begin()");
         }
 
 
+        /**
+         * @inheritDoc
+         */
         public function cancel():void {
             LOG.warn("Cancelled");
             _status.setCanceled(this);
@@ -86,6 +96,10 @@ package ru.koldoon.fc.m.async.impl {
         // -----------------------------------------------------------------------------------
 
         protected static var ticker:Shape = new Shape();
+
+        /**
+         * Status implementation accessor
+         */
         protected var _status:ProcessStatus;
 
 
